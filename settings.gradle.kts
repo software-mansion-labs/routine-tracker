@@ -1,4 +1,5 @@
 rootProject.name = "RoutineTracker"
+
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
