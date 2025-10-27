@@ -16,6 +16,7 @@ import com.swmansion.routinetracker.model.Task
 abstract class RoutineDatabase : RoomDatabase() {
     abstract fun routineDao(): RoutineDao
     abstract fun taskDao(): TaskDao
+    abstract fun routineRecurrenceDao(): RoutineRecurrenceDao
 }
 
 @Suppress("NO_ACTUAL_FOR_EXPECT")

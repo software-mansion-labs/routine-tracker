@@ -10,13 +10,13 @@ import com.swmansion.routinetracker.model.Task
 
 @Dao
 interface TaskDao {
-    @Query("SELECT * FROM tasks WHERE routineId = :routineId ORDER BY `order`")
+    @Query("SELECT * FROM tasks WHERE routineId = :routineId")
     fun getTasksForRoutine(routineId: Long): kotlinx.coroutines.flow.Flow<List<Task>>
 
-    @Query("SELECT * FROM tasks WHERE routineId = :routineId ORDER BY `order`")
+    @Query("SELECT * FROM tasks WHERE routineId = :routineId")
     suspend fun getTasksForRoutineSuspend(routineId: Long): List<Task>
 
-    @Query("SELECT * FROM tasks ORDER BY routineId, `order`")
+    @Query("SELECT * FROM tasks ORDER BY routineId")
     fun getAllTasks(): kotlinx.coroutines.flow.Flow<List<Task>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -31,6 +31,6 @@ interface TaskDao {
     @Delete
     suspend fun deleteTask(task: Task)
 
-    @Query("UPDATE tasks SET `order` = :newOrder WHERE id = :taskId")
-    suspend fun updateTaskOrder(taskId: Long, newOrder: Int)
+    @Query("DELETE FROM tasks")
+    suspend fun removeAll()
 }
