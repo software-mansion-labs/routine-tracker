@@ -76,6 +76,4 @@ dependencies {
     add("kspIosArm64", libs.androidx.room.compiler)
 }
 
-room {
-    schemaDirectory("$projectDir/schemas")
-}
+room { schemaDirectory("$projectDir/schemas") }
