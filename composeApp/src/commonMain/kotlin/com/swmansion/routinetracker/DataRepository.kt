@@ -9,7 +9,11 @@ import com.swmansion.routinetracker.viewmodel.RoutineViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 
-class DataRepository(private val routineDao: RoutineDao, private val taskDao: TaskDao, private val routineRecurrenceDao: RoutineRecurrenceDao) {
+class DataRepository(
+    private val routineDao: RoutineDao,
+    private val taskDao: TaskDao,
+    private val routineRecurrenceDao: RoutineRecurrenceDao,
+) {
 
     fun getAllRoutinesWithTasks(): Flow<List<RoutineViewModel>> =
         routineDao.getAllRoutines().combine(taskDao.getAllTasks()) { routines, tasks ->
@@ -18,7 +22,9 @@ class DataRepository(private val routineDao: RoutineDao, private val taskDao: Ta
 
     fun getRoutineWithTasks(id: Long): Flow<RoutineViewModel?> =
         routineDao.getAllRoutines().combine(taskDao.getAllTasks()) { routines, tasks ->
-            routines.find { it.id == id }?.let { RoutineViewModel(it, tasks.filter { t -> t.routineId == it.id }) }
+            routines
+                .find { it.id == id }
+                ?.let { RoutineViewModel(it, tasks.filter { t -> t.routineId == it.id }) }
         }
 
     suspend fun insertRoutineWithTasks(routine: Routine, tasks: List<Task>): Long {
@@ -28,6 +34,7 @@ class DataRepository(private val routineDao: RoutineDao, private val taskDao: Ta
     }
 
     suspend fun updateRoutine(routine: Routine) = routineDao.updateRoutine(routine)
+
     suspend fun deleteRoutine(routine: Routine) = routineDao.deleteRoutine(routine)
 
     suspend fun addTaskToRoutine(routineId: Long, task: Task): Long {
@@ -36,6 +43,7 @@ class DataRepository(private val routineDao: RoutineDao, private val taskDao: Ta
     }
 
     suspend fun updateTask(task: Task) = taskDao.updateTask(task)
+
     suspend fun deleteTask(task: Task) = taskDao.deleteTask(task)
 
     suspend fun removeAll() {

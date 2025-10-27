@@ -7,14 +7,11 @@ import com.swmansion.routinetracker.database.DB_FILE_NAME
 import com.swmansion.routinetracker.database.RoutineDatabase
 import kotlinx.coroutines.Dispatchers
 
-actual class DataFactory(private val app: Application)  {
+actual class DataFactory(private val app: Application) {
     actual fun createRoomDatabase(): RoutineDatabase {
         val dbFile = app.getDatabasePath(DB_FILE_NAME)
-        return Room
-            .databaseBuilder<RoutineDatabase>(
-                context = app,
-                name = dbFile.absolutePath,
-            ).setDriver(BundledSQLiteDriver())
+        return Room.databaseBuilder<RoutineDatabase>(context = app, name = dbFile.absolutePath)
+            .setDriver(BundledSQLiteDriver())
             .setQueryCoroutineContext(Dispatchers.IO)
             .build()
     }

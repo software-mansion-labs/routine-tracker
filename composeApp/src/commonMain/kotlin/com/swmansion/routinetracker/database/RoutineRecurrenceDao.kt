@@ -5,6 +5,5 @@ import androidx.room.Query
 
 @Dao
 interface RoutineRecurrenceDao {
-    @Query("DELETE FROM routine_recurrence")
-    suspend fun removeAll()
+    @Query("DELETE FROM routine_recurrence") suspend fun removeAll()
 }

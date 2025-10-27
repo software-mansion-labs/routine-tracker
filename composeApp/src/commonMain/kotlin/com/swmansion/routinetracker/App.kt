@@ -17,11 +17,11 @@ fun App() {
         } else {
             androidx.compose.material3.Surface(
                 modifier = Modifier.fillMaxSize(),
-                color = MaterialTheme.colorScheme.background
+                color = MaterialTheme.colorScheme.background,
             ) {
                 androidx.compose.material3.Text(
                     "Database not initialized",
-                    style = MaterialTheme.typography.headlineMedium
+                    style = MaterialTheme.typography.headlineMedium,
                 )
             }
         }

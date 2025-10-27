@@ -19,18 +19,13 @@ interface TaskDao {
     @Query("SELECT * FROM tasks ORDER BY routineId")
     fun getAllTasks(): kotlinx.coroutines.flow.Flow<List<Task>>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertTask(task: Task): Long
+    @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun insertTask(task: Task): Long
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertTasks(tasks: List<Task>)
+    @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun insertTasks(tasks: List<Task>)
 
-    @Update
-    suspend fun updateTask(task: Task)
+    @Update suspend fun updateTask(task: Task)
 
-    @Delete
-    suspend fun deleteTask(task: Task)
+    @Delete suspend fun deleteTask(task: Task)
 
-    @Query("DELETE FROM tasks")
-    suspend fun removeAll()
+    @Query("DELETE FROM tasks") suspend fun removeAll()
 }

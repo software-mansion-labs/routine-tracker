@@ -10,12 +10,10 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
-        
+
         val dataFactory = DataFactory(application as android.app.Application)
         globalDatabase = dataFactory.createRoomDatabase()
 
-        setContent {
-            App()
-        }
+        setContent { App() }
     }
 }

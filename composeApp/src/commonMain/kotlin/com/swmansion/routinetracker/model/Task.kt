@@ -6,20 +6,20 @@ import androidx.room.PrimaryKey
 
 @Entity(
     tableName = "tasks",
-    foreignKeys = [
-        ForeignKey(
-            entity = Routine::class,
-            parentColumns = ["id"],
-            childColumns = ["routineId"],
-            onDelete = ForeignKey.CASCADE
-        )
-    ]
+    foreignKeys =
+        [
+            ForeignKey(
+                entity = Routine::class,
+                parentColumns = ["id"],
+                childColumns = ["routineId"],
+                onDelete = ForeignKey.CASCADE,
+            )
+        ],
 )
 data class Task(
-    @PrimaryKey(autoGenerate = true)
-    val id: Long = 0,
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val routineId: Long,
     val name: String,
     val duration: Int? = null,
-    val order: Int
+    val order: Int,
 )

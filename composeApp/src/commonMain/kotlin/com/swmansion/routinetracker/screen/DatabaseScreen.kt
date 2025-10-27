@@ -16,16 +16,14 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun TestDatabaseScreen(database: RoutineDatabase) {
-    val repository = DataRepository(database.routineDao(), database.taskDao(), database.routineRecurrenceDao())
+    val repository =
+        DataRepository(database.routineDao(), database.taskDao(), database.routineRecurrenceDao())
     val scope = rememberCoroutineScope()
     var testResults by remember { mutableStateOf<List<String>>(emptyList()) }
-    
-    LaunchedEffect(Unit) {
-        testResults = testResults + "Initializing database test..."
-    }
 
-    Column( Modifier.fillMaxWidth()
-        .padding(vertical = 50.dp), Arrangement.Bottom) {
+    LaunchedEffect(Unit) { testResults = testResults + "Initializing database test..." }
+
+    Column(Modifier.fillMaxWidth().padding(vertical = 50.dp), Arrangement.Bottom) {
         Column {
             Button(
                 onClick = {
@@ -33,27 +31,48 @@ fun TestDatabaseScreen(database: RoutineDatabase) {
                         testResults = testResults + "--- Creating test routines ---"
 
                         val routine1 = Routine(name = "Morning Exercise", time = "07:00")
-                        val routine1Id = repository.insertRoutineWithTasks(
-                            routine1,
-                            listOf(
-                                Task(routineId = 0, name = "Push-ups", duration = 10, order = 0),
-                                Task(routineId = 0, name = "Deadlift", duration = 10, order = 0),
+                        val routine1Id =
+                            repository.insertRoutineWithTasks(
+                                routine1,
+                                listOf(
+                                    Task(
+                                        routineId = 0,
+                                        name = "Push-ups",
+                                        duration = 10,
+                                        order = 0,
+                                    ),
+                                    Task(routineId = 0, name = "Deadlift", duration = 10, order = 0),
+                                ),
                             )
-                        )
-                        testResults = testResults + "✓ Created routine 'Morning Exercise' with ID: $routine1Id"
+                        testResults =
+                            testResults +
+                                "✓ Created routine 'Morning Exercise' with ID: $routine1Id"
 
                         val routine2 = Routine(name = "Evening Meditation", time = "20:00")
-                        val routine2Id = repository.insertRoutineWithTasks(
-                            routine2,
-                            listOf(
-                                Task(routineId = 0, name = "Clear mind", duration = 5, order = 0),
-                                Task(routineId = 0, name = "Focus breath", duration = 10, order = 0)
+                        val routine2Id =
+                            repository.insertRoutineWithTasks(
+                                routine2,
+                                listOf(
+                                    Task(
+                                        routineId = 0,
+                                        name = "Clear mind",
+                                        duration = 5,
+                                        order = 0,
+                                    ),
+                                    Task(
+                                        routineId = 0,
+                                        name = "Focus breath",
+                                        duration = 10,
+                                        order = 0,
+                                    ),
+                                ),
                             )
-                        )
-                        testResults = testResults + "✓ Created routine 'Evening Meditation' with ID: $routine2Id"
+                        testResults =
+                            testResults +
+                                "✓ Created routine 'Evening Meditation' with ID: $routine2Id"
                     }
                 },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             ) {
                 Text("Insert Test Data")
             }
@@ -67,16 +86,18 @@ fun TestDatabaseScreen(database: RoutineDatabase) {
                         val routines = repository.getAllRoutinesWithTasks().first()
                         testResults = testResults + "Found ${routines.size} routines"
                         routines.forEach { rvm ->
-                            testResults = testResults +
+                            testResults =
+                                testResults +
                                     "✓ Routine '${rvm.routine.name}' (ID: ${rvm.routine.id}, Time: ${rvm.routine.time}) - ${rvm.tasks.size} tasks"
                             rvm.tasks.forEach { task ->
-                                testResults = testResults +
+                                testResults =
+                                    testResults +
                                         "  → Task: ${task.name} Duration: ${task.duration}min)"
                             }
                         }
                     }
                 },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             ) {
                 Text("Read All")
             }
@@ -91,7 +112,7 @@ fun TestDatabaseScreen(database: RoutineDatabase) {
                         testResults = testResults + "Results cleared"
                     }
                 },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             ) {
                 Text("Clear")
             }
@@ -106,31 +127,24 @@ fun TestDatabaseScreen(database: RoutineDatabase) {
                         testResults = testResults + "--- Data cleared ---"
                     }
                 },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             ) {
                 Text("Remove all data")
             }
         }
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-        ) {
+        Card(modifier = Modifier.fillMaxWidth().weight(1f)) {
             Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(8.dp)
-                    .verticalScroll(rememberScrollState())
+                modifier =
+                    Modifier.fillMaxSize().padding(8.dp).verticalScroll(rememberScrollState())
             ) {
                 testResults.forEach { result ->
                     Text(
                         text = result,
                         style = MaterialTheme.typography.bodySmall,
-                        modifier = Modifier.padding(vertical = 2.dp)
+                        modifier = Modifier.padding(vertical = 2.dp),
                     )
                 }
             }
         }
     }
 }
-

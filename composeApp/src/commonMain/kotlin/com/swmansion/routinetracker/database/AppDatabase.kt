@@ -8,14 +8,13 @@ import com.swmansion.routinetracker.model.Routine
 import com.swmansion.routinetracker.model.RoutineRecurrence
 import com.swmansion.routinetracker.model.Task
 
-@Database(
-    entities = [Routine::class, Task::class, RoutineRecurrence::class],
-    version = 1,
-)
+@Database(entities = [Routine::class, Task::class, RoutineRecurrence::class], version = 1)
 @ConstructedBy(AppDatabaseConstructor::class)
 abstract class RoutineDatabase : RoomDatabase() {
     abstract fun routineDao(): RoutineDao
+
     abstract fun taskDao(): TaskDao
+
     abstract fun routineRecurrenceDao(): RoutineRecurrenceDao
 }
 

@@ -14,23 +14,22 @@ import platform.Foundation.NSUserDomainMask
 actual class DataFactory {
     actual fun createRoomDatabase(): RoutineDatabase {
         val dbFile = "${fileDirectory()}/$DB_FILE_NAME"
-        return Room
-            .databaseBuilder<RoutineDatabase>(
-                name = dbFile,
-            ).setDriver(_root_ide_package_.androidx.sqlite.driver.bundled.BundledSQLiteDriver())
+        return Room.databaseBuilder<RoutineDatabase>(name = dbFile)
+            .setDriver(_root_ide_package_.androidx.sqlite.driver.bundled.BundledSQLiteDriver())
             .setQueryCoroutineContext(Dispatchers.IO)
             .build()
     }
 
     @OptIn(ExperimentalForeignApi::class)
     private fun fileDirectory(): String {
-        val documentDirectory: NSURL? = NSFileManager.defaultManager.URLForDirectory(
-            directory = NSDocumentDirectory,
-            inDomain = NSUserDomainMask,
-            appropriateForURL = null,
-            create = false,
-            error = null,
-        )
+        val documentDirectory: NSURL? =
+            NSFileManager.defaultManager.URLForDirectory(
+                directory = NSDocumentDirectory,
+                inDomain = NSUserDomainMask,
+                appropriateForURL = null,
+                create = false,
+                error = null,
+            )
         return requireNotNull(documentDirectory).path!!
     }
 }
