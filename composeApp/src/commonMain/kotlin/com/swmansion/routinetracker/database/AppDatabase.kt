@@ -18,6 +18,7 @@ abstract class RoutineDatabase : RoomDatabase() {
     abstract fun taskDao(): TaskDao
 }
 
+@Suppress("NO_ACTUAL_FOR_EXPECT")
 expect object AppDatabaseConstructor : RoomDatabaseConstructor<RoutineDatabase> {
     override fun initialize(): RoutineDatabase
 }
