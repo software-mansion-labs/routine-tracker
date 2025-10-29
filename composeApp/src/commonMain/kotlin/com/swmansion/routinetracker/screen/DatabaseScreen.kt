@@ -16,7 +16,6 @@ import kotlinx.coroutines.launch
 @Composable
 fun TestDatabaseScreen(appContainer: AppContainer) {
     val repository = appContainer.repository
-    val database = appContainer.database
     val scope = rememberCoroutineScope()
     var testResults by remember { mutableStateOf<List<String>>(emptyList()) }
 
@@ -132,32 +131,6 @@ fun TestDatabaseScreen(appContainer: AppContainer) {
             }
 
             Spacer(modifier = Modifier.height(16.dp))
-
-            Button(
-                onClick = {
-                    scope.launch {
-                        testResults = testResults + "--- Getting data ---"
-                        val routine = database.routineDao().getAllRoutines().first().first()
-                        val routineWithTasks = repository.getRoutineWithTasks(routine.id).first()
-
-                        routineWithTasks?.let { rwt ->
-                            testResults =
-                                testResults +
-                                    "✓ Routine '${rwt.routine.name}' (ID: ${rwt.routine.id}, Time: ${rwt.routine.time}) - ${rwt.tasks.size} tasks"
-                            rwt.tasks.forEach { task ->
-                                testResults =
-                                    testResults +
-                                        "  → Task: ${task.name} Duration: ${task.duration}min)"
-                            }
-                        }
-
-                        testResults = testResults + "--- All data are printed ---"
-                    }
-                },
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Text("Get all tasks from first routine")
-            }
         }
         Card(modifier = Modifier.fillMaxWidth().weight(1f)) {
             Column(
