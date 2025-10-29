@@ -7,14 +7,15 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.swmansion.routinetracker.di.AppContainer
+import com.swmansion.routinetracker.di.LocalAppContainer
 import com.swmansion.routinetracker.model.Routine
 import com.swmansion.routinetracker.model.Task
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 @Composable
-fun TestDatabaseScreen(appContainer: AppContainer) {
+fun TestDatabaseScreen() {
+    val appContainer = LocalAppContainer.current
     val repository = appContainer.repository
     val scope = rememberCoroutineScope()
     var testResults by remember { mutableStateOf<List<String>>(emptyList()) }

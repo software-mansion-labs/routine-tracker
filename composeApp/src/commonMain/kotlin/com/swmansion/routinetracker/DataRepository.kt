@@ -25,9 +25,8 @@ class DataRepository(
 
     suspend fun deleteRoutine(routine: Routine) = routineDao.deleteRoutine(routine)
 
-    suspend fun addTaskToRoutine(routineId: Long, task: Task): Long {
-        return taskDao.insertTask(task.copy(routineId = routineId))
-    }
+    suspend fun addTaskToRoutine(routineId: Long, task: Task) =
+        taskDao.insertTask(task.copy(routineId = routineId))
 
     suspend fun updateTask(task: Task) = taskDao.updateTask(task)
 
