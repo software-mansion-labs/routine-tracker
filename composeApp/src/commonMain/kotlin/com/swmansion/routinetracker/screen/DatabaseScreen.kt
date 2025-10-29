@@ -7,17 +7,16 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.swmansion.routinetracker.DataRepository
-import com.swmansion.routinetracker.database.RoutineDatabase
+import com.swmansion.routinetracker.di.AppContainer
 import com.swmansion.routinetracker.model.Routine
 import com.swmansion.routinetracker.model.Task
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 @Composable
-fun TestDatabaseScreen(database: RoutineDatabase) {
-    val repository =
-        DataRepository(database.routineDao(), database.taskDao(), database.routineRecurrenceDao())
+fun TestDatabaseScreen(appContainer: AppContainer) {
+    val repository = appContainer.repository
+    val database = appContainer.database
     val scope = rememberCoroutineScope()
     var testResults by remember { mutableStateOf<List<String>>(emptyList()) }
 

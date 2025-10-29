@@ -4,16 +4,16 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.swmansion.routinetracker.di.DataFactory
+import androidx.compose.runtime.CompositionLocalProvider
+import com.swmansion.routinetracker.di.LocalAppContainer
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
-        val dataFactory = DataFactory(application as android.app.Application)
-        globalDatabase = dataFactory.createRoomDatabase()
+        val appContainer = (application as RoutineTrackerApplication).appContainer
 
-        setContent { App() }
+        setContent { CompositionLocalProvider(LocalAppContainer provides appContainer) { App() } }
     }
 }
