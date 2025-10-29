@@ -13,7 +13,7 @@ import platform.Foundation.NSURL
 import platform.Foundation.NSUserDomainMask
 
 actual class AppContainer {
-    actual val database: RoutineDatabase by lazy {
+    private val database: RoutineDatabase by lazy {
         val dbFile = "${fileDirectory()}/$DB_FILE_NAME"
         Room.databaseBuilder<RoutineDatabase>(name = dbFile)
             .setDriver(_root_ide_package_.androidx.sqlite.driver.bundled.BundledSQLiteDriver())

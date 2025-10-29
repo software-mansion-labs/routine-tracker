@@ -9,7 +9,7 @@ import com.swmansion.routinetracker.database.RoutineDatabase
 import kotlinx.coroutines.Dispatchers
 
 actual class AppContainer(private val application: Application) {
-    actual val database: RoutineDatabase by lazy {
+    private val database: RoutineDatabase by lazy {
         val dbFile = application.getDatabasePath(DB_FILE_NAME)
         Room.databaseBuilder<RoutineDatabase>(context = application, name = dbFile.absolutePath)
             .setDriver(BundledSQLiteDriver())
