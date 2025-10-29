@@ -1,6 +1,7 @@
 package com.swmansion.routinetracker.di
 
 import androidx.room.Room
+import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.swmansion.routinetracker.DataRepository
 import com.swmansion.routinetracker.database.DB_FILE_NAME
 import com.swmansion.routinetracker.database.RoutineDatabase
@@ -16,7 +17,7 @@ actual class AppContainer {
     private val database: RoutineDatabase by lazy {
         val dbFile = "${fileDirectory()}/$DB_FILE_NAME"
         Room.databaseBuilder<RoutineDatabase>(name = dbFile)
-            .setDriver(_root_ide_package_.androidx.sqlite.driver.bundled.BundledSQLiteDriver())
+            .setDriver(BundledSQLiteDriver())
             .setQueryCoroutineContext(Dispatchers.IO)
             .build()
     }
