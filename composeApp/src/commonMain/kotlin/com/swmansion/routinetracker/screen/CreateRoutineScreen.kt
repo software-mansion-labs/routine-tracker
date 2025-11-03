@@ -20,7 +20,9 @@ fun CreateRoutineScreen(onNavigateBack: () -> Unit) {
     val scope = rememberCoroutineScope()
 
     var routineName by remember { mutableStateOf("") }
-    var routineTime by remember { mutableStateOf("") }
+    val timePickerState =
+        rememberTimePickerState(initialHour = 12, initialMinute = 0, is24Hour = true)
+    var isTimeSet by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var successMessage by remember { mutableStateOf<String?>(null) }
@@ -56,24 +58,16 @@ fun CreateRoutineScreen(onNavigateBack: () -> Unit) {
                 isError = errorMessage != null,
             )
 
-            OutlinedTextField(
-                value = routineTime,
-                onValueChange = {
-                    routineTime = it
-                    errorMessage = null
-                    successMessage = null
-                },
-                label = { Text("Time (e.g., 07:00)") },
+            Card(
                 modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                placeholder = { Text("Optional") },
-                supportingText = {
-                    Text(
-                        text = "Format: HH:mm (e.g., 07:00, 20:30)",
-                        style = MaterialTheme.typography.bodySmall,
-                    )
-                },
-            )
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            ) {
+                TimeInput(
+                    state = timePickerState,
+                    modifier = Modifier,
+                    colors = TimePickerDefaults.colors(),
+                )
+            }
 
             if (errorMessage != null) {
                 Card(
@@ -124,16 +118,19 @@ fun CreateRoutineScreen(onNavigateBack: () -> Unit) {
 
                     scope.launch {
                         try {
-                            val routine =
-                                Routine(
-                                    name = routineName.trim(),
-                                    time = routineTime.takeIf { it.isNotBlank() },
-                                )
+                            val timeString =
+                                if (isTimeSet) {
+                                    "${timePickerState.hour.toString().padStart(2, '0')}:${timePickerState.minute.toString().padStart(2, '0')}"
+                                } else {
+                                    null
+                                }
+
+                            val routine = Routine(name = routineName.trim(), time = timeString)
                             val routineId = repository.createRoutine(routine)
                             successMessage =
-                                "Routine '${routine.name}' with ID: '{$routineId}' created successfully!"
+                                "Routine '${routine.name}' with ID: $routineId created successfully!"
                             routineName = ""
-                            routineTime = ""
+                            isTimeSet = false
 
                             onNavigateBack()
                         } catch (e: Exception) {
