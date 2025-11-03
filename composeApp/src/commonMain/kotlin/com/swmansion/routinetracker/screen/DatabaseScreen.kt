@@ -132,6 +132,21 @@ fun TestDatabaseScreen() {
             }
 
             Spacer(modifier = Modifier.height(16.dp))
+
+            Button(
+                onClick = {
+                    scope.launch {
+                        testResults = testResults + "--- Creating routine ---"
+                        repository.createRoutine(Routine(name = "Test Routine"))
+                        testResults = testResults + "--- Routine created ---"
+                    }
+                },
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text("Create routine")
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
         }
         Card(modifier = Modifier.fillMaxWidth().weight(1f)) {
             Column(

@@ -15,6 +15,8 @@ class DataRepository(
 
     fun getRoutineWithTasks(id: Long) = routineDao.getRoutineWithTasksById(id)
 
+    suspend fun createRoutine(routine: Routine) = routineDao.insertRoutine(routine)
+
     suspend fun insertRoutineWithTasks(routine: Routine, tasks: List<Task>): Long {
         val routineId = routineDao.insertRoutine(routine)
         taskDao.insertTasks(tasks.mapIndexed { i, t -> t.copy(routineId = routineId) })
