@@ -105,51 +105,62 @@ fun CreateRoutineScreen(onNavigateBack: () -> Unit) {
 
             Spacer(modifier = Modifier.weight(1f))
 
-            Button(
-                onClick = {
-                    if (routineName.isBlank()) {
-                        errorMessage = "Routine name is required"
-                        return@Button
-                    }
-
-                    isLoading = true
-                    errorMessage = null
-                    successMessage = null
-
-                    scope.launch {
-                        try {
-                            val timeString =
-                                if (isTimeSet) {
-                                    "${timePickerState.hour.toString().padStart(2, '0')}:${timePickerState.minute.toString().padStart(2, '0')}"
-                                } else {
-                                    null
-                                }
-
-                            val routine = Routine(name = routineName.trim(), time = timeString)
-                            val routineId = repository.createRoutine(routine)
-                            successMessage =
-                                "Routine '${routine.name}' with ID: $routineId created successfully!"
-                            routineName = ""
-                            isTimeSet = false
-
-                            onNavigateBack()
-                        } catch (e: Exception) {
-                            errorMessage = "Failed to create routine: ${e.message}"
-                        } finally {
-                            isLoading = false
-                        }
-                    }
-                },
-                modifier = Modifier.fillMaxWidth().height(56.dp),
-                enabled = !isLoading,
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                if (isLoading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(24.dp),
-                        color = MaterialTheme.colorScheme.onPrimary,
-                    )
-                } else {
-                    Text("Create Routine")
+                Button(
+                    onClick = {
+                        if (routineName.isBlank()) {
+                            errorMessage = "Routine name is required"
+                            return@Button
+                        }
+
+                        isLoading = true
+                        errorMessage = null
+                        successMessage = null
+
+                        scope.launch {
+                            try {
+                                val timeString =
+                                    if (isTimeSet) {
+                                        "${timePickerState.hour.toString().padStart(2, '0')}:${timePickerState.minute.toString().padStart(2, '0')}"
+                                    } else {
+                                        null
+                                    }
+
+                                val routine = Routine(name = routineName.trim(), time = timeString)
+                                val routineId = repository.createRoutine(routine)
+                                successMessage =
+                                    "Routine '${routine.name}' with ID: $routineId created successfully!"
+                                routineName = ""
+                                isTimeSet = false
+
+                                onNavigateBack()
+                            } catch (e: Exception) {
+                                errorMessage = "Failed to create routine: ${e.message}"
+                            } finally {
+                                isLoading = false
+                            }
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth().height(56.dp),
+                    enabled = !isLoading,
+                ) {
+                    if (isLoading) {
+                        CircularProgressIndicator(color = MaterialTheme.colorScheme.onPrimary)
+                    } else {
+                        Text("Create", style = MaterialTheme.typography.bodyLarge)
+                    }
+                }
+
+                TextButton(
+                    onClick = onNavigateBack,
+                    modifier = Modifier.fillMaxWidth().height(56.dp),
+                    enabled = !isLoading,
+                ) {
+                    Text(text = "Discard", style = MaterialTheme.typography.bodyLarge)
                 }
             }
         }
