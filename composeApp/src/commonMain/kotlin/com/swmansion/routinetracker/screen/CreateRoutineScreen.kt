@@ -10,6 +10,7 @@ import com.mohamedrejeb.calf.ui.timepicker.AdaptiveTimePicker
 import com.mohamedrejeb.calf.ui.timepicker.rememberAdaptiveTimePickerState
 import com.swmansion.routinetracker.di.LocalAppContainer
 import com.swmansion.routinetracker.model.Routine
+import com.swmansion.routinetracker.model.RoutineRecurrence
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
@@ -27,9 +28,22 @@ fun CreateRoutineScreen(onNavigateBack: () -> Unit) {
     val timePickerState = rememberAdaptiveTimePickerState()
     var isTimeSet by remember { mutableStateOf(false) }
     var showTimePicker by remember { mutableStateOf(false) }
+    var selectedDaysOfWeek by remember { mutableStateOf<Set<Int>>(emptySet()) }
+    var intervalWeeks by remember { mutableStateOf(0f) }
     var isLoading by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var successMessage by remember { mutableStateOf<String?>(null) }
+
+    val daysOfWeek =
+        listOf(
+            "Mon" to 1,
+            "Tue" to 2,
+            "Wed" to 3,
+            "Thu" to 4,
+            "Fri" to 5,
+            "Sat" to 6,
+            "Sun" to 7,
+        )
 
     val selectedTimeText =
         if (isTimeSet) {
@@ -63,7 +77,7 @@ fun CreateRoutineScreen(onNavigateBack: () -> Unit) {
                     errorMessage = null
                     successMessage = null
                 },
-                label = { Text("Routine Name *") },
+                label = { Text("Routine Name") },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 isError = errorMessage != null,
@@ -110,6 +124,50 @@ fun CreateRoutineScreen(onNavigateBack: () -> Unit) {
                             Text("Cancel")
                         }
                     },
+                )
+            }
+
+            HorizontalDivider(
+                modifier = Modifier.padding(vertical = 8.dp),
+                thickness = 1.dp,
+            )
+
+            Column {
+                Text(
+                    text = "Days of Week",
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+                FlowRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    daysOfWeek.forEach { (dayName, dayValue) ->
+                        FilterChip(
+                            selected = selectedDaysOfWeek.contains(dayValue),
+                            onClick = {
+                                selectedDaysOfWeek =
+                                    if (selectedDaysOfWeek.contains(dayValue)) {
+                                        selectedDaysOfWeek - dayValue
+                                    } else {
+                                        selectedDaysOfWeek + dayValue
+                                    }
+                            },
+                            label = { Text(dayName) },
+                        )
+                    }
+                }
+            }
+
+            Column {
+                Text(
+                    text = "Repeat every ${intervalWeeks.toInt()} week(s)",
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+                Slider(
+                    value = intervalWeeks,
+                    onValueChange = { intervalWeeks = it },
+                    valueRange = 0f..4f,
+                    steps = 3,
                 )
             }
 
@@ -175,11 +233,23 @@ fun CreateRoutineScreen(onNavigateBack: () -> Unit) {
                                     }
 
                                 val routine = Routine(name = routineName.trim(), time = timeString)
-                                val routineId = repository.createRoutine(routine)
+                                
+                                val recurrences =
+                                    selectedDaysOfWeek.map { dayOfWeek ->
+                                        RoutineRecurrence(
+                                            routineId = 0,
+                                            dayOfWeek = dayOfWeek,
+                                            intervalWeeks = intervalWeeks.toInt(),
+                                        )
+                                    }
+
+                                val routineId = repository.createRoutineWithRecurrence(routine, recurrences)
                                 successMessage =
                                     "Routine '${routine.name}' with ID: $routineId created successfully!"
                                 routineName = ""
                                 isTimeSet = false
+                                selectedDaysOfWeek = emptySet()
+                                intervalWeeks = 1f
 
                                 onNavigateBack()
                             } catch (e: Exception) {
