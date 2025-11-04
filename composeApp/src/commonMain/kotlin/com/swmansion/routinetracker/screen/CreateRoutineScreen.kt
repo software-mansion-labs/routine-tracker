@@ -134,7 +134,7 @@ fun CreateRoutineScreen(onNavigateBack: () -> Unit) {
                             routineName = ""
                             isTimeSet = false
                             selectedDaysOfWeek = emptySet()
-                            intervalWeeks = 1f
+                            intervalWeeks = 0f
 
                             onNavigateBack()
                         } catch (e: Exception) {
@@ -173,7 +173,10 @@ private fun RoutineNameField(
 @Composable
 private fun TimeSelectionButton(selectedTimeText: String?, onTimeClick: () -> Unit) {
     Button(onClick = onTimeClick, modifier = Modifier.fillMaxWidth().height(48.dp)) {
-        Text(text = selectedTimeText ?: "Select Time", style = MaterialTheme.typography.bodyLarge)
+        Text(
+            text = selectedTimeText ?: "Select Time (optional)",
+            style = MaterialTheme.typography.bodyLarge,
+        )
     }
 }
 
@@ -215,7 +218,7 @@ private fun DaysOfWeekSelector(
     onDaysChange: (Set<DayOfWeek>) -> Unit,
 ) {
     Column {
-        Text(text = "Days of Week", style = MaterialTheme.typography.bodyMedium)
+        Text(text = "Days of Week (optional)", style = MaterialTheme.typography.bodyMedium)
         FlowRow(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -243,7 +246,7 @@ private fun DaysOfWeekSelector(
 private fun IntervalWeeksSelector(intervalWeeks: Float, onIntervalChange: (Float) -> Unit) {
     Column {
         Text(
-            text = "Repeat every ${intervalWeeks.toInt()} week(s)",
+            text = "Repeat every ${intervalWeeks.toInt()} week(s) (optional)",
             style = MaterialTheme.typography.bodyMedium,
         )
         Slider(
