@@ -1,10 +1,14 @@
 package com.swmansion.routinetracker.screen
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.mohamedrejeb.calf.ui.timepicker.AdaptiveTimePicker
+import com.mohamedrejeb.calf.ui.timepicker.rememberAdaptiveTimePickerState
 import com.swmansion.routinetracker.di.LocalAppContainer
 import com.swmansion.routinetracker.model.Routine
 import kotlinx.coroutines.launch
@@ -20,12 +24,19 @@ fun CreateRoutineScreen(onNavigateBack: () -> Unit) {
     val scope = rememberCoroutineScope()
 
     var routineName by remember { mutableStateOf("") }
-    val timePickerState =
-        rememberTimePickerState(initialHour = 12, initialMinute = 0, is24Hour = true)
+    val timePickerState = rememberAdaptiveTimePickerState()
     var isTimeSet by remember { mutableStateOf(false) }
+    var showTimePicker by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var successMessage by remember { mutableStateOf<String?>(null) }
+
+    val selectedTimeText =
+        if (isTimeSet) {
+            "${timePickerState.hour.toString().padStart(2, '0')}:${timePickerState.minute.toString().padStart(2, '0')}"
+        } else {
+            null
+        }
 
     Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(
@@ -58,14 +69,47 @@ fun CreateRoutineScreen(onNavigateBack: () -> Unit) {
                 isError = errorMessage != null,
             )
 
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            Button(
+                onClick = { showTimePicker = true },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp),
             ) {
-                TimeInput(
-                    state = timePickerState,
-                    modifier = Modifier,
-                    colors = TimePickerDefaults.colors(),
+                Text(
+                    text = selectedTimeText ?: "Select Time",
+                    style = MaterialTheme.typography.bodyLarge,
+                )
+            }
+
+            if (showTimePicker) {
+                AlertDialog(
+                    onDismissRequest = { showTimePicker = false },
+                    title = { Text("Pick a Time") },
+                    text = {
+                        AdaptiveTimePicker(
+                            state = timePickerState,
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                    },
+                    confirmButton = {
+                        Button(
+                            onClick = {
+                                isTimeSet = true
+                                showTimePicker = false
+                                errorMessage = null
+                                successMessage = null
+                            },
+                        ) {
+                            Text("Done")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(
+                            onClick = { showTimePicker = false },
+                        ) {
+                            Text("Cancel")
+                        }
+                    },
                 )
             }
 

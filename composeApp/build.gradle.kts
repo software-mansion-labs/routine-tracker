@@ -44,6 +44,7 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.androidx.room.runtime)
             implementation(libs.androidx.sqlite.bundled)
+            implementation(libs.calf.ui)
         }
 
         commonTest.dependencies { implementation(libs.kotlin.test) }
