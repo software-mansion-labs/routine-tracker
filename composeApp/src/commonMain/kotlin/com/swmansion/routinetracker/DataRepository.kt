@@ -25,7 +25,7 @@ class DataRepository(
         val routineId = routineDao.insertRoutine(routine)
         if (recurrences.isNotEmpty()) {
             routineRecurrenceDao.insertRecurrences(
-                recurrences.map { it.copy(routineId = routineId) },
+                recurrences.map { it.copy(routineId = routineId) }
             )
         }
         return routineId

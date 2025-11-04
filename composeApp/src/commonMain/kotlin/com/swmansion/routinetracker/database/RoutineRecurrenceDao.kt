@@ -20,6 +20,5 @@ interface RoutineRecurrenceDao {
     @Query("DELETE FROM routine_recurrence WHERE routineId = :routineId")
     suspend fun deleteRecurrencesForRoutine(routineId: Long)
 
-    @Query("DELETE FROM routine_recurrence")
-    suspend fun removeAll()
+    @Query("DELETE FROM routine_recurrence") suspend fun removeAll()
 }

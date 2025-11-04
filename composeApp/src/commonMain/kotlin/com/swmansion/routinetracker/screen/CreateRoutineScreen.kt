@@ -1,6 +1,5 @@
 package com.swmansion.routinetracker.screen
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -11,7 +10,6 @@ import com.mohamedrejeb.calf.ui.timepicker.rememberAdaptiveTimePickerState
 import com.swmansion.routinetracker.di.LocalAppContainer
 import com.swmansion.routinetracker.model.Routine
 import com.swmansion.routinetracker.model.RoutineRecurrence
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import routinetracker.composeapp.generated.resources.Res
@@ -35,15 +33,7 @@ fun CreateRoutineScreen(onNavigateBack: () -> Unit) {
     var successMessage by remember { mutableStateOf<String?>(null) }
 
     val daysOfWeek =
-        listOf(
-            "Mon" to 1,
-            "Tue" to 2,
-            "Wed" to 3,
-            "Thu" to 4,
-            "Fri" to 5,
-            "Sat" to 6,
-            "Sun" to 7,
-        )
+        listOf("Mon" to 1, "Tue" to 2, "Wed" to 3, "Thu" to 4, "Fri" to 5, "Sat" to 6, "Sun" to 7)
 
     val selectedTimeText =
         if (isTimeSet) {
@@ -85,9 +75,7 @@ fun CreateRoutineScreen(onNavigateBack: () -> Unit) {
 
             Button(
                 onClick = { showTimePicker = true },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(48.dp),
+                modifier = Modifier.fillMaxWidth().height(48.dp),
             ) {
                 Text(
                     text = selectedTimeText ?: "Select Time",
@@ -112,31 +100,21 @@ fun CreateRoutineScreen(onNavigateBack: () -> Unit) {
                                 showTimePicker = false
                                 errorMessage = null
                                 successMessage = null
-                            },
+                            }
                         ) {
                             Text("Done")
                         }
                     },
                     dismissButton = {
-                        TextButton(
-                            onClick = { showTimePicker = false },
-                        ) {
-                            Text("Cancel")
-                        }
+                        TextButton(onClick = { showTimePicker = false }) { Text("Cancel") }
                     },
                 )
             }
 
-            HorizontalDivider(
-                modifier = Modifier.padding(vertical = 8.dp),
-                thickness = 1.dp,
-            )
+            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), thickness = 1.dp)
 
             Column {
-                Text(
-                    text = "Days of Week",
-                    style = MaterialTheme.typography.bodyMedium,
-                )
+                Text(text = "Days of Week", style = MaterialTheme.typography.bodyMedium)
                 FlowRow(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -233,7 +211,7 @@ fun CreateRoutineScreen(onNavigateBack: () -> Unit) {
                                     }
 
                                 val routine = Routine(name = routineName.trim(), time = timeString)
-                                
+
                                 val recurrences =
                                     selectedDaysOfWeek.map { dayOfWeek ->
                                         RoutineRecurrence(
@@ -243,7 +221,8 @@ fun CreateRoutineScreen(onNavigateBack: () -> Unit) {
                                         )
                                     }
 
-                                val routineId = repository.createRoutineWithRecurrence(routine, recurrences)
+                                val routineId =
+                                    repository.createRoutineWithRecurrence(routine, recurrences)
                                 successMessage =
                                     "Routine '${routine.name}' with ID: $routineId created successfully!"
                                 routineName = ""
