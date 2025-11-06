@@ -1,7 +1,12 @@
 package com.swmansion.routinetracker.viewmodel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.CreationExtras
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import com.swmansion.routinetracker.DataRepository
 import com.swmansion.routinetracker.model.DayOfWeek
 import com.swmansion.routinetracker.model.Routine
 import com.swmansion.routinetracker.model.RoutineRecurrence
@@ -12,29 +17,39 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalTime
 
-class CreateRoutineViewModel() : ViewModel() {
+class CreateRoutineViewModel(private val repository: DataRepository) : ViewModel() {
     private val _uiState = MutableStateFlow(CreateRoutineUiState())
     val uiState: StateFlow<CreateRoutineUiState> = _uiState.asStateFlow()
 
-    fun updateRoutineName(name: String) = _uiState.updateState { copy(routineName = name) }
+    fun updateRoutineName(name: String) {
+        _uiState.updateState { copy(routineName = name) }
+    }
 
-    fun updateVisibilityTimePicker(visibility: Boolean) =
+    fun updateVisibilityTimePicker(visibility: Boolean) {
         _uiState.updateState { copy(showTimePicker = visibility) }
+    }
 
-    fun updateSelectedDaysOfWeek(days: Set<DayOfWeek>) =
+    fun updateSelectedDaysOfWeek(days: Set<DayOfWeek>) {
         _uiState.updateState { copy(selectedDaysOfWeek = days) }
+    }
 
-    fun updateIntervalWeeks(weeks: Float) = _uiState.updateState { copy(intervalWeeks = weeks) }
+    fun updateIntervalWeeks(weeks: Float) {
+        _uiState.updateState { copy(intervalWeeks = weeks) }
+    }
 
-    fun updateLoading(isLoading: Boolean) = _uiState.updateState { copy(isLoading = isLoading) }
+    fun updateLoading(isLoading: Boolean) {
+        _uiState.updateState { copy(isLoading = isLoading) }
+    }
 
-    fun updateErrorMessage(errorMessage: String?) =
+    fun updateErrorMessage(errorMessage: String?) {
         _uiState.updateState { copy(errorMessage = errorMessage) }
+    }
 
-    fun updateSuccessMessage(successMessage: String?) =
+    fun updateSuccessMessage(successMessage: String?) {
         _uiState.updateState { copy(successMessage = successMessage) }
+    }
 
-    fun setTime(hour: Int, minute: Int) =
+    fun setTime(hour: Int, minute: Int) {
         _uiState.updateState {
             copy(
                 selectedHour = hour,
@@ -43,20 +58,21 @@ class CreateRoutineViewModel() : ViewModel() {
                 showTimePicker = false,
             )
         }
-
-    fun clearMessages() = _uiState.updateState { copy(errorMessage = null, successMessage = null) }
-
-    fun getFormattedTime(): String? {
-        return if (_uiState.value.isTimeSet)
-            LocalTime(hour = _uiState.value.selectedHour, minute = _uiState.value.selectedMinute)
-                .toString()
-        else null
     }
 
-    fun createRoutine(
-        onCreateCallback: suspend (Routine, List<RoutineRecurrence>) -> Long,
-        onSuccess: () -> Unit,
-    ) {
+    fun clearMessages() {
+        _uiState.updateState { copy(errorMessage = null, successMessage = null) }
+    }
+
+    fun getFormattedTime() =
+        if (_uiState.value.isTimeSet) {
+            LocalTime(hour = _uiState.value.selectedHour, minute = _uiState.value.selectedMinute)
+                .toString()
+        } else {
+            null
+        }
+
+    fun createRoutine(onSuccess: () -> Unit) {
         if (_uiState.value.routineName.isBlank()) {
             updateErrorMessage("Routine name is required")
             return
@@ -80,7 +96,7 @@ class CreateRoutineViewModel() : ViewModel() {
                         )
                     }
 
-                val routineId = onCreateCallback(routine, recurrences)
+                val routineId = repository.createRoutineWithRecurrence(routine, recurrences)
                 updateSuccessMessage(
                     "Routine '${routine.name}' with ID: $routineId created successfully!"
                 )
@@ -96,7 +112,7 @@ class CreateRoutineViewModel() : ViewModel() {
         }
     }
 
-    private fun resetForm() =
+    private fun resetForm() {
         _uiState.updateState {
             copy(
                 routineName = "",
@@ -105,17 +121,31 @@ class CreateRoutineViewModel() : ViewModel() {
                 intervalWeeks = 0f,
             )
         }
+    }
+
+    companion object {
+        val DATA_REPOSITORY_KEY = object : CreationExtras.Key<DataRepository> {}
+        var Factory: ViewModelProvider.Factory = viewModelFactory {
+            initializer {
+                val dataRepository =
+                    this[DATA_REPOSITORY_KEY]
+                        ?: throw IllegalArgumentException("DataRepository not provided")
+
+                CreateRoutineViewModel(dataRepository)
+            }
+        }
+    }
 }
 
 data class CreateRoutineUiState(
-    var routineName: String = "",
-    var isTimeSet: Boolean = false,
-    var showTimePicker: Boolean = false,
-    var selectedDaysOfWeek: Set<DayOfWeek> = emptySet(),
-    var intervalWeeks: Float = 0f,
-    var selectedHour: Int = 0,
-    var selectedMinute: Int = 0,
-    var isLoading: Boolean = false,
-    var errorMessage: String? = null,
-    var successMessage: String? = null,
+    val routineName: String = "",
+    val isTimeSet: Boolean = false,
+    val showTimePicker: Boolean = false,
+    val selectedDaysOfWeek: Set<DayOfWeek> = emptySet(),
+    val intervalWeeks: Float = 0f,
+    val selectedHour: Int = 0,
+    val selectedMinute: Int = 0,
+    val isLoading: Boolean = false,
+    val errorMessage: String? = null,
+    val successMessage: String? = null,
 )

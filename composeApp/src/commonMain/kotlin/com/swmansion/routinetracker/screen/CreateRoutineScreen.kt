@@ -7,6 +7,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.MutableCreationExtras
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mohamedrejeb.calf.ui.timepicker.AdaptiveTimePicker
 import com.mohamedrejeb.calf.ui.timepicker.AdaptiveTimePickerState
@@ -21,11 +22,19 @@ import routinetracker.composeapp.generated.resources.ic_back
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateRoutineScreen(
-    viewModel: CreateRoutineViewModel = viewModel { CreateRoutineViewModel() },
+    viewModel: CreateRoutineViewModel =
+        viewModel(
+            factory = CreateRoutineViewModel.Factory,
+            extras =
+                MutableCreationExtras().apply {
+                    set(
+                        CreateRoutineViewModel.DATA_REPOSITORY_KEY,
+                        LocalAppContainer.current.repository,
+                    )
+                },
+        ),
     onNavigateBack: () -> Unit,
 ) {
-    val appContainer = LocalAppContainer.current
-    val repository = appContainer.repository
     val uiState by viewModel.uiState.collectAsState()
     val timePickerState = rememberAdaptiveTimePickerState()
 
@@ -49,8 +58,8 @@ fun CreateRoutineScreen(
         ) {
             RoutineNameField(
                 routineName = uiState.routineName,
-                onNameChange = { viewModel.updateRoutineName(it) },
-                onErrorClear = { viewModel.clearMessages() },
+                onNameChange = viewModel::updateRoutineName,
+                onErrorClear = viewModel::clearMessages,
                 isError = uiState.errorMessage != null,
             )
 
@@ -71,31 +80,19 @@ fun CreateRoutineScreen(
 
             RecurrenceSection(
                 selectedDaysOfWeek = uiState.selectedDaysOfWeek,
-                onDaysChange = { viewModel.updateSelectedDaysOfWeek(it) },
+                onDaysChange = viewModel::updateSelectedDaysOfWeek,
                 intervalWeeks = uiState.intervalWeeks,
-                onIntervalChange = { viewModel.updateIntervalWeeks(it) },
+                onIntervalChange = viewModel::updateIntervalWeeks,
             )
 
-            if (uiState.errorMessage != null) {
-                ErrorMessageCard(message = uiState.errorMessage!!)
-            }
-
-            if (uiState.successMessage != null) {
-                SuccessMessageCard(message = uiState.successMessage!!)
-            }
+            uiState.errorMessage?.let { ErrorMessageCard(message = it) }
+            uiState.successMessage?.let { SuccessMessageCard(message = it) }
 
             Spacer(modifier = Modifier.weight(1f))
 
             ActionButtons(
                 isLoading = uiState.isLoading,
-                onCreate = {
-                    viewModel.createRoutine(
-                        onCreateCallback = { routine, recurrences ->
-                            repository.createRoutineWithRecurrence(routine, recurrences)
-                        },
-                        onSuccess = onNavigateBack,
-                    )
-                },
+                onCreate = { viewModel.createRoutine(onSuccess = onNavigateBack) },
                 onDiscard = onNavigateBack,
             )
         }
@@ -175,7 +172,7 @@ private fun DaysOfWeekSelector(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            DayOfWeek.entries.toList().forEach { dayOfWeek ->
+            DayOfWeek.entries.forEach { dayOfWeek ->
                 FilterChip(
                     selected = selectedDaysOfWeek.contains(dayOfWeek),
                     onClick = {
