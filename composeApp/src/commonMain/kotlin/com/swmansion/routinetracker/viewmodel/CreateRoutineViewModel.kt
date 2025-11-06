@@ -112,7 +112,7 @@ class CreateRoutineViewModel(private val repository: DataRepository) : ViewModel
         }
     }
 
-    private fun resetForm() =
+    private fun resetForm() {
         _uiState.updateState {
             copy(
                 routineName = "",
@@ -121,6 +121,7 @@ class CreateRoutineViewModel(private val repository: DataRepository) : ViewModel
                 intervalWeeks = 0f,
             )
         }
+    }
 
     companion object {
         val DATA_REPOSITORY_KEY = object : CreationExtras.Key<DataRepository> {}
