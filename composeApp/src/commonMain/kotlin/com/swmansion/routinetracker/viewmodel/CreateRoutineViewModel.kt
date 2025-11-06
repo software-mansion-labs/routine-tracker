@@ -21,25 +21,35 @@ class CreateRoutineViewModel(private val repository: DataRepository) : ViewModel
     private val _uiState = MutableStateFlow(CreateRoutineUiState())
     val uiState: StateFlow<CreateRoutineUiState> = _uiState.asStateFlow()
 
-    fun updateRoutineName(name: String) = _uiState.updateState { copy(routineName = name) }
+    fun updateRoutineName(name: String) {
+        _uiState.updateState { copy(routineName = name) }
+    }
 
-    fun updateVisibilityTimePicker(visibility: Boolean) =
+    fun updateVisibilityTimePicker(visibility: Boolean) {
         _uiState.updateState { copy(showTimePicker = visibility) }
+    }
 
-    fun updateSelectedDaysOfWeek(days: Set<DayOfWeek>) =
+    fun updateSelectedDaysOfWeek(days: Set<DayOfWeek>) {
         _uiState.updateState { copy(selectedDaysOfWeek = days) }
+    }
 
-    fun updateIntervalWeeks(weeks: Float) = _uiState.updateState { copy(intervalWeeks = weeks) }
+    fun updateIntervalWeeks(weeks: Float) {
+        _uiState.updateState { copy(intervalWeeks = weeks) }
+    }
 
-    fun updateLoading(isLoading: Boolean) = _uiState.updateState { copy(isLoading = isLoading) }
+    fun updateLoading(isLoading: Boolean) {
+        _uiState.updateState { copy(isLoading = isLoading) }
+    }
 
-    fun updateErrorMessage(errorMessage: String?) =
+    fun updateErrorMessage(errorMessage: String?) {
         _uiState.updateState { copy(errorMessage = errorMessage) }
+    }
 
-    fun updateSuccessMessage(successMessage: String?) =
+    fun updateSuccessMessage(successMessage: String?) {
         _uiState.updateState { copy(successMessage = successMessage) }
+    }
 
-    fun setTime(hour: Int, minute: Int) =
+    fun setTime(hour: Int, minute: Int) {
         _uiState.updateState {
             copy(
                 selectedHour = hour,
@@ -48,15 +58,19 @@ class CreateRoutineViewModel(private val repository: DataRepository) : ViewModel
                 showTimePicker = false,
             )
         }
+    }
 
-    fun clearMessages() = _uiState.updateState { copy(errorMessage = null, successMessage = null) }
+    fun clearMessages() {
+        _uiState.updateState { copy(errorMessage = null, successMessage = null) }
+    }
 
-    fun getFormattedTime(): String? {
-        return if (_uiState.value.isTimeSet)
+    fun getFormattedTime() =
+        if (_uiState.value.isTimeSet) {
             LocalTime(hour = _uiState.value.selectedHour, minute = _uiState.value.selectedMinute)
                 .toString()
-        else null
-    }
+        } else {
+            null
+        }
 
     fun createRoutine(onSuccess: () -> Unit) {
         if (_uiState.value.routineName.isBlank()) {
