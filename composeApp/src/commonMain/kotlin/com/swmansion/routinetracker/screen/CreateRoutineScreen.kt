@@ -33,7 +33,7 @@ fun CreateRoutineScreen(
                     )
                 },
         ),
-    onNavigateBack: () -> Unit,
+    onNavigateBack: () -> Unit = {},
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val timePickerState = rememberAdaptiveTimePickerState()

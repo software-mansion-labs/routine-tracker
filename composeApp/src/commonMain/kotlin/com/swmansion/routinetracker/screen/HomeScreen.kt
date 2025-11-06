@@ -13,6 +13,7 @@ import com.swmansion.routinetracker.di.LocalAppContainer
 import com.swmansion.routinetracker.model.Routine
 import org.jetbrains.compose.resources.painterResource
 import routinetracker.composeapp.generated.resources.Res
+import routinetracker.composeapp.generated.resources.ic_add
 import routinetracker.composeapp.generated.resources.ic_home
 
 enum class NavigationDestination {
@@ -28,6 +29,9 @@ fun HomeScreen() {
     val routines by routinesFlow.collectAsState(initial = emptyList())
 
     var selectedDestination by remember { mutableStateOf(NavigationDestination.HOME) }
+
+    val onCreateRoutineClick = CreateRoutineScreen()
+
 
     Scaffold(
         topBar = { TopAppBar(title = { Text("My Routines") }) },
@@ -47,6 +51,18 @@ fun HomeScreen() {
                 )
             }
         },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { onCreateRoutineClick },
+                modifier = Modifier.padding(end = 8.dp, bottom = 8.dp),
+            ) {
+                Icon(
+                    painter = painterResource(Res.drawable.ic_add),
+                    contentDescription = "Create Routine",
+                )
+            }
+        },
+        floatingActionButtonPosition = FabPosition.End,
     ) { paddingValues ->
         if (routines.isEmpty()) {
             Box(
