@@ -112,7 +112,9 @@ class CreateRoutineViewModel(private val repository: DataRepository) : ViewModel
         val DATA_REPOSITORY_KEY = object : CreationExtras.Key<DataRepository> {}
         var Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
-                val dataRepository = this[DATA_REPOSITORY_KEY] as DataRepository
+                val dataRepository = this[DATA_REPOSITORY_KEY]
+                    ?: throw IllegalArgumentException("DataRepository not provided")
+
                 CreateRoutineViewModel(dataRepository)
             }
         }

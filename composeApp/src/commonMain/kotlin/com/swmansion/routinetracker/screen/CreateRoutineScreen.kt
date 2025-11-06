@@ -58,8 +58,8 @@ fun CreateRoutineScreen(
         ) {
             RoutineNameField(
                 routineName = uiState.routineName,
-                onNameChange = { viewModel.updateRoutineName(it) },
-                onErrorClear = { viewModel.clearMessages() },
+                onNameChange = viewModel::updateRoutineName,
+                onErrorClear = viewModel::clearMessages,
                 isError = uiState.errorMessage != null,
             )
 
@@ -80,18 +80,13 @@ fun CreateRoutineScreen(
 
             RecurrenceSection(
                 selectedDaysOfWeek = uiState.selectedDaysOfWeek,
-                onDaysChange = { viewModel.updateSelectedDaysOfWeek(it) },
+                onDaysChange = viewModel::updateSelectedDaysOfWeek,
                 intervalWeeks = uiState.intervalWeeks,
-                onIntervalChange = { viewModel.updateIntervalWeeks(it) },
+                onIntervalChange = viewModel::updateIntervalWeeks,
             )
 
-            if (uiState.errorMessage != null) {
-                ErrorMessageCard(message = uiState.errorMessage!!)
-            }
-
-            if (uiState.successMessage != null) {
-                SuccessMessageCard(message = uiState.successMessage!!)
-            }
+            uiState.errorMessage?.let { ErrorMessageCard(message = it) }
+            uiState.successMessage?.let { SuccessMessageCard(message = it) }
 
             Spacer(modifier = Modifier.weight(1f))
 
@@ -177,7 +172,7 @@ private fun DaysOfWeekSelector(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            DayOfWeek.entries.toList().forEach { dayOfWeek ->
+            DayOfWeek.entries.forEach { dayOfWeek ->
                 FilterChip(
                     selected = selectedDaysOfWeek.contains(dayOfWeek),
                     onClick = {
