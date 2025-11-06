@@ -7,9 +7,5 @@ enum class DayOfWeek(val value: Int, val displayName: String) {
     THURSDAY(4, "Thu"),
     FRIDAY(5, "Fri"),
     SATURDAY(6, "Sat"),
-    SUNDAY(7, "Sun");
-
-    companion object {
-        val allDays = entries.toList()
-    }
+    SUNDAY(7, "Sun"),
 }

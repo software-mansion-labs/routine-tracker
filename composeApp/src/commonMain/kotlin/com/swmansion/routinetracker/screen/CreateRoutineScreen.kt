@@ -3,37 +3,31 @@ package com.swmansion.routinetracker.screen
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mohamedrejeb.calf.ui.timepicker.AdaptiveTimePicker
 import com.mohamedrejeb.calf.ui.timepicker.AdaptiveTimePickerState
 import com.mohamedrejeb.calf.ui.timepicker.rememberAdaptiveTimePickerState
 import com.swmansion.routinetracker.di.LocalAppContainer
 import com.swmansion.routinetracker.model.DayOfWeek
-import com.swmansion.routinetracker.model.Routine
-import com.swmansion.routinetracker.model.RoutineRecurrence
-import kotlinx.coroutines.launch
+import com.swmansion.routinetracker.viewmodel.CreateRoutineViewModel
 import org.jetbrains.compose.resources.painterResource
 import routinetracker.composeapp.generated.resources.Res
 import routinetracker.composeapp.generated.resources.ic_back
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateRoutineScreen(onNavigateBack: () -> Unit) {
+fun CreateRoutineScreen(
+    viewModel: CreateRoutineViewModel = viewModel { CreateRoutineViewModel() },
+    onNavigateBack: () -> Unit,
+) {
     val appContainer = LocalAppContainer.current
     val repository = appContainer.repository
-    val scope = rememberCoroutineScope()
-
-    var routineName by remember { mutableStateOf("") }
+    val uiState by viewModel.uiState.collectAsState()
     val timePickerState = rememberAdaptiveTimePickerState()
-    var isTimeSet by remember { mutableStateOf(false) }
-    var showTimePicker by remember { mutableStateOf(false) }
-    var selectedDaysOfWeek by remember { mutableStateOf<Set<DayOfWeek>>(emptySet()) }
-    var intervalWeeks by remember { mutableStateOf(0f) }
-    var isLoading by remember { mutableStateOf(false) }
-    var errorMessage by remember { mutableStateOf<String?>(null) }
-    var successMessage by remember { mutableStateOf<String?>(null) }
 
     Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(
@@ -54,96 +48,48 @@ fun CreateRoutineScreen(onNavigateBack: () -> Unit) {
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             RoutineNameField(
-                routineName = routineName,
-                onNameChange = { routineName = it },
-                onErrorClear = {
-                    errorMessage = null
-                    successMessage = null
-                },
-                isError = errorMessage != null,
+                routineName = uiState.routineName,
+                onNameChange = { viewModel.updateRoutineName(it) },
+                onErrorClear = { viewModel.clearMessages() },
+                isError = uiState.errorMessage != null,
             )
 
             TimeSelectionButton(
-                selectedTimeText =
-                    if (isTimeSet) formatTime(timePickerState.hour, timePickerState.minute)
-                    else null,
-                onTimeClick = { showTimePicker = true },
+                selectedTimeText = viewModel.getFormattedTime(),
+                onTimeClick = { viewModel.updateVisibilityTimePicker(true) },
             )
 
-            if (showTimePicker) {
+            if (uiState.showTimePicker) {
                 TimePickerDialog(
                     timePickerState = timePickerState,
-                    onDone = {
-                        isTimeSet = true
-                        showTimePicker = false
-                        errorMessage = null
-                        successMessage = null
-                    },
-                    onDismiss = { showTimePicker = false },
+                    onDone = { viewModel.setTime(timePickerState.hour, timePickerState.minute) },
+                    onDismiss = { viewModel.updateVisibilityTimePicker(false) },
                 )
             }
 
             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), thickness = 1.dp)
 
             RecurrenceSection(
-                selectedDaysOfWeek = selectedDaysOfWeek,
-                onDaysChange = { selectedDaysOfWeek = it },
-                intervalWeeks = intervalWeeks,
-                onIntervalChange = { intervalWeeks = it },
+                selectedDaysOfWeek = uiState.selectedDaysOfWeek,
+                onDaysChange = { viewModel.updateSelectedDaysOfWeek(it) },
+                intervalWeeks = uiState.intervalWeeks,
+                onIntervalChange = { viewModel.updateIntervalWeeks(it) },
             )
 
-            errorMessage?.let { ErrorMessageCard(message = it) }
-            successMessage?.let { SuccessMessageCard(message = it) }
+            uiState.errorMessage?.let { ErrorMessageCard(message = it) }
+            uiState.successMessage?.let { SuccessMessageCard(message = it) }
 
             Spacer(modifier = Modifier.weight(1f))
 
             ActionButtons(
-                isLoading = isLoading,
-                onCreate = {
-                    if (routineName.isBlank()) {
-                        errorMessage = "Routine name is required"
-                        return@ActionButtons
-                    }
-
-                    isLoading = true
-                    errorMessage = null
-                    successMessage = null
-
-                    scope.launch {
-                        try {
-                            val timeString =
-                                if (isTimeSet)
-                                    formatTime(timePickerState.hour, timePickerState.minute)
-                                else null
-
-                            val routine = Routine(name = routineName.trim(), time = timeString)
-
-                            val recurrences =
-                                selectedDaysOfWeek.map { dayOfWeek ->
-                                    RoutineRecurrence(
-                                        routineId = 0,
-                                        dayOfWeek = dayOfWeek.value,
-                                        intervalWeeks = intervalWeeks.toInt(),
-                                    )
-                                }
-
-                            val routineId =
-                                repository.createRoutineWithRecurrence(routine, recurrences)
-                            successMessage =
-                                "Routine '${routine.name}' with ID: $routineId created successfully!"
-                            routineName = ""
-                            isTimeSet = false
-                            selectedDaysOfWeek = emptySet()
-                            intervalWeeks = 0f
-
-                            onNavigateBack()
-                        } catch (e: Exception) {
-                            errorMessage = "Failed to create routine: ${e.message}"
-                        } finally {
-                            isLoading = false
-                        }
-                    }
-                },
+                isLoading = uiState.isLoading,
+                onCreate = { viewModel.createRoutine(
+                    onCreateCallback = {
+                        routine, recurrences ->
+                        repository.createRoutineWithRecurrence(routine, recurrences)
+                    },
+                    onSuccess = onNavigateBack
+                ) },
                 onDiscard = onNavigateBack,
             )
         }
@@ -223,7 +169,7 @@ private fun DaysOfWeekSelector(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            DayOfWeek.allDays.forEach { dayOfWeek ->
+            DayOfWeek.entries.toList().forEach { dayOfWeek ->
                 FilterChip(
                     selected = selectedDaysOfWeek.contains(dayOfWeek),
                     onClick = {
@@ -320,8 +266,4 @@ private fun ActionButtons(isLoading: Boolean, onCreate: () -> Unit, onDiscard: (
             Text(text = "Discard", style = MaterialTheme.typography.bodyLarge)
         }
     }
-}
-
-private fun formatTime(hour: Int, minute: Int): String {
-    return "${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}"
 }
