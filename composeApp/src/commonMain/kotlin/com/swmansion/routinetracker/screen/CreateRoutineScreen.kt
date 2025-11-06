@@ -38,22 +38,24 @@ fun CreateRoutineScreen(
     val uiState by viewModel.uiState.collectAsState()
     val timePickerState = rememberAdaptiveTimePickerState()
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        TopAppBar(
-            title = { Text("Create Routine") },
-            navigationIcon = {
-                IconButton(onClick = onNavigateBack) {
-                    Icon(
-                        painter = painterResource(Res.drawable.ic_back),
-                        contentDescription = "Back",
-                        modifier = Modifier.size(24.dp),
-                    )
-                }
-            },
-        )
-
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Create Routine") },
+                navigationIcon = {
+                    IconButton(onClick = onNavigateBack) {
+                        Icon(
+                            painter = painterResource(Res.drawable.ic_back),
+                            contentDescription = "Back",
+                            modifier = Modifier.size(24.dp),
+                        )
+                    }
+                },
+            )
+        }
+    ) { paddingValues ->
         Column(
-            modifier = Modifier.fillMaxSize().padding(16.dp),
+            modifier = Modifier.fillMaxSize().padding(paddingValues).padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             RoutineNameField(

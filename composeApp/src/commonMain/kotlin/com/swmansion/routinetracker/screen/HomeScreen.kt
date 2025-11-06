@@ -9,29 +9,33 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.MutableCreationExtras
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.swmansion.routinetracker.di.LocalAppContainer
 import com.swmansion.routinetracker.model.Routine
+import com.swmansion.routinetracker.navigation.Routes
+import com.swmansion.routinetracker.viewmodel.HomeViewModel
+import com.swmansion.routinetracker.viewmodel.NavigationDestination
 import org.jetbrains.compose.resources.painterResource
 import routinetracker.composeapp.generated.resources.Res
 import routinetracker.composeapp.generated.resources.ic_add
 import routinetracker.composeapp.generated.resources.ic_home
 
-enum class NavigationDestination {
-    HOME
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen() {
-    val appContainer = LocalAppContainer.current
-    val repository = appContainer.repository
-    val routinesFlow = repository.getAllRoutines()
-    val routines by routinesFlow.collectAsState(initial = emptyList())
-
-    var selectedDestination by remember { mutableStateOf(NavigationDestination.HOME) }
-
-    val onCreateRoutineClick = CreateRoutineScreen()
-
+fun HomeScreen(
+    navController: NavController,
+    viewModel: HomeViewModel =
+        viewModel(
+            factory = HomeViewModel.Factory,
+            extras =
+                MutableCreationExtras().apply {
+                    set(HomeViewModel.DATA_REPOSITORY_KEY, LocalAppContainer.current.repository)
+                },
+        ),
+) {
+    val uiState by viewModel.uiState.collectAsState()
 
     Scaffold(
         topBar = { TopAppBar(title = { Text("My Routines") }) },
@@ -46,14 +50,14 @@ fun HomeScreen() {
                         )
                     },
                     label = { Text("Home") },
-                    selected = selectedDestination == NavigationDestination.HOME,
-                    onClick = { selectedDestination = NavigationDestination.HOME },
+                    selected = uiState.selectedDestination == NavigationDestination.HOME,
+                    onClick = { viewModel.updateSelectedDestination(NavigationDestination.HOME) },
                 )
             }
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { onCreateRoutineClick },
+                onClick = { navController.navigate(Routes.CREATE_ROUTINE) },
                 modifier = Modifier.padding(end = 8.dp, bottom = 8.dp),
             ) {
                 Icon(
@@ -64,7 +68,7 @@ fun HomeScreen() {
         },
         floatingActionButtonPosition = FabPosition.End,
     ) { paddingValues ->
-        if (routines.isEmpty()) {
+        if (uiState.routines.isEmpty()) {
             Box(
                 modifier = Modifier.fillMaxSize().padding(paddingValues),
                 contentAlignment = Alignment.Center,
@@ -81,7 +85,7 @@ fun HomeScreen() {
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                items(routines) { routine -> RoutineItem(routine = routine) }
+                items(uiState.routines) { routine -> RoutineItem(routine = routine) }
             }
         }
     }
