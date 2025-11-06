@@ -76,8 +76,13 @@ fun CreateRoutineScreen(
                 onIntervalChange = { viewModel.updateIntervalWeeks(it) },
             )
 
-            uiState.errorMessage?.let { ErrorMessageCard(message = it) }
-            uiState.successMessage?.let { SuccessMessageCard(message = it) }
+            if (uiState.errorMessage != null) {
+                ErrorMessageCard(message = uiState.errorMessage!!)
+            }
+
+            if (uiState.successMessage != null) {
+                SuccessMessageCard(message = uiState.successMessage!!)
+            }
 
             Spacer(modifier = Modifier.weight(1f))
 

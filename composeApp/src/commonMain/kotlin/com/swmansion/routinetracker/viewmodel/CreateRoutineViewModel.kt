@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalTime
 
 class CreateRoutineViewModel() : ViewModel() {
     private val _uiState = MutableStateFlow(CreateRoutineUiState())
@@ -45,13 +46,10 @@ class CreateRoutineViewModel() : ViewModel() {
 
     fun clearMessages() = _uiState.updateState { copy(errorMessage = null, successMessage = null) }
 
-    fun formatTime(hour: Int, minute: Int): String {
-        return "${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}"
-    }
-
     fun getFormattedTime(): String? {
         return if (_uiState.value.isTimeSet)
-            formatTime(_uiState.value.selectedHour, _uiState.value.selectedMinute)
+            LocalTime(hour = _uiState.value.selectedHour, minute = _uiState.value.selectedMinute)
+                .toString()
         else null
     }
 
@@ -70,10 +68,7 @@ class CreateRoutineViewModel() : ViewModel() {
 
         viewModelScope.launch {
             try {
-                val timeString =
-                    if (_uiState.value.isTimeSet)
-                        formatTime(_uiState.value.selectedHour, _uiState.value.selectedMinute)
-                    else null
+                val timeString = getFormattedTime()
                 val routine = Routine(name = _uiState.value.routineName.trim(), time = timeString)
 
                 val recurrences =
@@ -101,14 +96,15 @@ class CreateRoutineViewModel() : ViewModel() {
         }
     }
 
-    private fun resetForm() = _uiState.updateState {
-        copy(
-            routineName = "",
-            isTimeSet = false,
-            selectedDaysOfWeek = emptySet(),
-            intervalWeeks = 0f,
-        )
-    }
+    private fun resetForm() =
+        _uiState.updateState {
+            copy(
+                routineName = "",
+                isTimeSet = false,
+                selectedDaysOfWeek = emptySet(),
+                intervalWeeks = 0f,
+            )
+        }
 }
 
 data class CreateRoutineUiState(
