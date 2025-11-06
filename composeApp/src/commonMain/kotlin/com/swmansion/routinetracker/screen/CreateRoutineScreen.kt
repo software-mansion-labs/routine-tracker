@@ -7,6 +7,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.MutableCreationExtras
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mohamedrejeb.calf.ui.timepicker.AdaptiveTimePicker
 import com.mohamedrejeb.calf.ui.timepicker.AdaptiveTimePickerState
@@ -21,11 +22,19 @@ import routinetracker.composeapp.generated.resources.ic_back
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateRoutineScreen(
-    viewModel: CreateRoutineViewModel = viewModel { CreateRoutineViewModel() },
+    viewModel: CreateRoutineViewModel =
+        viewModel(
+            factory = CreateRoutineViewModel.Factory,
+            extras =
+                MutableCreationExtras().apply {
+                    set(
+                        CreateRoutineViewModel.DATA_REPOSITORY_KEY,
+                        LocalAppContainer.current.repository,
+                    )
+                },
+        ),
     onNavigateBack: () -> Unit,
 ) {
-    val appContainer = LocalAppContainer.current
-    val repository = appContainer.repository
     val uiState by viewModel.uiState.collectAsState()
     val timePickerState = rememberAdaptiveTimePickerState()
 
@@ -88,14 +97,7 @@ fun CreateRoutineScreen(
 
             ActionButtons(
                 isLoading = uiState.isLoading,
-                onCreate = {
-                    viewModel.createRoutine(
-                        onCreateCallback = { routine, recurrences ->
-                            repository.createRoutineWithRecurrence(routine, recurrences)
-                        },
-                        onSuccess = onNavigateBack,
-                    )
-                },
+                onCreate = { viewModel.createRoutine(onSuccess = onNavigateBack) },
                 onDiscard = onNavigateBack,
             )
         }
