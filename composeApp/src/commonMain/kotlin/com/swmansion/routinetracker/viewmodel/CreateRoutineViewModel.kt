@@ -9,59 +9,41 @@ import kotlin.collections.emptySet
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class CreateRoutineViewModel() : ViewModel() {
     private val _uiState = MutableStateFlow(CreateRoutineUiState())
     val uiState: StateFlow<CreateRoutineUiState> = _uiState.asStateFlow()
 
-    fun updateRoutineName(name: String) {
-        _uiState.update { currentState -> currentState.copy(routineName = name) }
-        clearMessages()
-    }
+    fun updateRoutineName(name: String) = _uiState.updateState { copy(routineName = name) }
 
-    fun updateVisibilityTimePicker(visibility: Boolean) {
-        _uiState.update { currentState -> currentState.copy(showTimePicker = visibility) }
-    }
+    fun updateVisibilityTimePicker(visibility: Boolean) =
+        _uiState.updateState { copy(showTimePicker = visibility) }
 
-    fun updateSelectedDaysOfWeek(days: Set<DayOfWeek>) {
-        _uiState.update { currentState -> currentState.copy(selectedDaysOfWeek = days) }
-    }
+    fun updateSelectedDaysOfWeek(days: Set<DayOfWeek>) =
+        _uiState.updateState { copy(selectedDaysOfWeek = days) }
 
-    fun updateIntervalWeeks(weeks: Float) {
-        _uiState.update { currentState -> currentState.copy(intervalWeeks = weeks) }
-    }
+    fun updateIntervalWeeks(weeks: Float) = _uiState.updateState { copy(intervalWeeks = weeks) }
 
-    fun updateLoading(isLoading: Boolean) {
-        _uiState.update { currentState -> currentState.copy(isLoading = isLoading) }
-    }
+    fun updateLoading(isLoading: Boolean) = _uiState.updateState { copy(isLoading = isLoading) }
 
-    fun updateErrorMessage(errorMessage: String?) {
-        _uiState.update { currentState -> currentState.copy(errorMessage = errorMessage) }
-    }
+    fun updateErrorMessage(errorMessage: String?) =
+        _uiState.updateState { copy(errorMessage = errorMessage) }
 
-    fun updateSuccessMessage(successMessage: String?) {
-        _uiState.update { currentState -> currentState.copy(successMessage = successMessage) }
-    }
+    fun updateSuccessMessage(successMessage: String?) =
+        _uiState.updateState { copy(successMessage = successMessage) }
 
-    fun setTime(hour: Int, minute: Int) {
-        _uiState.update { currentState ->
-            currentState.copy(
+    fun setTime(hour: Int, minute: Int) =
+        _uiState.updateState {
+            copy(
                 selectedHour = hour,
                 selectedMinute = minute,
                 isTimeSet = true,
                 showTimePicker = false,
             )
         }
-        clearMessages()
-    }
 
-    fun clearMessages() {
-        _uiState.update { currentState ->
-            currentState.copy(errorMessage = null, successMessage = null)
-        }
-    }
+    fun clearMessages() = _uiState.updateState { copy(errorMessage = null, successMessage = null) }
 
     fun formatTime(hour: Int, minute: Int): String {
         return "${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}"
@@ -73,7 +55,10 @@ class CreateRoutineViewModel() : ViewModel() {
         else null
     }
 
-    fun createRoutine(onCreateCallback: suspend (Routine, List<RoutineRecurrence>) -> Long, onSuccess: () -> Unit) {
+    fun createRoutine(
+        onCreateCallback: suspend (Routine, List<RoutineRecurrence>) -> Long,
+        onSuccess: () -> Unit,
+    ) {
         if (_uiState.value.routineName.isBlank()) {
             updateErrorMessage("Routine name is required")
             return
@@ -116,15 +101,13 @@ class CreateRoutineViewModel() : ViewModel() {
         }
     }
 
-    private fun resetForm() {
-        _uiState.update { currentState ->
-            currentState.copy(
-                routineName = "",
-                isTimeSet = false,
-                selectedDaysOfWeek = emptySet(),
-                intervalWeeks = 0f,
-            )
-        }
+    private fun resetForm() = _uiState.updateState {
+        copy(
+            routineName = "",
+            isTimeSet = false,
+            selectedDaysOfWeek = emptySet(),
+            intervalWeeks = 0f,
+        )
     }
 }
 

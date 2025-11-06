@@ -83,13 +83,14 @@ fun CreateRoutineScreen(
 
             ActionButtons(
                 isLoading = uiState.isLoading,
-                onCreate = { viewModel.createRoutine(
-                    onCreateCallback = {
-                        routine, recurrences ->
-                        repository.createRoutineWithRecurrence(routine, recurrences)
-                    },
-                    onSuccess = onNavigateBack
-                ) },
+                onCreate = {
+                    viewModel.createRoutine(
+                        onCreateCallback = { routine, recurrences ->
+                            repository.createRoutineWithRecurrence(routine, recurrences)
+                        },
+                        onSuccess = onNavigateBack,
+                    )
+                },
                 onDiscard = onNavigateBack,
             )
         }
