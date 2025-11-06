@@ -16,11 +16,9 @@ import com.swmansion.routinetracker.di.LocalAppContainer
 import com.swmansion.routinetracker.model.Routine
 import com.swmansion.routinetracker.navigation.Routes
 import com.swmansion.routinetracker.viewmodel.HomeViewModel
-import com.swmansion.routinetracker.viewmodel.NavigationDestination
 import org.jetbrains.compose.resources.painterResource
 import routinetracker.composeapp.generated.resources.Res
 import routinetracker.composeapp.generated.resources.ic_add
-import routinetracker.composeapp.generated.resources.ic_home
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -39,22 +37,6 @@ fun HomeScreen(
 
     Scaffold(
         topBar = { TopAppBar(title = { Text("My Routines") }) },
-        bottomBar = {
-            NavigationBar(modifier = Modifier.height(84.dp), windowInsets = WindowInsets(0.dp)) {
-                NavigationBarItem(
-                    icon = {
-                        Icon(
-                            painter = painterResource(Res.drawable.ic_home),
-                            contentDescription = "Home",
-                            modifier = Modifier.size(24.dp),
-                        )
-                    },
-                    label = { Text("Home") },
-                    selected = uiState.selectedDestination == NavigationDestination.HOME,
-                    onClick = { viewModel.updateSelectedDestination(NavigationDestination.HOME) },
-                )
-            }
-        },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { navController.navigate(Routes.CREATE_ROUTINE) },
@@ -67,6 +49,7 @@ fun HomeScreen(
             }
         },
         floatingActionButtonPosition = FabPosition.End,
+        contentWindowInsets = WindowInsets(bottom = 84.dp),
     ) { paddingValues ->
         if (uiState.routines.isEmpty()) {
             Box(

@@ -52,7 +52,8 @@ fun CreateRoutineScreen(
                     }
                 },
             )
-        }
+        },
+        contentWindowInsets = WindowInsets(0.dp),
     ) { paddingValues ->
         Column(
             modifier = Modifier.fillMaxSize().padding(paddingValues).padding(16.dp),

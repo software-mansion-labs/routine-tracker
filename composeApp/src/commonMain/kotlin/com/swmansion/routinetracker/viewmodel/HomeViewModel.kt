@@ -8,31 +8,19 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.swmansion.routinetracker.DataRepository
 import com.swmansion.routinetracker.model.Routine
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
 class HomeViewModel(private val repository: DataRepository) : ViewModel() {
-    private val _selectedDestination = MutableStateFlow(NavigationDestination.HOME)
-    
-    val uiState: StateFlow<HomeUiState> = combine(
-        repository.getAllRoutines(),
-        _selectedDestination
-    ) { routines, selectedDestination ->
-        HomeUiState(
-            routines = routines,
-            selectedDestination = selectedDestination
+    val uiState: StateFlow<HomeUiState> = repository
+        .getAllRoutines()
+        .map { routines -> HomeUiState(routines = routines) }
+        .stateIn(
+            scope = viewModelScope,
+            started = kotlinx.coroutines.flow.SharingStarted.Eagerly,
+            initialValue = HomeUiState()
         )
-    }.stateIn(
-        scope = viewModelScope,
-        started = kotlinx.coroutines.flow.SharingStarted.Eagerly,
-        initialValue = HomeUiState()
-    )
-
-    fun updateSelectedDestination(destination: NavigationDestination) {
-        _selectedDestination.value = destination
-    }
 
     companion object {
         val DATA_REPOSITORY_KEY = object : CreationExtras.Key<DataRepository> {}
@@ -49,10 +37,5 @@ class HomeViewModel(private val repository: DataRepository) : ViewModel() {
 }
 
 data class HomeUiState(
-    val routines: List<Routine> = emptyList(),
-    val selectedDestination: NavigationDestination = NavigationDestination.HOME
+    val routines: List<Routine> = emptyList()
 )
-
-enum class NavigationDestination {
-    HOME
-}
