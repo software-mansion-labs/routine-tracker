@@ -12,6 +12,8 @@ class DataRepository(
     private val taskDao: TaskDao,
     private val routineRecurrenceDao: RoutineRecurrenceDao,
 ) {
+    fun getAllRoutines() = routineDao.getAllRoutines()
+
     fun getAllRoutinesWithTasks() = routineDao.getAllRoutinesWithTasks()
 
     fun getRoutineWithTasks(id: Long) = routineDao.getRoutineWithTasksById(id)
