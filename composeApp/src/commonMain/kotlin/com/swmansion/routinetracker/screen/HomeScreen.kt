@@ -26,7 +26,7 @@ fun HomeScreen(navController: NavController) {
 
     Scaffold(
         bottomBar = {
-            NavigationBar(modifier = Modifier.height(84.dp), windowInsets = WindowInsets(0.dp)) {
+            NavigationBar {
                 NavigationBarItem(
                     icon = {
                         Icon(

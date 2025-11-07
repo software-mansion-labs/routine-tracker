@@ -48,7 +48,6 @@ fun RoutinesScreen(
                 )
             }
         },
-        floatingActionButtonPosition = FabPosition.End,
         contentWindowInsets = WindowInsets(0.dp),
     ) { paddingValues ->
         if (uiState.routines.isEmpty()) {

@@ -1,6 +1,5 @@
 package com.swmansion.routinetracker
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -18,15 +17,13 @@ fun App() {
     MaterialTheme {
         val navController = rememberNavController()
 
-        Box(modifier = Modifier.fillMaxSize()) {
-            NavHost(
-                navController = navController,
-                startDestination = Home,
-                modifier = Modifier.fillMaxSize(),
-            ) {
-                composable<Home> { HomeScreen(navController = navController) }
-                composable<CreateRoutine> { CreateRoutineScreen(navController = navController) }
-            }
+        NavHost(
+            navController = navController,
+            startDestination = Home,
+            modifier = Modifier.fillMaxSize(),
+        ) {
+            composable<Home> { HomeScreen(navController = navController) }
+            composable<CreateRoutine> { CreateRoutineScreen(navController = navController) }
         }
     }
 }
