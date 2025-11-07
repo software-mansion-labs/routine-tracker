@@ -4,6 +4,7 @@ import kotlinx.serialization.Serializable
 
 // Navigation Bar
 @Serializable object Home
+
 @Serializable object Routines
 
 // Additional
