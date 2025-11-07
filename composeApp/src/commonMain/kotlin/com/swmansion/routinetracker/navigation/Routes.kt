@@ -1,7 +1,10 @@
 package com.swmansion.routinetracker.navigation
 
-object Routes {
-    const val HOME = "home"
-    const val CREATE_ROUTINE = "create_routine"
-    const val SETTINGS = "settings"
-}
+import kotlinx.serialization.Serializable
+
+// Navigation Bar
+@Serializable object Home
+@Serializable object Routines
+
+// Additional
+@Serializable object CreateRoutine
