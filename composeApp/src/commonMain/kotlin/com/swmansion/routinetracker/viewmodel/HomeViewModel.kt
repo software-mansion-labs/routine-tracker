@@ -12,15 +12,16 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
-class HomeViewModel(private val repository: DataRepository) : ViewModel() {
-    val uiState: StateFlow<HomeUiState> = repository
-        .getAllRoutines()
-        .map { routines -> HomeUiState(routines = routines) }
-        .stateIn(
-            scope = viewModelScope,
-            started = kotlinx.coroutines.flow.SharingStarted.Eagerly,
-            initialValue = HomeUiState()
-        )
+class HomeViewModel(repository: DataRepository) : ViewModel() {
+    val uiState: StateFlow<HomeUiState> =
+        repository
+            .getAllRoutines()
+            .map(::HomeUiState)
+            .stateIn(
+                scope = viewModelScope,
+                started = kotlinx.coroutines.flow.SharingStarted.Eagerly,
+                initialValue = HomeUiState(),
+            )
 
     companion object {
         val DATA_REPOSITORY_KEY = object : CreationExtras.Key<DataRepository> {}
@@ -36,6 +37,4 @@ class HomeViewModel(private val repository: DataRepository) : ViewModel() {
     }
 }
 
-data class HomeUiState(
-    val routines: List<Routine> = emptyList()
-)
+data class HomeUiState(val routines: List<Routine> = emptyList())

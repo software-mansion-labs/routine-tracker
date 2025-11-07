@@ -68,7 +68,9 @@ fun HomeScreen(
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                items(uiState.routines) { routine -> RoutineItem(routine = routine) }
+                items(items = uiState.routines, key = { routine -> routine.id }) { routine ->
+                    RoutineItem(routine = routine)
+                }
             }
         }
     }

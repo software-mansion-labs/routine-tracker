@@ -23,29 +23,25 @@ fun App() {
         val navController = rememberNavController()
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route
-        
-        val showBottomBar = remember(currentRoute) {
-            currentRoute == Routes.HOME
-        }
+
+        val showBottomBar = remember(currentRoute) { currentRoute == Routes.HOME }
 
         Box(modifier = Modifier.fillMaxSize()) {
             NavHost(
                 navController = navController,
                 startDestination = Routes.HOME,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
             ) {
-                composable(route = Routes.HOME) {
-                    HomeScreen(navController = navController)
-                }
+                composable(route = Routes.HOME) { HomeScreen(navController = navController) }
                 composable(route = Routes.CREATE_ROUTINE) {
                     CreateRoutineScreen(onNavigateBack = { navController.popBackStack() })
                 }
             }
-            
+
             if (showBottomBar) {
                 BottomNavigationBar(
                     navController = navController,
-                    modifier = Modifier.align(Alignment.BottomCenter)
+                    modifier = Modifier.align(Alignment.BottomCenter),
                 )
             }
         }

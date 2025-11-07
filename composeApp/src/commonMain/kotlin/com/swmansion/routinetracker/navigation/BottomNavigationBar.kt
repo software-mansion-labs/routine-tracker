@@ -8,7 +8,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.swmansion.routinetracker.navigation.Routes
 import org.jetbrains.compose.resources.painterResource
 import routinetracker.composeapp.generated.resources.Res
 import routinetracker.composeapp.generated.resources.ic_home
@@ -17,7 +16,7 @@ import routinetracker.composeapp.generated.resources.ic_home
 fun BottomNavigationBar(navController: NavController, modifier: Modifier = Modifier) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
-    
+
     NavigationBar(modifier = modifier.height(84.dp), windowInsets = WindowInsets(0.dp)) {
         NavigationBarItem(
             icon = {
@@ -37,4 +36,3 @@ fun BottomNavigationBar(navController: NavController, modifier: Modifier = Modif
         )
     }
 }
-
