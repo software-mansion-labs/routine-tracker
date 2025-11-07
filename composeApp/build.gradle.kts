@@ -50,7 +50,12 @@ kotlin {
             implementation(libs.androidx.jetbrains.navigation.compose)
         }
 
-        commonTest.dependencies { implementation(libs.kotlin.test) }
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+
+            @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
+            implementation(compose.uiTest)
+        }
     }
 }
 
