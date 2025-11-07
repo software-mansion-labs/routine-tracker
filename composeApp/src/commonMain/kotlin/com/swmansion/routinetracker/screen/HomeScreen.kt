@@ -7,11 +7,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.NavDestination.Companion.hasRoute
+import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.toRoute
 import com.swmansion.routinetracker.navigation.Routines
 import org.jetbrains.compose.resources.painterResource
 import routinetracker.composeapp.generated.resources.Res
@@ -35,7 +36,10 @@ fun HomeScreen(navController: NavController) {
                         )
                     },
                     label = { Text("Routines") },
-                    selected = currentBackStackEntry?.toRoute<Routines>() == Routines,
+                    selected =
+                        currentBackStackEntry?.destination?.hierarchy?.any {
+                            it.hasRoute(Routines::class)
+                        } == true,
                     onClick = { homeNavController.navigate(Routines) },
                 )
             }

@@ -44,7 +44,7 @@ fun CreateRoutineScreen(
             TopAppBar(
                 title = { Text("Create Routine") },
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
+                    IconButton(onClick = navController::popBackStack) {
                         Icon(
                             painter = painterResource(Res.drawable.ic_back),
                             contentDescription = "Back",
@@ -96,10 +96,8 @@ fun CreateRoutineScreen(
 
             ActionButtons(
                 isLoading = uiState.isLoading,
-                onCreate = {
-                    viewModel.createRoutine(onSuccess = { navController.popBackStack() })
-                },
-                onDiscard = { navController.popBackStack() },
+                onCreate = { viewModel.createRoutine(onSuccess = navController::popBackStack) },
+                onDiscard = navController::popBackStack,
             )
         }
     }

@@ -68,7 +68,7 @@ fun RoutinesScreen(
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                items(items = uiState.routines, key = { routine -> routine.id }) { routine ->
+                items(items = uiState.routines, key = Routine::id) { routine ->
                     RoutineItem(routine = routine)
                 }
             }
