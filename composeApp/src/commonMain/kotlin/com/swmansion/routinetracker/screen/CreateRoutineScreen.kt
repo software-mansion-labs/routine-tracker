@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.MutableCreationExtras
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.mohamedrejeb.calf.ui.timepicker.AdaptiveTimePicker
 import com.mohamedrejeb.calf.ui.timepicker.AdaptiveTimePickerState
 import com.mohamedrejeb.calf.ui.timepicker.rememberAdaptiveTimePickerState
@@ -33,27 +34,32 @@ fun CreateRoutineScreen(
                     )
                 },
         ),
-    onNavigateBack: () -> Unit,
+    navController: NavController,
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val timePickerState = rememberAdaptiveTimePickerState()
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        TopAppBar(
-            title = { Text("Create Routine") },
-            navigationIcon = {
-                IconButton(onClick = onNavigateBack) {
-                    Icon(
-                        painter = painterResource(Res.drawable.ic_back),
-                        contentDescription = "Back",
-                        modifier = Modifier.size(24.dp),
-                    )
-                }
-            },
-        )
-
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Create Routine") },
+                navigationIcon = {
+                    IconButton(onClick = navController::popBackStack) {
+                        Icon(
+                            painter = painterResource(Res.drawable.ic_back),
+                            contentDescription = "Back",
+                            modifier = Modifier.size(24.dp),
+                        )
+                    }
+                },
+            )
+        }
+    ) { paddingValues ->
         Column(
-            modifier = Modifier.fillMaxSize().padding(16.dp),
+            modifier =
+                Modifier.fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(start = 16.dp, top = 16.dp, end = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             RoutineNameField(
@@ -92,8 +98,8 @@ fun CreateRoutineScreen(
 
             ActionButtons(
                 isLoading = uiState.isLoading,
-                onCreate = { viewModel.createRoutine(onSuccess = onNavigateBack) },
-                onDiscard = onNavigateBack,
+                onCreate = { viewModel.createRoutine(onSuccess = navController::popBackStack) },
+                onDiscard = navController::popBackStack,
             )
         }
     }

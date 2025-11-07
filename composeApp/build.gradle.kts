@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.androidx.room)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.jetbarins.serialization)
 }
 
 kotlin {
@@ -46,6 +47,7 @@ kotlin {
             implementation(libs.androidx.sqlite.bundled)
             implementation(libs.calf.ui)
             implementation(libs.kotlinx.datetime)
+            implementation(libs.androidx.jetbrains.navigation.compose)
         }
 
         commonTest.dependencies { implementation(libs.kotlin.test) }
