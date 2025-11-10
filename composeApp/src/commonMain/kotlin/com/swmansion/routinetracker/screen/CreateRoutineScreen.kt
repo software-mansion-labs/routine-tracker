@@ -1,6 +1,5 @@
 package com.swmansion.routinetracker.screen
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -248,7 +247,11 @@ private fun TaskSection(
     navController: NavController,
     viewModel: CreateRoutineViewModel,
 ) {
-    Box(Modifier.background(MaterialTheme.colorScheme.primaryContainer).fillMaxWidth()) {
+    Surface(
+        color = MaterialTheme.colorScheme.primaryContainer,
+        shape = MaterialTheme.shapes.medium,
+        modifier = Modifier.fillMaxWidth(),
+    ) {
         Column {
             Text(text = "Tasks: ${tasks.size}", modifier = Modifier.padding(16.dp))
             tasks.forEach { task ->
