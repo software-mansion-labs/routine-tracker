@@ -18,8 +18,8 @@ class DataRepositoryTest {
     
     @Test
     fun `createRoutine should insert routine and return id`() = runTest {
-        val routine = Routine(name = "Morning Routine", time = "08:00")
         val routineId = 1L
+        val routine = Routine(id = routineId ,name = "Morning Routine", time = "08:00")
         val mockRoutineDao = createMockRoutineDao(insertResult = routineId)
         val mockTaskDao = createMockTaskDao()
         val mockRecurrenceDao = createMockRecurrenceDao()

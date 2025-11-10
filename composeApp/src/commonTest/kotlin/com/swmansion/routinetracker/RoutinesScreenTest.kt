@@ -1,6 +1,7 @@
 package com.swmansion.routinetracker
 
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.onNodeWithText
@@ -9,6 +10,7 @@ import androidx.compose.ui.test.runComposeUiTest
 import com.swmansion.routinetracker.di.AppContainer
 import com.swmansion.routinetracker.di.LocalAppContainer
 import com.swmansion.routinetracker.mock.MockAppContainer
+import com.swmansion.routinetracker.mock.MockViewModelStoreOwner
 import com.swmansion.routinetracker.mock.createMockNavController
 import com.swmansion.routinetracker.model.Routine
 import com.swmansion.routinetracker.screen.RoutinesScreen
@@ -21,9 +23,13 @@ class RoutinesScreenTest {
     @Test
     fun `should display empty state when no routines exist`() = runComposeUiTest {
         val testAppContainer = createTestAppContainer(emptyList())
+        val viewModelStoreOwner = MockViewModelStoreOwner()
         
         setContent {
-            CompositionLocalProvider(LocalAppContainer provides testAppContainer) {
+            CompositionLocalProvider(
+                LocalViewModelStoreOwner provides viewModelStoreOwner,
+                LocalAppContainer provides testAppContainer
+            ) {
                 RoutinesScreen(navController = createMockNavController())
             }
         }
@@ -39,9 +45,13 @@ class RoutinesScreenTest {
             Routine(id = 3L, name = "Workout Routine")
         )
         val testAppContainer = createTestAppContainer(routines)
+        val viewModelStoreOwner = MockViewModelStoreOwner()
         
         setContent {
-            CompositionLocalProvider(LocalAppContainer provides testAppContainer) {
+            CompositionLocalProvider(
+                LocalViewModelStoreOwner provides viewModelStoreOwner,
+                LocalAppContainer provides testAppContainer
+            ) {
                 RoutinesScreen(navController = createMockNavController())
             }
         }
@@ -60,9 +70,13 @@ class RoutinesScreenTest {
             Routine(id = 1L, name = "Simple Routine", time = null)
         )
         val testAppContainer = createTestAppContainer(routines)
+        val viewModelStoreOwner = MockViewModelStoreOwner()
         
         setContent {
-            CompositionLocalProvider(LocalAppContainer provides testAppContainer) {
+            CompositionLocalProvider(
+                LocalViewModelStoreOwner provides viewModelStoreOwner,
+                LocalAppContainer provides testAppContainer
+            ) {
                 RoutinesScreen(navController = createMockNavController())
             }
         }
@@ -73,9 +87,13 @@ class RoutinesScreenTest {
     @Test
     fun `should display top bar with correct title`() = runComposeUiTest {
         val testAppContainer = createTestAppContainer(emptyList())
+        val viewModelStoreOwner = MockViewModelStoreOwner()
         
         setContent {
-            CompositionLocalProvider(LocalAppContainer provides testAppContainer) {
+            CompositionLocalProvider(
+                LocalViewModelStoreOwner provides viewModelStoreOwner,
+                LocalAppContainer provides testAppContainer
+            ) {
                 RoutinesScreen(navController = createMockNavController())
             }
         }
@@ -86,9 +104,13 @@ class RoutinesScreenTest {
     @Test
     fun `should display floating action button`() = runComposeUiTest {
         val testAppContainer = createTestAppContainer(emptyList())
+        val viewModelStoreOwner = MockViewModelStoreOwner()
 
         setContent {
-            CompositionLocalProvider(LocalAppContainer provides testAppContainer) {
+            CompositionLocalProvider(
+                LocalViewModelStoreOwner provides viewModelStoreOwner,
+                LocalAppContainer provides testAppContainer
+            ) {
                 RoutinesScreen(navController = createMockNavController())
             }
         }
@@ -100,9 +122,13 @@ class RoutinesScreenTest {
     fun `should update list when routines are added`() = runComposeUiTest {
         val routinesFlow = MutableStateFlow<List<Routine>>(emptyList())
         val testAppContainer = createTestAppContainerWithFlow(routinesFlow)
+        val viewModelStoreOwner = MockViewModelStoreOwner()
         
         setContent {
-            CompositionLocalProvider(LocalAppContainer provides testAppContainer) {
+            CompositionLocalProvider(
+                LocalViewModelStoreOwner provides viewModelStoreOwner,
+                LocalAppContainer provides testAppContainer
+            ) {
                 RoutinesScreen(navController = createMockNavController())
             }
         }
