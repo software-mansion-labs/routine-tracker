@@ -16,7 +16,7 @@ class HomeViewModel(repository: DataRepository) : ViewModel() {
     val uiState: StateFlow<HomeUiState> =
         repository
             .getAllRoutinesWithTasks()
-            .map { HomeUiState(routinesWithTasks = it) }
+            .map(::HomeUiState)
             .stateIn(
                 scope = viewModelScope,
                 started = kotlinx.coroutines.flow.SharingStarted.Eagerly,
