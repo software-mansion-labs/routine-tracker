@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.MutableCreationExtras
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.mohamedrejeb.calf.ui.timepicker.AdaptiveTimePicker
 import com.mohamedrejeb.calf.ui.timepicker.AdaptiveTimePickerState
 import com.mohamedrejeb.calf.ui.timepicker.rememberAdaptiveTimePickerState
@@ -20,7 +21,6 @@ import com.swmansion.routinetracker.di.LocalAppContainer
 import com.swmansion.routinetracker.model.DayOfWeek
 import com.swmansion.routinetracker.model.Task
 import com.swmansion.routinetracker.navigation.CreateTask
-import com.swmansion.routinetracker.model.TaskWithoutRoutine
 import com.swmansion.routinetracker.viewmodel.CreateRoutineViewModel
 import com.swmansion.routinetracker.viewmodel.durationToString
 import org.jetbrains.compose.resources.painterResource
@@ -46,6 +46,18 @@ fun CreateRoutineScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val timePickerState = rememberAdaptiveTimePickerState()
+
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    LaunchedEffect(navBackStackEntry) {
+        val handle = navBackStackEntry?.savedStateHandle ?: return@LaunchedEffect
+        val name: String? = handle.get("task_name")
+        if (name != null) {
+            val duration: Int? = handle.get("task_duration")
+            viewModel.addTask(name, duration)
+            handle.remove<String>("task_name")
+            handle.remove<Int>("task_duration")
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -89,7 +101,7 @@ fun CreateRoutineScreen(
                 isError = uiState.errorMessage != null,
             )
 
-            TimeSelectionButton(
+            DurationSelectionButton(
                 selectedTimeText = viewModel.getFormattedTime(),
                 onTimeClick = { viewModel.updateVisibilityTimePicker(true) },
             )
@@ -113,7 +125,7 @@ fun CreateRoutineScreen(
 
             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), thickness = 1.dp)
 
-            TaskSection(uiState.tasks)
+            TaskSection(uiState.tasks, navController, viewModel)
 
             uiState.errorMessage?.let { ErrorMessageCard(message = it) }
             uiState.successMessage?.let { SuccessMessageCard(message = it) }
@@ -142,7 +154,7 @@ private fun RoutineNameField(
 }
 
 @Composable
-private fun TimeSelectionButton(selectedTimeText: String?, onTimeClick: () -> Unit) {
+private fun DurationSelectionButton(selectedTimeText: String?, onTimeClick: () -> Unit) {
     Button(onClick = onTimeClick, modifier = Modifier.fillMaxWidth().height(48.dp)) {
         Text(
             text = selectedTimeText ?: "Select Time (optional)",
