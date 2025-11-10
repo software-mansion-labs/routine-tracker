@@ -22,6 +22,7 @@ import com.swmansion.routinetracker.model.DayOfWeek
 import com.swmansion.routinetracker.model.Task
 import com.swmansion.routinetracker.navigation.CreateTask
 import com.swmansion.routinetracker.viewmodel.CreateRoutineViewModel
+import com.swmansion.routinetracker.viewmodel.durationToString
 import org.jetbrains.compose.resources.painterResource
 import routinetracker.composeapp.generated.resources.Res
 import routinetracker.composeapp.generated.resources.ic_back
@@ -264,7 +265,7 @@ private fun TaskSection(
                         horizontalArrangement = Arrangement.SpaceBetween,
                     ) {
                         Text(task.name, style = MaterialTheme.typography.bodyLarge)
-                        Text(viewModel.durationToString(task.duration) ?: "")
+                        Text(durationToString(task.duration) ?: "")
                     }
                 }
             }

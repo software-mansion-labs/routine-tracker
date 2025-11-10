@@ -7,7 +7,7 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.swmansion.routinetracker.DataRepository
-import com.swmansion.routinetracker.model.Routine
+import com.swmansion.routinetracker.model.RoutineWithTasks
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -15,8 +15,8 @@ import kotlinx.coroutines.flow.stateIn
 class HomeViewModel(repository: DataRepository) : ViewModel() {
     val uiState: StateFlow<HomeUiState> =
         repository
-            .getAllRoutines()
-            .map(::HomeUiState)
+            .getAllRoutinesWithTasks()
+            .map { HomeUiState(routinesWithTasks = it) }
             .stateIn(
                 scope = viewModelScope,
                 started = kotlinx.coroutines.flow.SharingStarted.Eagerly,
@@ -37,4 +37,4 @@ class HomeViewModel(repository: DataRepository) : ViewModel() {
     }
 }
 
-data class HomeUiState(val routines: List<Routine> = emptyList())
+data class HomeUiState(val routinesWithTasks: List<RoutineWithTasks> = emptyList())

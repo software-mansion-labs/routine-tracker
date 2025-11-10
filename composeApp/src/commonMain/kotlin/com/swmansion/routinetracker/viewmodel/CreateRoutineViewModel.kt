@@ -73,19 +73,6 @@ class CreateRoutineViewModel(private val repository: DataRepository) : ViewModel
             null
         }
 
-    fun durationToString(duration: Int?): String? =
-        duration?.let { seconds ->
-            val totalMinutes = seconds / 60
-            val h = totalMinutes / 60
-            val m = totalMinutes % 60
-            when {
-                h > 0 && m > 0 -> "${h}h ${m}m"
-                h > 0 -> "${h}h"
-                m > 0 -> "${m}m"
-                else -> "0m"
-            }
-        }
-
     fun addTask(name: String, durationSeconds: Int?) {
         val order = _uiState.value.tasks.size
         val newTask = Task(routineId = -1, name = name, duration = durationSeconds, order = order)
