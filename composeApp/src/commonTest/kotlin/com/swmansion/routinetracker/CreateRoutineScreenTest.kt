@@ -8,6 +8,8 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.runComposeUiTest
 import com.swmansion.routinetracker.di.LocalAppContainer
+import com.swmansion.routinetracker.mock.MockAppContainer
+import com.swmansion.routinetracker.mock.MockNavController
 import com.swmansion.routinetracker.model.Routine
 import com.swmansion.routinetracker.screen.CreateRoutineScreen
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -122,8 +124,8 @@ class CreateRoutineScreenTest {
     
     private fun createTestAppContainer(
         routinesFlow: MutableStateFlow<List<Routine>> = MutableStateFlow(emptyList())
-    ): TestAppContainer {
-        return TestAppContainer(routinesFlow)
+    ): MockAppContainer {
+        return MockAppContainer(routinesFlow)
     }
     
     private fun createMockNavController(onNavigate: (String) -> Unit = {}): MockNavController {
