@@ -36,7 +36,7 @@ fun CreateTaskScreen(
     navController: NavController,
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val timePickerState = rememberAdaptiveTimePickerState()
+    val timePickerState = rememberAdaptiveTimePickerState(is24Hour = true)
 
     Scaffold(
         topBar = {
@@ -142,7 +142,7 @@ private fun TimePickerDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Pick a Time") },
+        title = { Text("Pick Duration") },
         text = { AdaptiveTimePicker(state = timePickerState, modifier = Modifier.fillMaxWidth()) },
         confirmButton = { Button(onClick = onDone) { Text("Done") } },
         dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } },
