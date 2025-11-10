@@ -1,5 +1,6 @@
 package com.swmansion.routinetracker.screen
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -15,6 +16,7 @@ import com.mohamedrejeb.calf.ui.timepicker.AdaptiveTimePickerState
 import com.mohamedrejeb.calf.ui.timepicker.rememberAdaptiveTimePickerState
 import com.swmansion.routinetracker.di.LocalAppContainer
 import com.swmansion.routinetracker.model.DayOfWeek
+import com.swmansion.routinetracker.model.TaskWithoutRoutine
 import com.swmansion.routinetracker.viewmodel.CreateRoutineViewModel
 import org.jetbrains.compose.resources.painterResource
 import routinetracker.composeapp.generated.resources.Res
@@ -90,6 +92,10 @@ fun CreateRoutineScreen(
                 intervalWeeks = uiState.intervalWeeks,
                 onIntervalChange = viewModel::updateIntervalWeeks,
             )
+
+            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), thickness = 1.dp)
+
+            TaskSection(uiState.tasks)
 
             uiState.errorMessage?.let { ErrorMessageCard(message = it) }
             uiState.successMessage?.let { SuccessMessageCard(message = it) }
@@ -210,6 +216,18 @@ private fun IntervalWeeksSelector(intervalWeeks: Float, onIntervalChange: (Float
             valueRange = 0f..4f,
             steps = 3,
         )
+    }
+}
+
+@Composable
+private fun TaskSection(tasks: List<TaskWithoutRoutine>) {
+    Box(Modifier.background(MaterialTheme.colorScheme.primaryContainer).fillMaxWidth()) {
+        Column {
+            Text(text = "Tasks: ${tasks.size}", modifier = Modifier.padding(16.dp))
+            Button(onClick = {}, modifier = Modifier.padding(16.dp).fillMaxWidth().height(48.dp)) {
+                Text(text = "+ Add task", style = MaterialTheme.typography.bodyLarge)
+            }
+        }
     }
 }
 

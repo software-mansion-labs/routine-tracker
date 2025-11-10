@@ -10,6 +10,7 @@ import com.swmansion.routinetracker.DataRepository
 import com.swmansion.routinetracker.model.DayOfWeek
 import com.swmansion.routinetracker.model.Routine
 import com.swmansion.routinetracker.model.RoutineRecurrence
+import com.swmansion.routinetracker.model.TaskWithoutRoutine
 import kotlin.collections.emptySet
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -71,6 +72,10 @@ class CreateRoutineViewModel(private val repository: DataRepository) : ViewModel
         } else {
             null
         }
+
+    fun createTask(task: TaskWithoutRoutine) {
+        _uiState.updateState { copy(tasks = _uiState.value.tasks.plus(task)) }
+    }
 
     fun createRoutine(onSuccess: () -> Unit) {
         if (_uiState.value.routineName.isBlank()) {
@@ -148,4 +153,5 @@ data class CreateRoutineUiState(
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
     val successMessage: String? = null,
+    val tasks: List<TaskWithoutRoutine> = emptyList(),
 )
