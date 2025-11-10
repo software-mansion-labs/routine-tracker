@@ -124,7 +124,7 @@ fun CreateRoutineScreen(
 
             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), thickness = 1.dp)
 
-            TaskSection(uiState.tasks, navController, viewModel)
+            TaskSection(uiState.tasks, navController)
 
             uiState.errorMessage?.let { ErrorMessageCard(message = it) }
             uiState.successMessage?.let { SuccessMessageCard(message = it) }
