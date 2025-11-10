@@ -1,9 +1,6 @@
 package com.swmansion.routinetracker.screen
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.collectAsState
@@ -13,29 +10,25 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.MutableCreationExtras
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.currentBackStackEntryAsState
 import com.mohamedrejeb.calf.ui.timepicker.AdaptiveTimePicker
 import com.mohamedrejeb.calf.ui.timepicker.AdaptiveTimePickerState
 import com.mohamedrejeb.calf.ui.timepicker.rememberAdaptiveTimePickerState
 import com.swmansion.routinetracker.di.LocalAppContainer
-import com.swmansion.routinetracker.model.DayOfWeek
-import com.swmansion.routinetracker.model.Task
-import com.swmansion.routinetracker.navigation.CreateTask
-import com.swmansion.routinetracker.viewmodel.CreateRoutineViewModel
+import com.swmansion.routinetracker.viewmodel.CreateTaskViewModel
 import org.jetbrains.compose.resources.painterResource
 import routinetracker.composeapp.generated.resources.Res
 import routinetracker.composeapp.generated.resources.ic_back
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateRoutineScreen(
-    viewModel: CreateRoutineViewModel =
+fun CreateTaskScreen(
+    viewModel: CreateTaskViewModel =
         viewModel(
-            factory = CreateRoutineViewModel.Factory,
+            factory = CreateTaskViewModel.Factory,
             extras =
                 MutableCreationExtras().apply {
                     set(
-                        CreateRoutineViewModel.DATA_REPOSITORY_KEY,
+                        CreateTaskViewModel.DATA_REPOSITORY_KEY,
                         LocalAppContainer.current.repository,
                     )
                 },
@@ -45,22 +38,10 @@ fun CreateRoutineScreen(
     val uiState by viewModel.uiState.collectAsState()
     val timePickerState = rememberAdaptiveTimePickerState()
 
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    LaunchedEffect(navBackStackEntry) {
-        val handle = navBackStackEntry?.savedStateHandle ?: return@LaunchedEffect
-        val name: String? = handle.get("task_name")
-        if (name != null) {
-            val duration: Int? = handle.get("task_duration")
-            viewModel.addTask(name, duration)
-            handle.remove<String>("task_name")
-            handle.remove<Int>("task_duration")
-        }
-    }
-
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Create Routine") },
+                title = { Text("Create Task") },
                 navigationIcon = {
                     IconButton(onClick = navController::popBackStack) {
                         Icon(
@@ -71,32 +52,18 @@ fun CreateRoutineScreen(
                     }
                 },
             )
-        },
-        bottomBar = {
-            Column(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp)
-            ) {
-                ActionButtons(
-                    isLoading = uiState.isLoading,
-                    onCreate = {
-                        viewModel.createRoutine(onSuccess = { navController.popBackStack() })
-                    },
-                    onDiscard = { navController.popBackStack() },
-                )
-            }
-        },
+        }
     ) { paddingValues ->
         Column(
             modifier =
                 Modifier.fillMaxSize()
                     .padding(paddingValues)
-                    .padding(start = 16.dp, top = 16.dp, end = 16.dp)
-                    .verticalScroll(rememberScrollState()),
+                    .padding(start = 16.dp, top = 16.dp, end = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             RoutineNameField(
-                routineName = uiState.routineName,
-                onNameChange = viewModel::updateRoutineName,
+                routineName = uiState.taskName,
+                onNameChange = viewModel::updateTaskName,
                 onErrorClear = viewModel::clearMessages,
                 isError = uiState.errorMessage != null,
             )
@@ -114,21 +81,24 @@ fun CreateRoutineScreen(
                 )
             }
 
-            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), thickness = 1.dp)
-
-            RecurrenceSection(
-                selectedDaysOfWeek = uiState.selectedDaysOfWeek,
-                onDaysChange = viewModel::updateSelectedDaysOfWeek,
-                intervalWeeks = uiState.intervalWeeks,
-                onIntervalChange = viewModel::updateIntervalWeeks,
-            )
-
-            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), thickness = 1.dp)
-
-            TaskSection(uiState.tasks, navController, viewModel)
-
             uiState.errorMessage?.let { ErrorMessageCard(message = it) }
             uiState.successMessage?.let { SuccessMessageCard(message = it) }
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            ActionButtons(
+                isLoading = uiState.isLoading,
+                onCreate = {
+                    viewModel.createTask { name, duration ->
+                        navController.previousBackStackEntry?.savedStateHandle?.apply {
+                            set("task_name", name)
+                            set("task_duration", duration)
+                        }
+                        navController.popBackStack()
+                    }
+                },
+                onDiscard = { navController.popBackStack() },
+            )
         }
     }
 }
@@ -146,7 +116,7 @@ private fun RoutineNameField(
             onNameChange(it)
             onErrorClear()
         },
-        label = { Text("Routine Name") },
+        label = { Text("Task Name") },
         modifier = Modifier.fillMaxWidth(),
         singleLine = true,
         isError = isError,
@@ -177,105 +147,6 @@ private fun TimePickerDialog(
         confirmButton = { Button(onClick = onDone) { Text("Done") } },
         dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } },
     )
-}
-
-@Composable
-private fun RecurrenceSection(
-    selectedDaysOfWeek: Set<DayOfWeek>,
-    onDaysChange: (Set<DayOfWeek>) -> Unit,
-    intervalWeeks: Float,
-    onIntervalChange: (Float) -> Unit,
-) {
-    Column {
-        DaysOfWeekSelector(selectedDaysOfWeek = selectedDaysOfWeek, onDaysChange = onDaysChange)
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        IntervalWeeksSelector(intervalWeeks = intervalWeeks, onIntervalChange = onIntervalChange)
-    }
-}
-
-@Composable
-private fun DaysOfWeekSelector(
-    selectedDaysOfWeek: Set<DayOfWeek>,
-    onDaysChange: (Set<DayOfWeek>) -> Unit,
-) {
-    Column {
-        Text(text = "Days of Week (optional)", style = MaterialTheme.typography.bodyMedium)
-        FlowRow(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            DayOfWeek.entries.forEach { dayOfWeek ->
-                FilterChip(
-                    selected = selectedDaysOfWeek.contains(dayOfWeek),
-                    onClick = {
-                        onDaysChange(
-                            if (selectedDaysOfWeek.contains(dayOfWeek)) {
-                                selectedDaysOfWeek - dayOfWeek
-                            } else {
-                                selectedDaysOfWeek + dayOfWeek
-                            }
-                        )
-                    },
-                    label = { Text(dayOfWeek.displayName) },
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun IntervalWeeksSelector(intervalWeeks: Float, onIntervalChange: (Float) -> Unit) {
-    Column {
-        Text(
-            text = "Repeat every ${intervalWeeks.toInt()} week(s) (optional)",
-            style = MaterialTheme.typography.bodyMedium,
-        )
-        Slider(
-            value = intervalWeeks,
-            onValueChange = onIntervalChange,
-            valueRange = 0f..4f,
-            steps = 3,
-        )
-    }
-}
-
-@Composable
-private fun TaskSection(
-    tasks: List<Task>,
-    navController: NavController,
-    viewModel: CreateRoutineViewModel,
-) {
-    Box(Modifier.background(MaterialTheme.colorScheme.primaryContainer).fillMaxWidth()) {
-        Column {
-            Text(text = "Tasks: ${tasks.size}", modifier = Modifier.padding(16.dp))
-            tasks.forEach { task ->
-                Surface(
-                    tonalElevation = 1.dp,
-                    modifier =
-                        Modifier.fillMaxWidth()
-                            .padding(start = 12.dp, end = 12.dp, top = 0.dp, bottom = 12.dp),
-                    shape = MaterialTheme.shapes.medium,
-                ) {
-                    Row(
-                        Modifier.fillMaxWidth().padding(16.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                    ) {
-                        Text(task.name, style = MaterialTheme.typography.bodyLarge)
-                        Text(viewModel.durationToString(task.duration) ?: "")
-                    }
-                }
-            }
-            Button(
-                onClick = { navController.navigate(CreateTask) },
-                modifier = Modifier.padding(16.dp).fillMaxWidth().height(48.dp),
-            ) {
-                Text(text = "+ Add task", style = MaterialTheme.typography.bodyLarge)
-            }
-        }
-    }
 }
 
 @Composable

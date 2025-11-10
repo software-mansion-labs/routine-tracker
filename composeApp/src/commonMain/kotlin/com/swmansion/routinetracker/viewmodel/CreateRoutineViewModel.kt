@@ -10,7 +10,7 @@ import com.swmansion.routinetracker.DataRepository
 import com.swmansion.routinetracker.model.DayOfWeek
 import com.swmansion.routinetracker.model.Routine
 import com.swmansion.routinetracker.model.RoutineRecurrence
-import com.swmansion.routinetracker.model.TaskWithoutRoutine
+import com.swmansion.routinetracker.model.Task
 import kotlin.collections.emptySet
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -73,8 +73,23 @@ class CreateRoutineViewModel(private val repository: DataRepository) : ViewModel
             null
         }
 
-    fun createTask(task: TaskWithoutRoutine) {
-        _uiState.updateState { copy(tasks = _uiState.value.tasks.plus(task)) }
+    fun durationToString(duration: Int?): String? =
+        duration?.let { seconds ->
+            val totalMinutes = seconds / 60
+            val h = totalMinutes / 60
+            val m = totalMinutes % 60
+            when {
+                h > 0 && m > 0 -> "${h}h ${m}m"
+                h > 0 -> "${h}h"
+                m > 0 -> "${m}m"
+                else -> "0m"
+            }
+        }
+
+    fun addTask(name: String, durationSeconds: Int?) {
+        val order = _uiState.value.tasks.size
+        val newTask = Task(routineId = -1, name = name, duration = durationSeconds, order = order)
+        _uiState.updateState { copy(tasks = tasks + newTask) }
     }
 
     fun createRoutine(onSuccess: () -> Unit) {
@@ -106,6 +121,10 @@ class CreateRoutineViewModel(private val repository: DataRepository) : ViewModel
                     "Routine '${routine.name}' with ID: $routineId created successfully!"
                 )
 
+                for (task in uiState.value.tasks) {
+                    repository.addTaskToRoutine(routineId, task)
+                }
+
                 resetForm()
 
                 onSuccess()
@@ -124,6 +143,7 @@ class CreateRoutineViewModel(private val repository: DataRepository) : ViewModel
                 isTimeSet = false,
                 selectedDaysOfWeek = emptySet(),
                 intervalWeeks = 0f,
+                tasks = emptyList(),
             )
         }
     }
@@ -153,5 +173,5 @@ data class CreateRoutineUiState(
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
     val successMessage: String? = null,
-    val tasks: List<TaskWithoutRoutine> = emptyList(),
+    val tasks: List<Task> = emptyList(),
 )

@@ -8,8 +8,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.swmansion.routinetracker.navigation.CreateRoutine
+import com.swmansion.routinetracker.navigation.CreateTask
 import com.swmansion.routinetracker.navigation.Home
 import com.swmansion.routinetracker.screen.CreateRoutineScreen
+import com.swmansion.routinetracker.screen.CreateTaskScreen
 import com.swmansion.routinetracker.screen.HomeScreen
 
 @Composable
@@ -24,6 +26,7 @@ fun App() {
         ) {
             composable<Home> { HomeScreen(navController = navController) }
             composable<CreateRoutine> { CreateRoutineScreen(navController = navController) }
+            composable<CreateTask> { CreateTaskScreen(navController = navController) }
         }
     }
 }
