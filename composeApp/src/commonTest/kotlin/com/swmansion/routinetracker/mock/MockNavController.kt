@@ -1,22 +1,10 @@
 package com.swmansion.routinetracker.mock
 
-import androidx.navigation.NavBackStackEntry
+import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
-import androidx.navigation.NavDeepLinkRequest
-import androidx.navigation.NavGraph
+import androidx.navigation.compose.rememberNavController
 
-class MockNavController(private val onNavigate: (String) -> Unit = {}) : NavController() {
-    override val currentBackStackEntry: NavBackStackEntry?
-        get() = null
-    override var graph: NavGraph = TODO()
-        get() = throw NotImplementedError()
-
-    override fun navigate(request: NavDeepLinkRequest) {
-        onNavigate(request.uri.toString())
-    }
-
-    override fun navigateUp(): Boolean = true
-    override fun popBackStack(): Boolean = true
-    override fun addOnDestinationChangedListener(listener: OnDestinationChangedListener) {}
-    override fun removeOnDestinationChangedListener(listener: OnDestinationChangedListener) {}
+@Composable
+fun createMockNavController(): NavController {
+    return rememberNavController()
 }

@@ -9,7 +9,7 @@ import androidx.compose.ui.test.runComposeUiTest
 import com.swmansion.routinetracker.di.AppContainer
 import com.swmansion.routinetracker.di.LocalAppContainer
 import com.swmansion.routinetracker.mock.MockAppContainer
-import com.swmansion.routinetracker.mock.MockNavController
+import com.swmansion.routinetracker.mock.createMockNavController
 import com.swmansion.routinetracker.model.Routine
 import com.swmansion.routinetracker.screen.RoutinesScreen
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -86,13 +86,10 @@ class RoutinesScreenTest {
     @Test
     fun `should display floating action button`() = runComposeUiTest {
         val testAppContainer = createTestAppContainer(emptyList())
-        // var fabClicked = false
-        
+
         setContent {
             CompositionLocalProvider(LocalAppContainer provides testAppContainer) {
-                RoutinesScreen(navController = createMockNavController {
-                    // fabClicked = true
-                })
+                RoutinesScreen(navController = createMockNavController())
             }
         }
 
@@ -131,7 +128,5 @@ class RoutinesScreenTest {
         return MockAppContainer(routinesFlow)
     }
     
-    private fun createMockNavController(onNavigate: (String) -> Unit = {}): MockNavController {
-        return MockNavController(onNavigate)
-    }
+
 }

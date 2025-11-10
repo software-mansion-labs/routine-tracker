@@ -1,5 +1,6 @@
 package com.swmansion.routinetracker
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
@@ -9,7 +10,8 @@ import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.runComposeUiTest
 import com.swmansion.routinetracker.di.LocalAppContainer
 import com.swmansion.routinetracker.mock.MockAppContainer
-import com.swmansion.routinetracker.mock.MockNavController
+import androidx.navigation.compose.rememberNavController
+import com.swmansion.routinetracker.mock.createMockNavController
 import com.swmansion.routinetracker.model.Routine
 import com.swmansion.routinetracker.screen.CreateRoutineScreen
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -113,9 +115,7 @@ class CreateRoutineScreenTest {
         
         setContent {
             CompositionLocalProvider(LocalAppContainer provides testAppContainer) {
-                CreateRoutineScreen(navController = createMockNavController {
-                    // backPressed = true
-                })
+                CreateRoutineScreen(navController = createMockNavController())
             }
         }
         
@@ -126,10 +126,6 @@ class CreateRoutineScreenTest {
         routinesFlow: MutableStateFlow<List<Routine>> = MutableStateFlow(emptyList())
     ): MockAppContainer {
         return MockAppContainer(routinesFlow)
-    }
-    
-    private fun createMockNavController(onNavigate: (String) -> Unit = {}): MockNavController {
-        return MockNavController(onNavigate)
     }
 }
 
