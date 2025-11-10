@@ -1,13 +1,11 @@
 package com.swmansion.routinetracker
 
-import com.swmansion.routinetracker.database.RoutineDao
-import com.swmansion.routinetracker.database.RoutineRecurrenceDao
-import com.swmansion.routinetracker.database.TaskDao
+import com.swmansion.routinetracker.mock.MockRecurrenceDao
+import com.swmansion.routinetracker.mock.MockRoutineDao
+import com.swmansion.routinetracker.mock.MockTaskDao
 import com.swmansion.routinetracker.model.DayOfWeek
 import com.swmansion.routinetracker.model.Routine
 import com.swmansion.routinetracker.model.RoutineRecurrence
-import com.swmansion.routinetracker.model.RoutineWithTasks
-import com.swmansion.routinetracker.model.Task
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -101,23 +99,19 @@ class DataRepositoryTest {
     
     @Test
     fun `getAllRoutines should return empty list when no routines exist`() = runTest {
-        // Given
         val mockRoutineDao = createMockRoutineDao(routinesFlow = flowOf(emptyList()))
         val mockTaskDao = createMockTaskDao()
         val mockRecurrenceDao = createMockRecurrenceDao()
         val repository = DataRepository(mockRoutineDao, mockTaskDao, mockRecurrenceDao)
         
-        // When
         val result = repository.getAllRoutines()
         
-        // Then
         var collectedRoutines: List<Routine>? = null
         result.collect { collectedRoutines = it }
         assertNotNull(collectedRoutines)
         assertTrue(collectedRoutines.isEmpty())
     }
     
-    // Helper functions to create mock DAOs
     private fun createMockRoutineDao(
         insertResult: Long = 1L,
         routinesFlow: Flow<List<Routine>> = flowOf(emptyList())
@@ -132,69 +126,5 @@ class DataRepositoryTest {
     private fun createMockRecurrenceDao(): MockRecurrenceDao {
         return MockRecurrenceDao()
     }
-}
-
-class MockRoutineDao(
-    private val insertResult: Long,
-    private val routinesFlow: Flow<List<Routine>>
-) : RoutineDao {
-    var insertCallCount = 0
-    var lastInsertedRoutine: Routine? = null
-    
-    override fun getAllRoutines(): Flow<List<Routine>> = routinesFlow
-    
-    override suspend fun getRoutineById(id: Long): Routine? = null
-    
-    override fun getAllRoutinesWithTasks(): Flow<List<RoutineWithTasks>> = flowOf(emptyList())
-
-    override fun getRoutineWithTasksById(id: Long): Flow<RoutineWithTasks?> = flowOf(null)
-    
-    override suspend fun insertRoutine(routine: Routine): Long {
-        insertCallCount++
-        lastInsertedRoutine = routine
-        return insertResult
-    }
-    
-    override suspend fun insertRoutines(routines: List<Routine>) {}
-    
-    override suspend fun updateRoutine(routine: Routine) {}
-    
-    override suspend fun deleteRoutine(routine: Routine) {}
-    
-    override suspend fun deleteRoutineById(id: Long) {}
-    
-    override suspend fun removeAll() {}
-}
-
-class MockTaskDao : TaskDao {
-    override fun getTasksForRoutine(routineId: Long): Flow<List<Task>> = flowOf(emptyList())
-    override suspend fun getTasksForRoutineSuspend(routineId: Long): List<Task> = emptyList()
-    override fun getAllTasks(): Flow<List<Task>> = flowOf(emptyList())
-    override suspend fun insertTask(task: Task): Long = 1L
-    override suspend fun insertTasks(tasks: List<Task>) {}
-    override suspend fun updateTask(task: Task) {}
-    override suspend fun deleteTask(task: Task) {}
-    override suspend fun removeAll() {}
-}
-
-class MockRecurrenceDao : RoutineRecurrenceDao {
-    var insertCallCount = 0
-    var lastInsertedRecurrences: List<RoutineRecurrence> = emptyList()
-    
-    override suspend fun insertRecurrence(recurrence: RoutineRecurrence): Long {
-        insertCallCount++
-        return 1L
-    }
-    
-    override suspend fun insertRecurrences(recurrences: List<RoutineRecurrence>) {
-        insertCallCount++
-        lastInsertedRecurrences = recurrences
-    }
-    
-    override suspend fun getRecurrencesForRoutine(routineId: Long): List<RoutineRecurrence> = emptyList()
-    
-    override suspend fun deleteRecurrencesForRoutine(routineId: Long) {}
-    
-    override suspend fun removeAll() {}
 }
 

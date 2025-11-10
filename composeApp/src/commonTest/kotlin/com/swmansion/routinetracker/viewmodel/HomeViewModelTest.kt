@@ -1,12 +1,10 @@
 package com.swmansion.routinetracker.viewmodel
 
 import com.swmansion.routinetracker.DataRepository
-import com.swmansion.routinetracker.database.RoutineDao
-import com.swmansion.routinetracker.database.TaskDao
+import com.swmansion.routinetracker.mock.MockRecurrenceDao
+import com.swmansion.routinetracker.mock.MockRoutineDao
+import com.swmansion.routinetracker.mock.MockTaskDao
 import com.swmansion.routinetracker.model.Routine
-import com.swmansion.routinetracker.model.RoutineRecurrence
-import com.swmansion.routinetracker.model.RoutineWithTasks
-import com.swmansion.routinetracker.model.Task
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
@@ -114,40 +112,3 @@ class HomeViewModelTest {
         return DataRepository(mockRoutineDao, mockTaskDao, mockRecurrenceDao)
     }
 }
-
-// Reuse mock DAOs
-class MockRoutineDao(
-    private val insertResult: Long,
-    private val routinesFlow: Flow<List<Routine>>
-) : RoutineDao {
-    override fun getAllRoutines(): Flow<List<Routine>> = routinesFlow
-    override suspend fun getRoutineById(id: Long): Routine? = null
-    override fun getAllRoutinesWithTasks(): Flow<List<RoutineWithTasks>> = flowOf(emptyList())
-    override fun getRoutineWithTasksById(id: Long): Flow<RoutineWithTasks?> = flowOf(null)
-    override suspend fun insertRoutine(routine: Routine): Long = insertResult
-    override suspend fun insertRoutines(routines: List<Routine>) {}
-    override suspend fun updateRoutine(routine: Routine) {}
-    override suspend fun deleteRoutine(routine: Routine) {}
-    override suspend fun deleteRoutineById(id: Long) {}
-    override suspend fun removeAll() {}
-}
-
-class MockTaskDao : TaskDao {
-    override fun getTasksForRoutine(routineId: Long): Flow<List<Task>> = flowOf(emptyList())
-    override suspend fun getTasksForRoutineSuspend(routineId: Long): List<Task> = emptyList()
-    override fun getAllTasks(): Flow<List<Task>> = flowOf(emptyList())
-    override suspend fun insertTask(task: Task): Long = 1L
-    override suspend fun insertTasks(tasks: List<Task>) {}
-    override suspend fun updateTask(task: Task) {}
-    override suspend fun deleteTask(task: Task) {}
-    override suspend fun removeAll() {}
-}
-
-class MockRecurrenceDao : com.swmansion.routinetracker.database.RoutineRecurrenceDao {
-    override suspend fun insertRecurrence(recurrence: RoutineRecurrence): Long = 1L
-    override suspend fun insertRecurrences(recurrences: List<RoutineRecurrence>) {}
-    override suspend fun getRecurrencesForRoutine(routineId: Long): List<RoutineRecurrence> = emptyList()
-    override suspend fun deleteRecurrencesForRoutine(routineId: Long) {}
-    override suspend fun removeAll() {}
-}
-

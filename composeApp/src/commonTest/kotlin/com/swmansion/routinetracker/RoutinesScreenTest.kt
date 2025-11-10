@@ -6,7 +6,11 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.runComposeUiTest
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
+import androidx.navigation.NavDeepLinkRequest
+import androidx.navigation.NavDestination
+import androidx.navigation.NavGraph
 import com.swmansion.routinetracker.di.AppContainer
 import com.swmansion.routinetracker.di.LocalAppContainer
 import com.swmansion.routinetracker.model.Routine
@@ -199,32 +203,32 @@ class TestRecurrenceDao : com.swmansion.routinetracker.database.RoutineRecurrenc
     override suspend fun removeAll() {}
 }
 
-class MockNavController(private val onNavigate: (String) -> Unit = {}) : NavController {
-    override val currentBackStackEntry: androidx.navigation.NavBackStackEntry?
+class MockNavController(private val onNavigate: (String) -> Unit = {}) : NavController() {
+    override val currentBackStackEntry: NavBackStackEntry?
         get() = null
-    override val graph: androidx.navigation.NavGraph
+    override val graph: NavGraph
         get() = throw NotImplementedError()
     
     override fun navigate(route: String) {
         onNavigate(route)
     }
     
-    override fun navigate(route: androidx.navigation.NavDeepLinkRequest) {
+    override fun navigate(route: NavDeepLinkRequest) {
         onNavigate(route.uri.toString())
     }
     
     override fun navigateUp(): Boolean = true
     override fun popBackStack(): Boolean = true
     override fun popBackStack(route: String, inclusive: Boolean): Boolean = true
-    override fun popBackStack(route: androidx.navigation.NavDestination, inclusive: Boolean): Boolean = true
-    override fun setGraph(graph: androidx.navigation.NavGraph) {}
-    override fun setGraph(graph: androidx.navigation.NavGraph, startDestination: String) {}
-    override fun setGraph(graph: androidx.navigation.NavGraph, startDestination: androidx.navigation.NavDestination) {}
+    override fun popBackStack(route: NavDestination, inclusive: Boolean): Boolean = true
+    override fun setGraph(graph: NavGraph) {}
+    override fun setGraph(graph: NavGraph, startDestination: String) {}
+    override fun setGraph(graph: NavGraph, startDestination: NavDestination) {}
     override fun enableOnBackPressed(enabled: Boolean) {}
     override fun addOnDestinationChangedListener(listener: OnDestinationChangedListener) {}
     override fun removeOnDestinationChangedListener(listener: OnDestinationChangedListener) {}
-    override fun getBackStackEntry(route: String): androidx.navigation.NavBackStackEntry = throw NotImplementedError()
-    override fun getBackStackEntry(navDestinationId: Int): androidx.navigation.NavBackStackEntry = throw NotImplementedError()
-    override fun saveState(): androidx.navigation.NavControllerSavedState = throw NotImplementedError()
-    override fun restoreState(savedState: androidx.navigation.NavControllerSavedState) {}
+    override fun getBackStackEntry(route: String): NavBackStackEntry = throw NotImplementedError()
+    override fun getBackStackEntry(navDestinationId: Int): NavBackStackEntry = throw NotImplementedError()
+    override fun saveState(): NavControllerSavedState = throw NotImplementedError()
+    override fun restoreState(savedState: NavControllerSavedState) {}
 }
