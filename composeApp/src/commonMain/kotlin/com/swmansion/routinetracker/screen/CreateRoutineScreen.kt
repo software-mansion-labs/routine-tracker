@@ -101,7 +101,7 @@ fun CreateRoutineScreen(
                 isError = uiState.errorMessage != null,
             )
 
-            DurationSelectionButton(
+            TimeSelectionButton(
                 selectedTimeText = viewModel.getFormattedTime(),
                 onTimeClick = { viewModel.updateVisibilityTimePicker(true) },
             )
@@ -154,7 +154,7 @@ private fun RoutineNameField(
 }
 
 @Composable
-private fun DurationSelectionButton(selectedTimeText: String?, onTimeClick: () -> Unit) {
+private fun TimeSelectionButton(selectedTimeText: String?, onTimeClick: () -> Unit) {
     Button(onClick = onTimeClick, modifier = Modifier.fillMaxWidth().height(48.dp)) {
         Text(
             text = selectedTimeText ?: "Select Time (optional)",
