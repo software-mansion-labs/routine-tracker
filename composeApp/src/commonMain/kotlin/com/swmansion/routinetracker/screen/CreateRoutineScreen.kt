@@ -1,5 +1,6 @@
 package com.swmansion.routinetracker.screen
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -19,6 +20,7 @@ import com.swmansion.routinetracker.di.LocalAppContainer
 import com.swmansion.routinetracker.model.DayOfWeek
 import com.swmansion.routinetracker.model.Task
 import com.swmansion.routinetracker.navigation.CreateTask
+import com.swmansion.routinetracker.model.TaskWithoutRoutine
 import com.swmansion.routinetracker.viewmodel.CreateRoutineViewModel
 import com.swmansion.routinetracker.viewmodel.durationToString
 import org.jetbrains.compose.resources.painterResource
@@ -111,7 +113,7 @@ fun CreateRoutineScreen(
 
             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), thickness = 1.dp)
 
-            TaskSection(uiState.tasks, navController)
+            TaskSection(uiState.tasks)
 
             uiState.errorMessage?.let { ErrorMessageCard(message = it) }
             uiState.successMessage?.let { SuccessMessageCard(message = it) }
