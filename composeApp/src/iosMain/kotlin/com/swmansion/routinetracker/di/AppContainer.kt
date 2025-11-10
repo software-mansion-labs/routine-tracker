@@ -13,7 +13,9 @@ import platform.Foundation.NSFileManager
 import platform.Foundation.NSURL
 import platform.Foundation.NSUserDomainMask
 
-actual class AppContainer {
+actual open class AppContainer {
+    actual constructor()
+    actual constructor(application: Any?) : this()
     private val database: RoutineDatabase by lazy {
         val dbFile = "${fileDirectory()}/$DB_FILE_NAME"
         Room.databaseBuilder<RoutineDatabase>(name = dbFile)
@@ -22,7 +24,7 @@ actual class AppContainer {
             .build()
     }
 
-    actual val repository: DataRepository by lazy {
+    actual open val repository: DataRepository by lazy {
         DataRepository(
             routineDao = database.routineDao(),
             taskDao = database.taskDao(),

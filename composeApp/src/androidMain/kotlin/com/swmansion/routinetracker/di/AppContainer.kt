@@ -8,16 +8,24 @@ import com.swmansion.routinetracker.database.DB_FILE_NAME
 import com.swmansion.routinetracker.database.RoutineDatabase
 import kotlinx.coroutines.Dispatchers
 
-actual class AppContainer(private val application: Application) {
+actual open class AppContainer {
+    private val application: Any?
+    
+    actual constructor() : this(null)
+    
+    actual constructor(application: Any?) {
+        this.application = application
+    }
     private val database: RoutineDatabase by lazy {
-        val dbFile = application.getDatabasePath(DB_FILE_NAME)
-        Room.databaseBuilder<RoutineDatabase>(context = application, name = dbFile.absolutePath)
+        val app = application as? Application ?: throw IllegalStateException("Application is required for AppContainer")
+        val dbFile = app.getDatabasePath(DB_FILE_NAME)
+        Room.databaseBuilder<RoutineDatabase>(context = app, name = dbFile.absolutePath)
             .setDriver(BundledSQLiteDriver())
             .setQueryCoroutineContext(Dispatchers.IO)
             .build()
     }
 
-    actual val repository: DataRepository by lazy {
+    actual open val repository: DataRepository by lazy {
         DataRepository(
             routineDao = database.routineDao(),
             taskDao = database.taskDao(),
