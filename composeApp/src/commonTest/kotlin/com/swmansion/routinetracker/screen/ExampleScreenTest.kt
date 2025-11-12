@@ -23,14 +23,8 @@ class ExampleScreenTest {
     fun myTest() = runComposeUiTest {
         setContent {
             var text by remember { mutableStateOf("Hello") }
-            Text(
-                text = text,
-                modifier = Modifier.testTag("text")
-            )
-            Button(
-                onClick = { text = "Compose" },
-                modifier = Modifier.testTag("button")
-            ) {
+            Text(text = text, modifier = Modifier.testTag("text"))
+            Button(onClick = { text = "Compose" }, modifier = Modifier.testTag("button")) {
                 Text("Click me")
             }
         }
@@ -39,5 +33,4 @@ class ExampleScreenTest {
         onNodeWithTag("button").performClick()
         onNodeWithTag("text").assertTextEquals("Compose")
     }
-
 }
