@@ -69,7 +69,7 @@ fun HomeScreen(navController: NavController) {
             modifier = Modifier.fillMaxSize().padding(paddingValues),
         ) {
             composable<Routines> { RoutinesScreen(navController = navController) }
-            composable<Settings> { SettingsScreen(navController = navController) }
+            composable<Settings> { SettingsScreen() }
         }
     }
 }
