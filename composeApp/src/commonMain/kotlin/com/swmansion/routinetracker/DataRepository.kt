@@ -7,7 +7,7 @@ import com.swmansion.routinetracker.model.Routine
 import com.swmansion.routinetracker.model.RoutineRecurrence
 import com.swmansion.routinetracker.model.Task
 
-class DataRepository(
+open class DataRepository(
     private val routineDao: RoutineDao,
     private val taskDao: TaskDao,
     private val routineRecurrenceDao: RoutineRecurrenceDao,
@@ -20,7 +20,7 @@ class DataRepository(
 
     suspend fun createRoutine(routine: Routine) = routineDao.insertRoutine(routine)
 
-    suspend fun createRoutineWithRecurrence(
+    open suspend fun createRoutineWithRecurrence(
         routine: Routine,
         recurrences: List<RoutineRecurrence>,
     ): Long {
