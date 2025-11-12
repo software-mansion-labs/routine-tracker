@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.Flow
 class HomeViewModelTest {
     
     @Test
-    fun `uiState should initially be empty`() = runTest {
+    fun uiStateShouldInitiallyBeEmpty() = runTest {
         val repository = createMockRepository(flowOf(emptyList()))
         val viewModel = HomeViewModel(repository)
         
@@ -24,7 +24,7 @@ class HomeViewModelTest {
     }
     
     @Test
-    fun `uiState should reflect routines from repository`() = runTest {
+    fun uiStateShouldReflectRoutinesFromRepository() = runTest {
         val routines = listOf(
             Routine(id = 1L, name = "Morning Routine", time = "08:00"),
             Routine(id = 2L, name = "Evening Routine", time = "20:00"),
@@ -42,7 +42,7 @@ class HomeViewModelTest {
     }
     
     @Test
-    fun `uiState should update when repository emits new routines`() = runTest {
+    fun uiStateShouldUpdateWhenRepositoryEmitsNewRoutines() = runTest {
         val stateFlow = MutableStateFlow<List<Routine>>(emptyList())
         val repository = createMockRepository(stateFlow)
         val viewModel = HomeViewModel(repository)
@@ -75,7 +75,7 @@ class HomeViewModelTest {
     }
     
     @Test
-    fun `uiState should handle empty list from repository`() = runTest {
+    fun uiStateShouldHandleEmptyListFromRepository() = runTest {
         val repository = createMockRepository(flowOf(emptyList()))
         val viewModel = HomeViewModel(repository)
         
@@ -85,7 +85,7 @@ class HomeViewModelTest {
     }
     
     @Test
-    fun `uiState should maintain routine order from repository`() = runTest {
+    fun uiStateShouldMaintainRoutineOrderFromRepository() = runTest {
         val routines = listOf(
             Routine(id = 3L, name = "C Routine"),
             Routine(id = 1L, name = "A Routine"),

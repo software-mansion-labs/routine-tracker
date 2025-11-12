@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.Flow
 class DataRepositoryTest {
     
     @Test
-    fun `createRoutine should insert routine and return id`() = runTest {
+    fun createRoutineShouldInsertRoutineAndReturnId() = runTest {
         val routineId = 1L
         val routine = Routine(id = routineId ,name = "Morning Routine", time = "08:00")
         val mockRoutineDao = createMockRoutineDao(insertResult = routineId)
@@ -33,7 +33,7 @@ class DataRepositoryTest {
     }
     
     @Test
-    fun `createRoutineWithRecurrence should insert routine and recurrences`() = runTest {
+    fun createRoutineWithRecurrenceShouldInsertRoutineAndRecurrences() = runTest {
         val routine = Routine(name = "Evening Routine", time = "20:00")
         val routineId = 2L
         val recurrences = listOf(
@@ -59,7 +59,7 @@ class DataRepositoryTest {
     }
     
     @Test
-    fun `createRoutineWithRecurrence with empty recurrences should not insert recurrences`() = runTest {
+    fun createRoutineWithRecurrenceWithEmptyRecurrencesShouldNotInsertRecurrences() = runTest {
         val routine = Routine(name = "Simple Routine")
         val routineId = 3L
         val mockRoutineDao = createMockRoutineDao(insertResult = routineId)
@@ -75,7 +75,7 @@ class DataRepositoryTest {
     }
     
     @Test
-    fun `getAllRoutines should return all routines from dao`() = runTest {
+    fun getAllRoutinesShouldReturnAllRoutinesFromDao() = runTest {
         val routines = listOf(
             Routine(id = 1L, name = "Routine 1", time = "08:00"),
             Routine(id = 2L, name = "Routine 2", time = "12:00"),
@@ -98,7 +98,7 @@ class DataRepositoryTest {
     }
     
     @Test
-    fun `getAllRoutines should return empty list when no routines exist`() = runTest {
+    fun getAllRoutinesShouldReturnEmptyListWhenNoRoutinesExist() = runTest {
         val mockRoutineDao = createMockRoutineDao(routinesFlow = flowOf(emptyList()))
         val mockTaskDao = createMockTaskDao()
         val mockRecurrenceDao = createMockRecurrenceDao()

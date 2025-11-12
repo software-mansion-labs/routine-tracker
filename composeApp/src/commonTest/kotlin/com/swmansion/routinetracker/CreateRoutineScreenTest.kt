@@ -1,6 +1,5 @@
 package com.swmansion.routinetracker
 
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.compose.ui.test.ExperimentalTestApi
@@ -22,7 +21,7 @@ import kotlin.test.Test
 class CreateRoutineScreenTest {
     
     @Test
-    fun `should display create routine screen with all elements`() = runComposeUiTest {
+    fun shouldDisplayCreateRoutineScreenWithAllElements() = runComposeUiTest {
         val testAppContainer = createTestAppContainer()
         val viewModelStoreOwner = MockViewModelStoreOwner()
         
@@ -43,7 +42,7 @@ class CreateRoutineScreenTest {
     }
     
     @Test
-    fun `should allow entering routine name`() = runComposeUiTest {
+    fun shouldAllowEnteringRoutineName() = runComposeUiTest {
         val testAppContainer = createTestAppContainer()
         val viewModelStoreOwner = MockViewModelStoreOwner()
         val routineName = "Test Routine"
@@ -62,7 +61,7 @@ class CreateRoutineScreenTest {
     }
     
     @Test
-    fun `should display error message when creating routine with empty name`() = runComposeUiTest {
+    fun shouldDisplayErrorMessageWhenCreatingRoutineWithEmptyName() = runComposeUiTest {
         val testAppContainer = createTestAppContainer()
         val viewModelStoreOwner = MockViewModelStoreOwner()
         
@@ -80,7 +79,7 @@ class CreateRoutineScreenTest {
     }
     
     @Test
-    fun `should display success message after creating routine`() = runComposeUiTest {
+    fun shouldDisplaySuccessMessageAfterCreatingRoutine() = runComposeUiTest {
         val routinesFlow = MutableStateFlow<List<Routine>>(emptyList())
         val testAppContainer = createTestAppContainer(routinesFlow)
         val viewModelStoreOwner = MockViewModelStoreOwner()
@@ -102,7 +101,7 @@ class CreateRoutineScreenTest {
     }
     
     @Test
-    fun `should display days of week selector`() = runComposeUiTest {
+    fun shouldDisplayDaysOfWeekSelector() = runComposeUiTest {
         val testAppContainer = createTestAppContainer()
         val viewModelStoreOwner = MockViewModelStoreOwner()
         
@@ -119,7 +118,7 @@ class CreateRoutineScreenTest {
     }
     
     @Test
-    fun `should display interval weeks selector`() = runComposeUiTest {
+    fun shouldDisplayIntervalWeeksSelector() = runComposeUiTest {
         val testAppContainer = createTestAppContainer()
         val viewModelStoreOwner = MockViewModelStoreOwner()
         
@@ -134,7 +133,7 @@ class CreateRoutineScreenTest {
     }
     
     @Test
-    fun `should navigate back when discard is clicked`() = runComposeUiTest {
+    fun shouldNavigateBackWhenDiscardIsClicked() = runComposeUiTest {
         val testAppContainer = createTestAppContainer()
         val viewModelStoreOwner = MockViewModelStoreOwner()
         // var backPressed = false

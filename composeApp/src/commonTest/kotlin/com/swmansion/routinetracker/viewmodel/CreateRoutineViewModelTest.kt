@@ -18,7 +18,7 @@ import kotlin.test.assertTrue
 class CreateRoutineViewModelTest {
     
     @Test
-    fun `updateRoutineName should update routine name in state`() = runTest {
+    fun updateRoutineNameShouldUpdateRoutineNameInState() = runTest {
         val repository = createMockRepository()
         val viewModel = CreateRoutineViewModel(repository)
         val newName = "Test Routine"
@@ -29,7 +29,7 @@ class CreateRoutineViewModelTest {
     }
     
     @Test
-    fun `setTime should update time in state and hide time picker`() = runTest {
+    fun setTimeShouldUpdateTimeInStateAndHideTimePicker() = runTest {
         val repository = createMockRepository()
         val viewModel = CreateRoutineViewModel(repository)
         val hour = 10
@@ -44,7 +44,7 @@ class CreateRoutineViewModelTest {
     }
     
     @Test
-    fun `getFormattedTime should return formatted time when time is set`() = runTest {
+    fun getFormattedTimeShouldReturnFormattedTimeWhenTimeIsSet() = runTest {
         val repository = createMockRepository()
         val viewModel = CreateRoutineViewModel(repository)
         viewModel.setTime(9, 15)
@@ -56,7 +56,7 @@ class CreateRoutineViewModelTest {
     }
     
     @Test
-    fun `getFormattedTime should return null when time is not set`() = runTest {
+    fun getFormattedTimeShouldReturnNullWhenTimeIsNotSet() = runTest {
         val repository = createMockRepository()
         val viewModel = CreateRoutineViewModel(repository)
         
@@ -66,7 +66,7 @@ class CreateRoutineViewModelTest {
     }
     
     @Test
-    fun `updateSelectedDaysOfWeek should update selected days in state`() = runTest {
+    fun updateSelectedDaysOfWeekShouldUpdateSelectedDaysInState() = runTest {
         val repository = createMockRepository()
         val viewModel = CreateRoutineViewModel(repository)
         val days = setOf(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY)
@@ -77,7 +77,7 @@ class CreateRoutineViewModelTest {
     }
     
     @Test
-    fun `updateIntervalWeeks should update interval weeks in state`() = runTest {
+    fun updateIntervalWeeksShouldUpdateIntervalWeeksInState() = runTest {
         val repository = createMockRepository()
         val viewModel = CreateRoutineViewModel(repository)
         val weeks = 2f
@@ -88,7 +88,7 @@ class CreateRoutineViewModelTest {
     }
     
     @Test
-    fun `createRoutine with empty name should show error message`() = runTest {
+    fun createRoutineWithEmptyNameShouldShowErrorMessage() = runTest {
         val repository = createMockRepository()
         val viewModel = CreateRoutineViewModel(repository)
         var onSuccessCalled = false
@@ -101,7 +101,7 @@ class CreateRoutineViewModelTest {
     }
     
     @Test
-    fun `createRoutine with blank name should show error message`() = runTest {
+    fun createRoutineWithBlankNameShouldShowErrorMessage() = runTest {
         val repository = createMockRepository()
         val viewModel = CreateRoutineViewModel(repository)
         viewModel.updateRoutineName("   ")
@@ -114,7 +114,7 @@ class CreateRoutineViewModelTest {
     }
     
     @Test
-    fun `createRoutine with valid name should create routine and reset form`() = runTest {
+    fun createRoutineWithValidNameShouldCreateRoutineAndResetForm() = runTest {
         val repository = createMockRepository(routineId = 1L)
         val viewModel = CreateRoutineViewModel(repository)
         val routineName = "Morning Routine"
@@ -139,7 +139,7 @@ class CreateRoutineViewModelTest {
     }
     
     @Test
-    fun `createRoutine should create routine with recurrences`() = runTest {
+    fun createRoutineShouldCreateRoutineWithRecurrences() = runTest {
         val repository = createMockRepository(routineId = 2L)
         val viewModel = CreateRoutineViewModel(repository)
         viewModel.updateRoutineName("Evening Routine")
@@ -163,7 +163,7 @@ class CreateRoutineViewModelTest {
     }
     
     @Test
-    fun `createRoutine should handle errors gracefully`() = runTest {
+    fun createRoutineShouldHandleErrorsGracefully() = runTest {
         val repository = createMockRepository(shouldThrowError = true)
         val viewModel = CreateRoutineViewModel(repository)
         viewModel.updateRoutineName("Test Routine")
@@ -180,7 +180,7 @@ class CreateRoutineViewModelTest {
     }
     
     @Test
-    fun `clearMessages should clear error and success messages`() = runTest {
+    fun clearMessagesShouldClearErrorAndSuccessMessages() = runTest {
         val repository = createMockRepository()
         val viewModel = CreateRoutineViewModel(repository)
         viewModel.updateErrorMessage("Test error")

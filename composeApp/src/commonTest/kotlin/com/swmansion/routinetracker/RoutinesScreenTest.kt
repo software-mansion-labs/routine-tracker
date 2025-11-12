@@ -21,7 +21,7 @@ import kotlin.test.Test
 class RoutinesScreenTest {
     
     @Test
-    fun `should display empty state when no routines exist`() = runComposeUiTest {
+    fun shouldDisplayEmptyStateWhenNoRoutinesExist() = runComposeUiTest {
         val testAppContainer = createTestAppContainer(emptyList())
         val viewModelStoreOwner = MockViewModelStoreOwner()
         
@@ -38,7 +38,7 @@ class RoutinesScreenTest {
     }
     
     @Test
-    fun `should display list of routines when routines exist`() = runComposeUiTest {
+    fun shouldDisplayListOfRoutinesWhenRoutinesExist() = runComposeUiTest {
         val routines = listOf(
             Routine(id = 1L, name = "Morning Routine", time = "08:00"),
             Routine(id = 2L, name = "Evening Routine", time = "20:00"),
@@ -65,7 +65,7 @@ class RoutinesScreenTest {
     }
     
     @Test
-    fun `should display routine without time when time is null`() = runComposeUiTest {
+    fun shouldDisplayRoutineWithoutTimeWhenTimeIsNull() = runComposeUiTest {
         val routines = listOf(
             Routine(id = 1L, name = "Simple Routine", time = null)
         )
@@ -85,7 +85,7 @@ class RoutinesScreenTest {
     }
     
     @Test
-    fun `should display top bar with correct title`() = runComposeUiTest {
+    fun shouldDisplayTopBarWithCorrectTitle() = runComposeUiTest {
         val testAppContainer = createTestAppContainer(emptyList())
         val viewModelStoreOwner = MockViewModelStoreOwner()
         
@@ -102,7 +102,7 @@ class RoutinesScreenTest {
     }
     
     @Test
-    fun `should display floating action button`() = runComposeUiTest {
+    fun shouldDisplayFloatingActionButton() = runComposeUiTest {
         val testAppContainer = createTestAppContainer(emptyList())
         val viewModelStoreOwner = MockViewModelStoreOwner()
 
@@ -119,7 +119,7 @@ class RoutinesScreenTest {
     }
     
     @Test
-    fun `should update list when routines are added`() = runComposeUiTest {
+    fun shouldUpdateListWhenRoutinesAreAdded() = runComposeUiTest {
         val routinesFlow = MutableStateFlow<List<Routine>>(emptyList())
         val testAppContainer = createTestAppContainerWithFlow(routinesFlow)
         val viewModelStoreOwner = MockViewModelStoreOwner()
