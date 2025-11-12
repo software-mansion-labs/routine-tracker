@@ -14,28 +14,32 @@ import com.mohamedrejeb.calf.ui.timepicker.AdaptiveTimePicker
 import com.mohamedrejeb.calf.ui.timepicker.AdaptiveTimePickerState
 import com.mohamedrejeb.calf.ui.timepicker.rememberAdaptiveTimePickerState
 import com.swmansion.routinetracker.di.LocalAppContainer
-import com.swmansion.routinetracker.viewmodel.CreateTaskViewModel
+import com.swmansion.routinetracker.navigation.CreateRoutine
+import com.swmansion.routinetracker.viewmodel.CreateRoutineViewModel
 import org.jetbrains.compose.resources.painterResource
 import routinetracker.composeapp.generated.resources.Res
 import routinetracker.composeapp.generated.resources.ic_back
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateTaskScreen(
-    viewModel: CreateTaskViewModel =
+fun CreateTaskScreen(navController: NavController) {
+    val routineBackStackEntry =
+        remember(navController) { navController.getBackStackEntry(CreateRoutine) }
+    val viewModel: CreateRoutineViewModel =
         viewModel(
-            factory = CreateTaskViewModel.Factory,
+            routineBackStackEntry,
+            factory = CreateRoutineViewModel.Factory,
             extras =
                 MutableCreationExtras().apply {
                     set(
-                        CreateTaskViewModel.DATA_REPOSITORY_KEY,
+                        CreateRoutineViewModel.DATA_REPOSITORY_KEY,
                         LocalAppContainer.current.repository,
                     )
                 },
-        ),
-    navController: NavController,
-) {
+        )
+
     val uiState by viewModel.uiState.collectAsState()
+    val task = uiState.task
     val timePickerState = rememberAdaptiveTimePickerState(is24Hour = true)
 
     Scaffold(
@@ -61,42 +65,36 @@ fun CreateTaskScreen(
                     .padding(start = 16.dp, top = 16.dp, end = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            RoutineNameField(
-                routineName = uiState.taskName,
+            TaskNameField(
+                taskName = task.name,
                 onNameChange = viewModel::updateTaskName,
-                onErrorClear = viewModel::clearMessages,
-                isError = uiState.errorMessage != null,
+                onErrorClear = viewModel::clearTaskMessages,
+                isError = task.errorMessage != null,
             )
 
             DurationSelectionButton(
-                selectedTimeText = viewModel.getFormattedTime(),
-                onTimeClick = { viewModel.updateVisibilityTimePicker(true) },
+                selectedTimeText = viewModel.getTaskFormattedTime(),
+                onTimeClick = { viewModel.updateTaskVisibilityTimePicker(true) },
             )
 
-            if (uiState.showTimePicker) {
+            if (task.showTimePicker) {
                 TimePickerDialog(
                     timePickerState = timePickerState,
-                    onDone = { viewModel.setTime(timePickerState.hour, timePickerState.minute) },
-                    onDismiss = { viewModel.updateVisibilityTimePicker(false) },
+                    onDone = {
+                        viewModel.setTaskTime(timePickerState.hour, timePickerState.minute)
+                    },
+                    onDismiss = { viewModel.updateTaskVisibilityTimePicker(false) },
                 )
             }
 
-            uiState.errorMessage?.let { ErrorMessageCard(message = it) }
-            uiState.successMessage?.let { SuccessMessageCard(message = it) }
+            task.errorMessage?.let { ErrorMessageCard(message = it) }
+            task.successMessage?.let { SuccessMessageCard(message = it) }
 
             Spacer(modifier = Modifier.weight(1f))
 
             ActionButtons(
-                isLoading = uiState.isLoading,
-                onCreate = {
-                    viewModel.createTask { name, duration ->
-                        navController.previousBackStackEntry?.savedStateHandle?.apply {
-                            set("task_name", name)
-                            set("task_duration", duration)
-                        }
-                        navController.popBackStack()
-                    }
-                },
+                isLoading = task.isLoading,
+                onCreate = { viewModel.createTask { navController.popBackStack() } },
                 onDiscard = { navController.popBackStack() },
             )
         }
@@ -104,14 +102,14 @@ fun CreateTaskScreen(
 }
 
 @Composable
-private fun RoutineNameField(
-    routineName: String,
+private fun TaskNameField(
+    taskName: String,
     onNameChange: (String) -> Unit,
     onErrorClear: () -> Unit,
     isError: Boolean,
 ) {
     OutlinedTextField(
-        value = routineName,
+        value = taskName,
         onValueChange = {
             onNameChange(it)
             onErrorClear()

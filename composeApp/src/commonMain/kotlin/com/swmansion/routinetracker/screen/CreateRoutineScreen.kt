@@ -12,7 +12,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.MutableCreationExtras
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.currentBackStackEntryAsState
 import com.mohamedrejeb.calf.ui.timepicker.AdaptiveTimePicker
 import com.mohamedrejeb.calf.ui.timepicker.AdaptiveTimePickerState
 import com.mohamedrejeb.calf.ui.timepicker.rememberAdaptiveTimePickerState
@@ -45,18 +44,6 @@ fun CreateRoutineScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val timePickerState = rememberAdaptiveTimePickerState()
-
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    LaunchedEffect(navBackStackEntry) {
-        val handle = navBackStackEntry?.savedStateHandle ?: return@LaunchedEffect
-        val name: String? = handle.get("task_name")
-        if (name != null) {
-            val duration: Int? = handle.get("task_duration")
-            viewModel.addTask(name, duration)
-            handle.remove<String>("task_name")
-            handle.remove<Int>("task_duration")
-        }
-    }
 
     Scaffold(
         topBar = {
