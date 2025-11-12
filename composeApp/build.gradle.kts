@@ -30,6 +30,7 @@ kotlin {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
             implementation(libs.androidx.room.runtime)
+            implementation(libs.datastore)
         }
 
         iosMain.dependencies {
@@ -51,6 +52,7 @@ kotlin {
             implementation(libs.calf.ui)
             implementation(libs.kotlinx.datetime)
             implementation(libs.androidx.jetbrains.navigation.compose)
+            implementation(libs.coroutines)
         }
 
         commonTest.dependencies {
