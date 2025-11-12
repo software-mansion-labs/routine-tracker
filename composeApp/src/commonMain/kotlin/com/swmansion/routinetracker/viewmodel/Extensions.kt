@@ -7,8 +7,8 @@ internal fun <T> MutableStateFlow<T>.updateState(update: T.() -> T) {
     update { it.update() }
 }
 
-fun durationToString(duration: Int?): String? =
-    duration?.let { seconds ->
+fun durationToString(duration: Int): String =
+    duration.let { seconds ->
         val totalMinutes = seconds / 60
         val h = totalMinutes / 60
         val m = totalMinutes % 60

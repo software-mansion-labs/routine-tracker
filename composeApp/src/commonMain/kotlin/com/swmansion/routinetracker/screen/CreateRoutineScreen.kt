@@ -24,6 +24,7 @@ import com.swmansion.routinetracker.viewmodel.CreateRoutineViewModel
 import com.swmansion.routinetracker.viewmodel.durationToString
 import org.jetbrains.compose.resources.painterResource
 import routinetracker.composeapp.generated.resources.Res
+import routinetracker.composeapp.generated.resources.ic_add
 import routinetracker.composeapp.generated.resources.ic_back
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -79,9 +80,9 @@ fun CreateRoutineScreen(
                 ActionButtons(
                     isLoading = uiState.isLoading,
                     onCreate = {
-                        viewModel.createRoutine(onSuccess = { navController.popBackStack() })
+                        viewModel.createRoutine(onSuccess = (navController::popBackStack))
                     },
-                    onDiscard = { navController.popBackStack() },
+                    onDiscard = navController::popBackStack,
                 )
             }
         },
@@ -264,7 +265,7 @@ private fun TaskSection(tasks: List<Task>, navController: NavController) {
                         horizontalArrangement = Arrangement.SpaceBetween,
                     ) {
                         Text(task.name, style = MaterialTheme.typography.bodyLarge)
-                        Text(durationToString(task.duration) ?: "")
+                        Text(task.duration?.let(::durationToString) ?: "")
                     }
                 }
             }
@@ -272,7 +273,13 @@ private fun TaskSection(tasks: List<Task>, navController: NavController) {
                 onClick = { navController.navigate(CreateTask) },
                 modifier = Modifier.padding(16.dp).fillMaxWidth().height(48.dp),
             ) {
-                Text(text = "+ Add task", style = MaterialTheme.typography.bodyLarge)
+                Row {
+                    Icon(
+                        painter = painterResource(Res.drawable.ic_add),
+                        contentDescription = "Add task",
+                    )
+                    Text(text = "Add task", style = MaterialTheme.typography.bodyLarge)
+                }
             }
         }
     }

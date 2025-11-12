@@ -70,7 +70,7 @@ fun RoutinesScreen(
             ) {
                 items(items = uiState.routinesWithTasks, key = { it.routine.id }) { routineWithTasks
                     ->
-                    RoutineItem(routine = routineWithTasks)
+                    RoutineItem(routineWithTasks = routineWithTasks)
                 }
             }
         }
@@ -78,7 +78,7 @@ fun RoutinesScreen(
 }
 
 @Composable
-private fun RoutineItem(routine: RoutineWithTasks) {
+private fun RoutineItem(routineWithTasks: RoutineWithTasks) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
@@ -89,16 +89,19 @@ private fun RoutineItem(routine: RoutineWithTasks) {
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text(text = routine.routine.name, style = MaterialTheme.typography.titleMedium)
-                if (routine.routine.time != null) {
+                Text(
+                    text = routineWithTasks.routine.name,
+                    style = MaterialTheme.typography.titleMedium,
+                )
+                if (routineWithTasks.routine.time != null) {
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = routine.routine.time,
+                        text = routineWithTasks.routine.time,
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
-                routine.tasks.forEach { task ->
+                routineWithTasks.tasks.forEach { task ->
                     Surface(
                         tonalElevation = 1.dp,
                         modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
@@ -110,7 +113,7 @@ private fun RoutineItem(routine: RoutineWithTasks) {
                             horizontalArrangement = Arrangement.SpaceBetween,
                         ) {
                             Text(task.name, style = MaterialTheme.typography.bodyLarge)
-                            Text(durationToString(task.duration) ?: "")
+                            Text(task.duration?.let(::durationToString) ?: "")
                         }
                     }
                 }
