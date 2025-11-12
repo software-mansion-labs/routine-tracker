@@ -7,6 +7,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable object Routines
 
+@Serializable object Settings
+
 // Additional
 @Serializable object CreateRoutine
 
