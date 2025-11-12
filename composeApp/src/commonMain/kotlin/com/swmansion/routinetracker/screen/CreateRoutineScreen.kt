@@ -66,9 +66,7 @@ fun CreateRoutineScreen(
             ) {
                 ActionButtons(
                     isLoading = uiState.isLoading,
-                    onCreate = {
-                        viewModel.createRoutine(onSuccess = (navController::popBackStack))
-                    },
+                    onCreate = { viewModel.createRoutine(onSuccess = navController::popBackStack) },
                     onDiscard = navController::popBackStack,
                 )
             }
@@ -252,7 +250,7 @@ private fun TaskSection(tasks: List<Task>, navController: NavController) {
                         horizontalArrangement = Arrangement.SpaceBetween,
                     ) {
                         Text(task.name, style = MaterialTheme.typography.bodyLarge)
-                        Text(task.duration?.let(::durationToString) ?: "")
+                        Text(task.duration?.let(::durationToString).orEmpty())
                     }
                 }
             }

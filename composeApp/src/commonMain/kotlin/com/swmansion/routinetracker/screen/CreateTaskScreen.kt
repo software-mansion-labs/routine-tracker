@@ -22,10 +22,11 @@ import routinetracker.composeapp.generated.resources.ic_back
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateTaskScreen(navController: NavController) {
-    val routineBackStackEntry =
-        remember(navController) { navController.getBackStackEntry(CreateRoutine) }
-    val viewModel: CreateRoutineViewModel =
+fun CreateTaskScreen(
+    navController: NavController,
+    createViewModel: @Composable () -> CreateRoutineViewModel = {
+        val routineBackStackEntry =
+            remember(navController) { navController.getBackStackEntry(CreateRoutine) }
         viewModel(
             routineBackStackEntry,
             factory = CreateRoutineViewModel.Factory,
@@ -37,7 +38,9 @@ fun CreateTaskScreen(navController: NavController) {
                     )
                 },
         )
-
+    },
+    viewModel: CreateRoutineViewModel = createViewModel(),
+) {
     val uiState by viewModel.uiState.collectAsState()
     val task = uiState.task
     val timePickerState = rememberAdaptiveTimePickerState(is24Hour = true)
@@ -94,8 +97,8 @@ fun CreateTaskScreen(navController: NavController) {
 
             ActionButtons(
                 isLoading = task.isLoading,
-                onCreate = { viewModel.createTask { navController.popBackStack() } },
-                onDiscard = { navController.popBackStack() },
+                onCreate = { viewModel.createTask(navController::popBackStack) },
+                onDiscard = navController::popBackStack,
             )
         }
     }

@@ -115,13 +115,17 @@ class CreateRoutineViewModel(private val repository: DataRepository) : ViewModel
         if (_uiState.value.task.isTimeSet) {
             LocalTime(_uiState.value.task.selectedHour, _uiState.value.task.selectedMinute)
                 .toString()
-        } else null
+        } else {
+            null
+        }
 
     private fun getTaskTimeInSeconds(): Int? =
         if (_uiState.value.task.isTimeSet) {
             LocalTime(_uiState.value.task.selectedHour, _uiState.value.task.selectedMinute)
                 .toSecondOfDay()
-        } else null
+        } else {
+            null
+        }
 
     private fun resetTaskForm() {
         _uiState.updateState { copy(task = CreateTaskUiState()) }
@@ -189,9 +193,7 @@ class CreateRoutineViewModel(private val repository: DataRepository) : ViewModel
                     "Routine '${routine.name}' with ID: $routineId created successfully!"
                 )
 
-                for (task in uiState.value.tasks) {
-                    repository.addTaskToRoutine(routineId, task)
-                }
+                for (task in uiState.value.tasks) repository.addTaskToRoutine(routineId, task)
 
                 resetForm()
 

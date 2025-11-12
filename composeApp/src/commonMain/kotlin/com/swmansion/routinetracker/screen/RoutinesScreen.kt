@@ -113,7 +113,7 @@ private fun RoutineItem(routineWithTasks: RoutineWithTasks) {
                             horizontalArrangement = Arrangement.SpaceBetween,
                         ) {
                             Text(task.name, style = MaterialTheme.typography.bodyLarge)
-                            Text(task.duration?.let(::durationToString) ?: "")
+                            Text(task.duration?.let(::durationToString).orEmpty())
                         }
                     }
                 }
