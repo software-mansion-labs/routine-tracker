@@ -1,4 +1,7 @@
+import org.jetbrains.compose.ExperimentalComposeLibrary
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -50,7 +53,21 @@ kotlin {
             implementation(libs.androidx.jetbrains.navigation.compose)
         }
 
-        commonTest.dependencies { implementation(libs.kotlin.test) }
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(libs.kotlinx.coroutines.test)
+
+            @OptIn(ExperimentalComposeLibrary::class) implementation(compose.uiTest)
+        }
+
+        androidTarget {
+            @OptIn(ExperimentalKotlinGradlePluginApi::class)
+            instrumentedTestVariant.sourceSetTree.set(KotlinSourceSetTree.test)
+        }
+
+        androidInstrumentedTest.dependencies {
+            @OptIn(ExperimentalComposeLibrary::class) implementation(compose.uiTest)
+        }
     }
 }
 
@@ -64,6 +81,7 @@ android {
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     packaging { resources { excludes += "/META-INF/{AL2.0,LGPL2.1}" } }
     buildTypes { getByName("release") { isMinifyEnabled = false } }
@@ -74,6 +92,8 @@ android {
 }
 
 dependencies {
+    androidTestImplementation(libs.androidx.ui.test.junit4.android)
+    debugImplementation(libs.androidx.ui.test.manifest)
     debugImplementation(compose.uiTooling)
     add("kspAndroid", libs.androidx.room.compiler)
     add("kspIosSimulatorArm64", libs.androidx.room.compiler)
