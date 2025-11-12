@@ -1,7 +1,10 @@
-package com.swmansion.routinetracker.mock
+package com.swmansion.routinetracker.mock.di
 
 import com.swmansion.routinetracker.DataRepository
 import com.swmansion.routinetracker.di.AppContainer
+import com.swmansion.routinetracker.mock.database.MockRecurrenceDao
+import com.swmansion.routinetracker.mock.database.MockRoutineDao
+import com.swmansion.routinetracker.mock.database.MockTaskDao
 import com.swmansion.routinetracker.model.Routine
 import kotlinx.coroutines.flow.MutableStateFlow
 

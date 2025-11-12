@@ -1,9 +1,9 @@
 package com.swmansion.routinetracker.viewmodel
 
 import com.swmansion.routinetracker.DataRepository
-import com.swmansion.routinetracker.mock.MockRecurrenceDao
-import com.swmansion.routinetracker.mock.MockRoutineDao
-import com.swmansion.routinetracker.mock.MockTaskDao
+import com.swmansion.routinetracker.mock.database.MockRecurrenceDao
+import com.swmansion.routinetracker.mock.database.MockRoutineDao
+import com.swmansion.routinetracker.mock.database.MockTaskDao
 import com.swmansion.routinetracker.model.Routine
 import kotlin.test.Test
 import kotlin.test.assertEquals

@@ -1,4 +1,4 @@
-package com.swmansion.routinetracker.mock
+package com.swmansion.routinetracker.mock.database
 
 import com.swmansion.routinetracker.database.TaskDao
 import com.swmansion.routinetracker.model.Task
