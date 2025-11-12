@@ -57,8 +57,7 @@ kotlin {
             implementation(kotlin("test"))
             implementation(libs.kotlinx.coroutines.test)
 
-            @OptIn(ExperimentalComposeLibrary::class)
-            implementation(compose.uiTest)
+            @OptIn(ExperimentalComposeLibrary::class) implementation(compose.uiTest)
         }
 
         androidTarget {
@@ -67,8 +66,7 @@ kotlin {
         }
 
         androidInstrumentedTest.dependencies {
-            @OptIn(ExperimentalComposeLibrary::class)
-            implementation(compose.uiTest)
+            @OptIn(ExperimentalComposeLibrary::class) implementation(compose.uiTest)
         }
     }
 }

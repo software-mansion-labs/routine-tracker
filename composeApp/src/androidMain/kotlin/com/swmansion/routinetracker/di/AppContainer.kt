@@ -10,14 +10,17 @@ import kotlinx.coroutines.Dispatchers
 
 actual open class AppContainer {
     private val application: Any?
-    
+
     actual constructor() : this(null)
-    
+
     actual constructor(application: Any?) {
         this.application = application
     }
+
     private val database: RoutineDatabase by lazy {
-        val app = application as? Application ?: throw IllegalStateException("Application is required for AppContainer")
+        val app =
+            application as? Application
+                ?: throw IllegalStateException("Application is required for AppContainer")
         val dbFile = app.getDatabasePath(DB_FILE_NAME)
         Room.databaseBuilder<RoutineDatabase>(context = app, name = dbFile.absolutePath)
             .setDriver(BundledSQLiteDriver())

@@ -6,4 +6,3 @@ import androidx.lifecycle.ViewModelStoreOwner
 class MockViewModelStoreOwner : ViewModelStoreOwner {
     override val viewModelStore: ViewModelStore = ViewModelStore()
 }
-

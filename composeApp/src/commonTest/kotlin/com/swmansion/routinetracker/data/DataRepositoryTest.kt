@@ -7,13 +7,13 @@ import com.swmansion.routinetracker.mock.MockTaskDao
 import com.swmansion.routinetracker.model.DayOfWeek
 import com.swmansion.routinetracker.model.Routine
 import com.swmansion.routinetracker.model.RoutineRecurrence
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.runTest
 
 class DataRepositoryTest {
 
@@ -37,14 +37,19 @@ class DataRepositoryTest {
     fun createRoutineWithRecurrenceShouldInsertRoutineAndRecurrences() = runTest {
         val routine = Routine(name = "Evening Routine", time = "20:00")
         val routineId = 2L
-        val recurrences = listOf(
-            RoutineRecurrence(routineId = 0, dayOfWeek = DayOfWeek.MONDAY.value, intervalWeeks = 1),
-            RoutineRecurrence(
-                routineId = 0,
-                dayOfWeek = DayOfWeek.WEDNESDAY.value,
-                intervalWeeks = 1
+        val recurrences =
+            listOf(
+                RoutineRecurrence(
+                    routineId = 0,
+                    dayOfWeek = DayOfWeek.MONDAY.value,
+                    intervalWeeks = 1,
+                ),
+                RoutineRecurrence(
+                    routineId = 0,
+                    dayOfWeek = DayOfWeek.WEDNESDAY.value,
+                    intervalWeeks = 1,
+                ),
             )
-        )
         val mockRoutineDao = createMockRoutineDao(insertResult = routineId)
         val mockTaskDao = createMockTaskDao()
         val mockRecurrenceDao = createMockRecurrenceDao()
@@ -58,9 +63,7 @@ class DataRepositoryTest {
         assertTrue(mockRecurrenceDao.lastInsertedRecurrences.isNotEmpty())
         assertEquals(2, mockRecurrenceDao.lastInsertedRecurrences.size)
 
-        mockRecurrenceDao.lastInsertedRecurrences.forEach {
-            assertEquals(routineId, it.routineId)
-        }
+        mockRecurrenceDao.lastInsertedRecurrences.forEach { assertEquals(routineId, it.routineId) }
     }
 
     @Test
@@ -81,11 +84,12 @@ class DataRepositoryTest {
 
     @Test
     fun getAllRoutinesShouldReturnAllRoutinesFromDao() = runTest {
-        val routines = listOf(
-            Routine(id = 1L, name = "Routine 1", time = "08:00"),
-            Routine(id = 2L, name = "Routine 2", time = "12:00"),
-            Routine(id = 3L, name = "Routine 3")
-        )
+        val routines =
+            listOf(
+                Routine(id = 1L, name = "Routine 1", time = "08:00"),
+                Routine(id = 2L, name = "Routine 2", time = "12:00"),
+                Routine(id = 3L, name = "Routine 3"),
+            )
         val mockRoutineDao = createMockRoutineDao(routinesFlow = flowOf(routines))
         val mockTaskDao = createMockTaskDao()
         val mockRecurrenceDao = createMockRecurrenceDao()
@@ -119,7 +123,7 @@ class DataRepositoryTest {
 
     private fun createMockRoutineDao(
         insertResult: Long = 1L,
-        routinesFlow: Flow<List<Routine>> = flowOf(emptyList())
+        routinesFlow: Flow<List<Routine>> = flowOf(emptyList()),
     ): MockRoutineDao {
         return MockRoutineDao(insertResult, routinesFlow)
     }

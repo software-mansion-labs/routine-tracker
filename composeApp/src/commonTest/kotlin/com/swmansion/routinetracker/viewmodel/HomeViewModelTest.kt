@@ -8,10 +8,11 @@ import com.swmansion.routinetracker.model.Routine
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 
 class HomeViewModelTest {
@@ -24,17 +25,19 @@ class HomeViewModelTest {
         assertTrue(viewModel.uiState.value.routines.isEmpty())
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun uiStateShouldReflectRoutinesFromRepository() = runTest {
-        val routines = listOf(
-            Routine(id = 1L, name = "Morning Routine", time = "08:00"),
-            Routine(id = 2L, name = "Evening Routine", time = "20:00"),
-            Routine(id = 3L, name = "Workout Routine")
-        )
+        val routines =
+            listOf(
+                Routine(id = 1L, name = "Morning Routine", time = "08:00"),
+                Routine(id = 2L, name = "Evening Routine", time = "20:00"),
+                Routine(id = 3L, name = "Workout Routine"),
+            )
         val repository = createMockRepository(flowOf(routines))
         val viewModel = HomeViewModel(repository)
 
-        delay(100)
+        advanceUntilIdle()
 
         assertEquals(3, viewModel.uiState.value.routines.size)
         assertEquals("Morning Routine", viewModel.uiState.value.routines[0].name)
@@ -42,6 +45,7 @@ class HomeViewModelTest {
         assertEquals("Workout Routine", viewModel.uiState.value.routines[2].name)
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun uiStateShouldUpdateWhenRepositoryEmitsNewRoutines() = runTest {
         val stateFlow = MutableStateFlow<List<Routine>>(emptyList())
@@ -50,52 +54,54 @@ class HomeViewModelTest {
 
         assertTrue(viewModel.uiState.value.routines.isEmpty())
 
-        val routines = listOf(
-            Routine(id = 1L, name = "Routine 1"),
-            Routine(id = 2L, name = "Routine 2")
-        )
+        val routines =
+            listOf(Routine(id = 1L, name = "Routine 1"), Routine(id = 2L, name = "Routine 2"))
         stateFlow.value = routines
 
-        delay(100)
+        advanceUntilIdle()
 
         assertEquals(2, viewModel.uiState.value.routines.size)
         assertEquals("Routine 1", viewModel.uiState.value.routines[0].name)
         assertEquals("Routine 2", viewModel.uiState.value.routines[1].name)
 
-        val updatedRoutines = listOf(
-            Routine(id = 1L, name = "Routine 1"),
-            Routine(id = 2L, name = "Routine 2"),
-            Routine(id = 3L, name = "Routine 3")
-        )
+        val updatedRoutines =
+            listOf(
+                Routine(id = 1L, name = "Routine 1"),
+                Routine(id = 2L, name = "Routine 2"),
+                Routine(id = 3L, name = "Routine 3"),
+            )
         stateFlow.value = updatedRoutines
 
-        delay(100)
+        advanceUntilIdle()
 
         assertEquals(3, viewModel.uiState.value.routines.size)
         assertEquals("Routine 3", viewModel.uiState.value.routines[2].name)
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun uiStateShouldHandleEmptyListFromRepository() = runTest {
         val repository = createMockRepository(flowOf(emptyList()))
         val viewModel = HomeViewModel(repository)
 
-        delay(100)
+        advanceUntilIdle()
 
         assertTrue(viewModel.uiState.value.routines.isEmpty())
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun uiStateShouldMaintainRoutineOrderFromRepository() = runTest {
-        val routines = listOf(
-            Routine(id = 1L, name = "A Routine"),
-            Routine(id = 2L, name = "B Routine"),
-            Routine(id = 3L, name = "C Routine")
-        )
+        val routines =
+            listOf(
+                Routine(id = 1L, name = "A Routine"),
+                Routine(id = 2L, name = "B Routine"),
+                Routine(id = 3L, name = "C Routine"),
+            )
         val repository = createMockRepository(flowOf(routines))
         val viewModel = HomeViewModel(repository)
 
-        delay(100)
+        advanceUntilIdle()
 
         assertEquals(3, viewModel.uiState.value.routines.size)
 
@@ -104,9 +110,7 @@ class HomeViewModelTest {
         assertEquals("C Routine", viewModel.uiState.value.routines[2].name)
     }
 
-    private fun createMockRepository(
-        routinesFlow: Flow<List<Routine>>
-    ): DataRepository {
+    private fun createMockRepository(routinesFlow: Flow<List<Routine>>): DataRepository {
         val mockRoutineDao = MockRoutineDao(1L, routinesFlow)
         val mockTaskDao = MockTaskDao()
         val mockRecurrenceDao = MockRecurrenceDao()

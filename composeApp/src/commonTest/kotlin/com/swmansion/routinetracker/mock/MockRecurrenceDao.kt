@@ -17,7 +17,8 @@ class MockRecurrenceDao : RoutineRecurrenceDao {
         lastInsertedRecurrences = recurrences
     }
 
-    override suspend fun getRecurrencesForRoutine(routineId: Long): List<RoutineRecurrence> = emptyList()
+    override suspend fun getRecurrencesForRoutine(routineId: Long): List<RoutineRecurrence> =
+        emptyList()
 
     override suspend fun deleteRecurrencesForRoutine(routineId: Long) {}
 

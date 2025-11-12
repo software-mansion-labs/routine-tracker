@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.flowOf
 
 class MockRoutineDao(
     private val insertResult: Long,
-    private val routinesFlow: Flow<List<Routine>>
+    private val routinesFlow: Flow<List<Routine>>,
 ) : RoutineDao {
     var insertCallCount = 0
     var lastInsertedRoutine: Routine? = null
@@ -37,4 +37,3 @@ class MockRoutineDao(
 
     override suspend fun removeAll() {}
 }
-

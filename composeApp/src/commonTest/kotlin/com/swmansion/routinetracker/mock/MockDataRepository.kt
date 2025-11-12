@@ -11,7 +11,7 @@ class MockDataRepository(
     routineDao: RoutineDao,
     taskDao: TaskDao,
     recurrenceDao: RoutineRecurrenceDao,
-    private val shouldThrowError: Boolean = false
+    private val shouldThrowError: Boolean = false,
 ) : DataRepository(routineDao, taskDao, recurrenceDao) {
     var createRoutineWithRecurrenceCallCount = 0
     var lastRoutine: Routine? = null
@@ -19,7 +19,7 @@ class MockDataRepository(
 
     override suspend fun createRoutineWithRecurrence(
         routine: Routine,
-        recurrences: List<RoutineRecurrence>
+        recurrences: List<RoutineRecurrence>,
     ): Long {
         if (shouldThrowError) {
             throw Exception("Test error")
@@ -30,4 +30,3 @@ class MockDataRepository(
         return super.createRoutineWithRecurrence(routine, recurrences)
     }
 }
-

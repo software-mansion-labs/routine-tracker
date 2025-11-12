@@ -15,7 +15,9 @@ import platform.Foundation.NSUserDomainMask
 
 actual open class AppContainer {
     actual constructor()
+
     actual constructor(application: Any?) : this()
+
     private val database: RoutineDatabase by lazy {
         val dbFile = "${fileDirectory()}/$DB_FILE_NAME"
         Room.databaseBuilder<RoutineDatabase>(name = dbFile)

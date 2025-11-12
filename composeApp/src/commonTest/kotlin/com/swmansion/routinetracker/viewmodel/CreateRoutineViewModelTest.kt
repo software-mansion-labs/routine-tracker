@@ -12,8 +12,9 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 
 class CreateRoutineViewModelTest {
@@ -114,6 +115,7 @@ class CreateRoutineViewModelTest {
         assertFalse(onSuccessCalled)
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun createRoutineShouldCreateRoutineWithRecurrences() = runTest {
         val repository = createMockRepository(routineId = 2L)
@@ -125,7 +127,7 @@ class CreateRoutineViewModelTest {
 
         viewModel.createRoutine { onSuccessCalled = true }
 
-        delay(100)
+        advanceUntilIdle()
 
         assertTrue(onSuccessCalled)
         assertNotNull(viewModel.uiState.value.successMessage)
@@ -138,6 +140,7 @@ class CreateRoutineViewModelTest {
         assertEquals(2, mockRepository.lastRecurrences!!.size)
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun createRoutineShouldHandleErrorsGracefully() = runTest {
         val repository = createMockRepository(shouldThrowError = true)
@@ -147,7 +150,7 @@ class CreateRoutineViewModelTest {
 
         viewModel.createRoutine { onSuccessCalled = true }
 
-        delay(100)
+        advanceUntilIdle()
 
         assertFalse(onSuccessCalled)
         assertNotNull(viewModel.uiState.value.errorMessage)
@@ -170,7 +173,7 @@ class CreateRoutineViewModelTest {
 
     private fun createMockRepository(
         routineId: Long = 1L,
-        shouldThrowError: Boolean = false
+        shouldThrowError: Boolean = false,
     ): DataRepository {
         val mockRoutineDao = MockRoutineDao(routineId, flowOf(emptyList()))
         val mockTaskDao = MockTaskDao()
