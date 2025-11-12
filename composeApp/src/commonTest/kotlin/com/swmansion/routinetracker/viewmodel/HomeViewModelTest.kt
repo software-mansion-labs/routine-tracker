@@ -5,6 +5,7 @@ import com.swmansion.routinetracker.mock.database.MockRecurrenceDao
 import com.swmansion.routinetracker.mock.database.MockRoutineDao
 import com.swmansion.routinetracker.mock.database.MockTaskDao
 import com.swmansion.routinetracker.model.Routine
+import com.swmansion.routinetracker.utils.runTestWithMainDispatcher
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -13,12 +14,12 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.runTest
 
 class HomeViewModelTest {
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun uiStateShouldInitiallyBeEmpty() = runTest {
+    fun uiStateShouldInitiallyBeEmpty() = runTestWithMainDispatcher {
         val repository = createMockRepository(flowOf(emptyList()))
         val viewModel = HomeViewModel(repository)
 
@@ -27,7 +28,7 @@ class HomeViewModelTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun uiStateShouldReflectRoutinesFromRepository() = runTest {
+    fun uiStateShouldReflectRoutinesFromRepository() = runTestWithMainDispatcher {
         val routines =
             listOf(
                 Routine(id = 1L, name = "Morning Routine", time = "08:00"),
@@ -47,7 +48,7 @@ class HomeViewModelTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun uiStateShouldUpdateWhenRepositoryEmitsNewRoutines() = runTest {
+    fun uiStateShouldUpdateWhenRepositoryEmitsNewRoutines() = runTestWithMainDispatcher {
         val stateFlow = MutableStateFlow<List<Routine>>(emptyList())
         val repository = createMockRepository(stateFlow)
         val viewModel = HomeViewModel(repository)
@@ -80,7 +81,7 @@ class HomeViewModelTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun uiStateShouldHandleEmptyListFromRepository() = runTest {
+    fun uiStateShouldHandleEmptyListFromRepository() = runTestWithMainDispatcher {
         val repository = createMockRepository(flowOf(emptyList()))
         val viewModel = HomeViewModel(repository)
 
@@ -91,7 +92,7 @@ class HomeViewModelTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun uiStateShouldMaintainRoutineOrderFromRepository() = runTest {
+    fun uiStateShouldMaintainRoutineOrderFromRepository() = runTestWithMainDispatcher {
         val routines =
             listOf(
                 Routine(id = 1L, name = "A Routine"),

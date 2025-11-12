@@ -1,4 +1,4 @@
-package com.swmansion.routinetracker
+package com.swmansion.routinetracker.screen
 
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.ExperimentalTestApi
@@ -13,7 +13,6 @@ import com.swmansion.routinetracker.mock.MockViewModelStoreOwner
 import com.swmansion.routinetracker.mock.createMockNavController
 import com.swmansion.routinetracker.mock.di.MockAppContainer
 import com.swmansion.routinetracker.model.Routine
-import com.swmansion.routinetracker.screen.RoutinesScreen
 import kotlin.test.Test
 import kotlinx.coroutines.flow.MutableStateFlow
 

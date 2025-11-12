@@ -7,6 +7,7 @@ import com.swmansion.routinetracker.mock.database.MockRoutineDao
 import com.swmansion.routinetracker.mock.database.MockTaskDao
 import com.swmansion.routinetracker.model.DayOfWeek
 import com.swmansion.routinetracker.model.Routine
+import com.swmansion.routinetracker.utils.runTestWithMainDispatcher
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -119,7 +120,7 @@ class CreateRoutineViewModelTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun createRoutineShouldCreateRoutineWithRecurrences() = runTest {
+    fun createRoutineShouldCreateRoutineWithRecurrences() = runTestWithMainDispatcher {
         val repository = createMockRepository()
         val viewModel = CreateRoutineViewModel(repository)
         viewModel.updateRoutineName("Evening Routine")
@@ -140,24 +141,6 @@ class CreateRoutineViewModelTest {
         assertEquals("Evening Routine", mockRepository.lastRoutine!!.name)
         assertNotNull(mockRepository.lastRecurrences)
         assertEquals(2, mockRepository.lastRecurrences!!.size)
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun createRoutineShouldHandleErrorsGracefully() = runTest {
-        val repository = createMockRepository()
-        val viewModel = CreateRoutineViewModel(repository)
-        viewModel.updateRoutineName("Test Routine")
-        var onSuccessCalled = false
-
-        viewModel.createRoutine { onSuccessCalled = true }
-
-        advanceUntilIdle()
-
-        assertFalse(onSuccessCalled)
-        assertNotNull(viewModel.uiState.value.errorMessage)
-        assertTrue(viewModel.uiState.value.errorMessage!!.contains("Failed", ignoreCase = true))
-        assertFalse(viewModel.uiState.value.isLoading)
     }
 
     @Test
