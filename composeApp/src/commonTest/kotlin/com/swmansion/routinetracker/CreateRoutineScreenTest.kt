@@ -136,8 +136,7 @@ class CreateRoutineScreenTest {
     fun shouldNavigateBackWhenDiscardIsClicked() = runComposeUiTest {
         val testAppContainer = createTestAppContainer()
         val viewModelStoreOwner = MockViewModelStoreOwner()
-        // var backPressed = false
-        
+
         setContent {
             CompositionLocalProvider(
                 LocalViewModelStoreOwner provides viewModelStoreOwner,
