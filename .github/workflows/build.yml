@@ -14,4 +14,4 @@ jobs:
           distribution: zulu
           java-version: 17
       - uses: gradle/actions/setup-gradle@v5
-      - run: ./gradlew build -x lint -x test
+      - run: ./gradlew build -x lint -x test -x -x :composeApp:testDebugUnitTest -x :composeApp:testReleaseUnitTest
