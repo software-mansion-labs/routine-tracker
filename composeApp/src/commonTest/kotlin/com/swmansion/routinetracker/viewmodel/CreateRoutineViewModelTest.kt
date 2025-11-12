@@ -6,6 +6,7 @@ import com.swmansion.routinetracker.mock.database.MockRecurrenceDao
 import com.swmansion.routinetracker.mock.database.MockRoutineDao
 import com.swmansion.routinetracker.mock.database.MockTaskDao
 import com.swmansion.routinetracker.model.DayOfWeek
+import com.swmansion.routinetracker.model.Routine
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -13,6 +14,7 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -118,7 +120,7 @@ class CreateRoutineViewModelTest {
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun createRoutineShouldCreateRoutineWithRecurrences() = runTest {
-        val repository = createMockRepository(routineId = 2L)
+        val repository = createMockRepository()
         val viewModel = CreateRoutineViewModel(repository)
         viewModel.updateRoutineName("Evening Routine")
         viewModel.updateSelectedDaysOfWeek(setOf(DayOfWeek.TUESDAY, DayOfWeek.THURSDAY))
@@ -143,7 +145,7 @@ class CreateRoutineViewModelTest {
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun createRoutineShouldHandleErrorsGracefully() = runTest {
-        val repository = createMockRepository(shouldThrowError = true)
+        val repository = createMockRepository()
         val viewModel = CreateRoutineViewModel(repository)
         viewModel.updateRoutineName("Test Routine")
         var onSuccessCalled = false
@@ -172,12 +174,11 @@ class CreateRoutineViewModelTest {
     }
 
     private fun createMockRepository(
-        routineId: Long = 1L,
-        shouldThrowError: Boolean = false,
+        routinesFlow: Flow<List<Routine>> = flowOf(emptyList())
     ): DataRepository {
-        val mockRoutineDao = MockRoutineDao(routineId, flowOf(emptyList()))
+        val mockRoutineDao = MockRoutineDao(1L, routinesFlow)
         val mockTaskDao = MockTaskDao()
         val mockRecurrenceDao = MockRecurrenceDao()
-        return MockDataRepository(mockRoutineDao, mockTaskDao, mockRecurrenceDao, shouldThrowError)
+        return MockDataRepository(mockRoutineDao, mockTaskDao, mockRecurrenceDao)
     }
 }

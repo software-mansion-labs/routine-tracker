@@ -9,9 +9,9 @@ import androidx.compose.ui.test.runComposeUiTest
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import com.swmansion.routinetracker.di.AppContainer
 import com.swmansion.routinetracker.di.LocalAppContainer
-import com.swmansion.routinetracker.mock.di.MockAppContainer
 import com.swmansion.routinetracker.mock.MockViewModelStoreOwner
 import com.swmansion.routinetracker.mock.createMockNavController
+import com.swmansion.routinetracker.mock.di.MockAppContainer
 import com.swmansion.routinetracker.model.Routine
 import com.swmansion.routinetracker.screen.RoutinesScreen
 import kotlin.test.Test

@@ -9,9 +9,9 @@ import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.runComposeUiTest
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import com.swmansion.routinetracker.di.LocalAppContainer
-import com.swmansion.routinetracker.mock.di.MockAppContainer
 import com.swmansion.routinetracker.mock.MockViewModelStoreOwner
 import com.swmansion.routinetracker.mock.createMockNavController
+import com.swmansion.routinetracker.mock.di.MockAppContainer
 import com.swmansion.routinetracker.model.Routine
 import com.swmansion.routinetracker.screen.CreateRoutineScreen
 import kotlin.test.Test
@@ -75,6 +75,7 @@ class CreateRoutineScreenTest {
         }
 
         onNodeWithText("Create").performClick()
+        onNodeWithText("Routine name is required").assertIsDisplayed()
     }
 
     @Test
@@ -95,6 +96,17 @@ class CreateRoutineScreenTest {
 
         onNodeWithText("Routine Name").performTextInput(routineName)
         onNodeWithText("Create").performClick()
+
+        waitUntil(timeoutMillis = 5000) {
+            try {
+                onNodeWithText("created successfully", substring = true).assertExists()
+                true
+            } catch (_: AssertionError) {
+                false
+            }
+        }
+
+        onNodeWithText("created successfully", substring = true).assertIsDisplayed()
     }
 
     @Test
