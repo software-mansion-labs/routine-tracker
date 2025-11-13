@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import com.swmansion.routinetracker.DataRepository
 import com.swmansion.routinetracker.IDataRepository
 import com.swmansion.routinetracker.model.DayOfWeek
 import com.swmansion.routinetracker.model.Routine

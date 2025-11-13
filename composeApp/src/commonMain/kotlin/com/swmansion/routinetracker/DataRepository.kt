@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface IDataRepository {
     fun getAllRoutinesWithTasks(): Flow<List<RoutineWithTasks>>
+
     suspend fun createRoutineWithRecurrence(
         routine: Routine,
         recurrences: List<RoutineRecurrence>,
