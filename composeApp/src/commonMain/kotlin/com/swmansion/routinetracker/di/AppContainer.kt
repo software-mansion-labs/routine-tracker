@@ -1,11 +1,11 @@
 package com.swmansion.routinetracker.di
 
-import com.swmansion.routinetracker.DataRepository
+import com.swmansion.routinetracker.IDataRepository
 
-expect open class AppContainer {
-    open val repository: DataRepository
+interface IAppContainer {
+    val repository: IDataRepository
+}
 
-    constructor()
-
-    constructor(application: Any?)
+expect class AppContainer : IAppContainer {
+    override val repository: IDataRepository
 }

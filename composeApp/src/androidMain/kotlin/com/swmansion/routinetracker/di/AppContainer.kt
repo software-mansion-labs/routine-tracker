@@ -4,18 +4,12 @@ import android.app.Application
 import androidx.room.Room
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.swmansion.routinetracker.DataRepository
+import com.swmansion.routinetracker.IDataRepository
 import com.swmansion.routinetracker.database.DB_FILE_NAME
 import com.swmansion.routinetracker.database.RoutineDatabase
 import kotlinx.coroutines.Dispatchers
 
-actual open class AppContainer {
-    private val application: Any?
-
-    actual constructor() : this(null)
-
-    actual constructor(application: Any?) {
-        this.application = application
-    }
+actual class AppContainer(private val application: Any?) : IAppContainer {
 
     private val database: RoutineDatabase by lazy {
         val app =
@@ -28,7 +22,7 @@ actual open class AppContainer {
             .build()
     }
 
-    actual open val repository: DataRepository by lazy {
+    actual override val repository: IDataRepository by lazy {
         DataRepository(
             routineDao = database.routineDao(),
             taskDao = database.taskDao(),

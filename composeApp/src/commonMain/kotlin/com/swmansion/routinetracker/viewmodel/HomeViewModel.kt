@@ -7,12 +7,13 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.swmansion.routinetracker.DataRepository
+import com.swmansion.routinetracker.IDataRepository
 import com.swmansion.routinetracker.model.RoutineWithTasks
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
-class HomeViewModel(repository: DataRepository) : ViewModel() {
+class HomeViewModel(repository: IDataRepository) : ViewModel() {
     val uiState: StateFlow<HomeUiState> =
         repository
             .getAllRoutinesWithTasks()
@@ -24,7 +25,7 @@ class HomeViewModel(repository: DataRepository) : ViewModel() {
             )
 
     companion object {
-        val DATA_REPOSITORY_KEY = object : CreationExtras.Key<DataRepository> {}
+        val DATA_REPOSITORY_KEY = object : CreationExtras.Key<IDataRepository> {}
         var Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 val dataRepository =

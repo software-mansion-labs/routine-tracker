@@ -5,22 +5,34 @@ import com.swmansion.routinetracker.database.RoutineRecurrenceDao
 import com.swmansion.routinetracker.database.TaskDao
 import com.swmansion.routinetracker.model.Routine
 import com.swmansion.routinetracker.model.RoutineRecurrence
+import com.swmansion.routinetracker.model.RoutineWithTasks
 import com.swmansion.routinetracker.model.Task
+import kotlinx.coroutines.flow.Flow
 
-open class DataRepository(
+interface IDataRepository {
+    fun getAllRoutinesWithTasks(): Flow<List<RoutineWithTasks>>
+    suspend fun createRoutineWithRecurrence(
+        routine: Routine,
+        recurrences: List<RoutineRecurrence>,
+    ): Long
+
+    suspend fun addTaskToRoutine(routineId: Long, task: Task): Long
+}
+
+class DataRepository(
     private val routineDao: RoutineDao,
     private val taskDao: TaskDao,
     private val routineRecurrenceDao: RoutineRecurrenceDao,
-) {
+) : IDataRepository {
     fun getAllRoutines() = routineDao.getAllRoutines()
 
-    fun getAllRoutinesWithTasks() = routineDao.getAllRoutinesWithTasks()
+    override fun getAllRoutinesWithTasks() = routineDao.getAllRoutinesWithTasks()
 
     fun getRoutineWithTasks(id: Long) = routineDao.getRoutineWithTasksById(id)
 
     suspend fun createRoutine(routine: Routine) = routineDao.insertRoutine(routine)
 
-    open suspend fun createRoutineWithRecurrence(
+    override suspend fun createRoutineWithRecurrence(
         routine: Routine,
         recurrences: List<RoutineRecurrence>,
     ): Long {
@@ -43,7 +55,7 @@ open class DataRepository(
 
     suspend fun deleteRoutine(routine: Routine) = routineDao.deleteRoutine(routine)
 
-    suspend fun addTaskToRoutine(routineId: Long, task: Task) =
+    override suspend fun addTaskToRoutine(routineId: Long, task: Task) =
         taskDao.insertTask(task.copy(routineId = routineId))
 
     suspend fun updateTask(task: Task) = taskDao.updateTask(task)

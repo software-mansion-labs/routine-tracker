@@ -7,6 +7,7 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.swmansion.routinetracker.DataRepository
+import com.swmansion.routinetracker.IDataRepository
 import com.swmansion.routinetracker.model.DayOfWeek
 import com.swmansion.routinetracker.model.Routine
 import com.swmansion.routinetracker.model.RoutineRecurrence
@@ -18,7 +19,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalTime
 
-class CreateRoutineViewModel(private val repository: DataRepository) : ViewModel() {
+class CreateRoutineViewModel(private val repository: IDataRepository) : ViewModel() {
     private val _uiState = MutableStateFlow(CreateRoutineUiState())
     val uiState: StateFlow<CreateRoutineUiState> = _uiState.asStateFlow()
 
@@ -219,7 +220,7 @@ class CreateRoutineViewModel(private val repository: DataRepository) : ViewModel
     }
 
     companion object {
-        val DATA_REPOSITORY_KEY = object : CreationExtras.Key<DataRepository> {}
+        val DATA_REPOSITORY_KEY = object : CreationExtras.Key<IDataRepository> {}
         var Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 val dataRepository =
