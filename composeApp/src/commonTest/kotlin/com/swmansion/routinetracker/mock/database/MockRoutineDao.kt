@@ -4,6 +4,7 @@ import com.swmansion.routinetracker.database.RoutineDao
 import com.swmansion.routinetracker.model.Routine
 import com.swmansion.routinetracker.model.RoutineWithTasks
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.flowOf
 
 class MockRoutineDao(
@@ -17,9 +18,21 @@ class MockRoutineDao(
 
     override suspend fun getRoutineById(id: Long): Routine? = null
 
-    override fun getAllRoutinesWithTasks(): Flow<List<RoutineWithTasks>> = flowOf(emptyList())
+    override fun getAllRoutinesWithTasks(): Flow<List<RoutineWithTasks>> {
+        return routinesFlow.map { routines ->
+            routines.map { routine ->
+                RoutineWithTasks(routine = routine, tasks = emptyList())
+            }
+        }
+    }
 
-    override fun getRoutineWithTasksById(id: Long): Flow<RoutineWithTasks?> = flowOf(null)
+    override fun getRoutineWithTasksById(id: Long): Flow<RoutineWithTasks?> {
+        return routinesFlow.map { routines ->
+            routines.firstOrNull { it.id == id }?.let { routine ->
+                RoutineWithTasks(routine = routine, tasks = emptyList())
+            }
+        }
+    }
 
     override suspend fun insertRoutine(routine: Routine): Long {
         insertCallCount++
