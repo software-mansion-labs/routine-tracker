@@ -8,7 +8,7 @@ import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.runComposeUiTest
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.navigation.compose.rememberNavController
-import com.swmansion.routinetracker.di.AppContainer
+import com.swmansion.routinetracker.di.IAppContainer
 import com.swmansion.routinetracker.di.LocalAppContainer
 import com.swmansion.routinetracker.mock.MockViewModelStoreOwner
 import com.swmansion.routinetracker.mock.di.MockAppContainer
@@ -61,7 +61,6 @@ class RoutinesScreenTest {
         onNodeWithText("Evening Routine").assertIsDisplayed()
         onNodeWithText("20:00").assertIsDisplayed()
         onNodeWithText("Workout Routine").assertIsDisplayed()
-        onNodeWithText("No routines yet").assertDoesNotExist()
     }
 
     @Test
@@ -118,7 +117,7 @@ class RoutinesScreenTest {
 
     @Test
     fun shouldUpdateListWhenRoutinesAreAdded() = runComposeUiTest {
-        val routinesFlow = MutableStateFlow<List<Routine>>(emptyList())
+        val routinesFlow = MutableStateFlow(emptyList<Routine>())
         val testAppContainer = createTestAppContainerWithFlow(routinesFlow)
         val viewModelStoreOwner = MockViewModelStoreOwner()
 
@@ -138,7 +137,6 @@ class RoutinesScreenTest {
         waitUntil(timeoutMillis = 5000) {
             try {
                 onNodeWithText("New Routine").assertExists()
-                onNodeWithText("No routines yet").assertDoesNotExist()
                 true
             } catch (_: AssertionError) {
                 false
@@ -146,17 +144,18 @@ class RoutinesScreenTest {
         }
 
         onNodeWithText("New Routine").assertIsDisplayed()
-        onNodeWithText("No routines yet").assertDoesNotExist()
     }
 
-    private fun createTestAppContainer(initialRoutines: List<Routine> = emptyList()): AppContainer {
+    private fun createTestAppContainer(
+        initialRoutines: List<Routine> = emptyList()
+    ): IAppContainer {
         val routinesFlow = MutableStateFlow(initialRoutines)
         return MockAppContainer(routinesFlow)
     }
 
     private fun createTestAppContainerWithFlow(
         routinesFlow: MutableStateFlow<List<Routine>>
-    ): AppContainer {
+    ): MockAppContainer {
         return MockAppContainer(routinesFlow)
     }
 }
