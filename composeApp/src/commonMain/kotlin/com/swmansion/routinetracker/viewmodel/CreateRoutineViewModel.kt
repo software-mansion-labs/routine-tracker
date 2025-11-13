@@ -10,6 +10,7 @@ import com.swmansion.routinetracker.DataRepository
 import com.swmansion.routinetracker.model.DayOfWeek
 import com.swmansion.routinetracker.model.Routine
 import com.swmansion.routinetracker.model.RoutineRecurrence
+import com.swmansion.routinetracker.model.Task
 import kotlin.collections.emptySet
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -72,6 +73,97 @@ class CreateRoutineViewModel(private val repository: DataRepository) : ViewModel
             null
         }
 
+    fun updateTaskName(name: String) {
+        _uiState.updateState { copy(task = task.copy(name = name)) }
+    }
+
+    fun updateTaskVisibilityTimePicker(visible: Boolean) {
+        _uiState.updateState { copy(task = task.copy(showTimePicker = visible)) }
+    }
+
+    private fun updateTaskLoading(isLoading: Boolean) {
+        _uiState.updateState { copy(task = task.copy(isLoading = isLoading)) }
+    }
+
+    private fun updateTaskErrorMessage(message: String?) {
+        _uiState.updateState { copy(task = task.copy(errorMessage = message)) }
+    }
+
+    private fun updateTaskSuccessMessage(message: String?) {
+        _uiState.updateState { copy(task = task.copy(successMessage = message)) }
+    }
+
+    fun setTaskTime(hour: Int, minute: Int) {
+        _uiState.updateState {
+            copy(
+                task =
+                    task.copy(
+                        selectedHour = hour,
+                        selectedMinute = minute,
+                        isTimeSet = true,
+                        showTimePicker = false,
+                    )
+            )
+        }
+    }
+
+    fun clearTaskMessages() {
+        _uiState.updateState { copy(task = task.copy(errorMessage = null, successMessage = null)) }
+    }
+
+    fun getTaskFormattedTime(): String? =
+        if (_uiState.value.task.isTimeSet) {
+            LocalTime(_uiState.value.task.selectedHour, _uiState.value.task.selectedMinute)
+                .toString()
+        } else {
+            null
+        }
+
+    private fun getTaskTimeInSeconds(): Int? =
+        if (_uiState.value.task.isTimeSet) {
+            LocalTime(_uiState.value.task.selectedHour, _uiState.value.task.selectedMinute)
+                .toSecondOfDay()
+        } else {
+            null
+        }
+
+    private fun resetTaskForm() {
+        _uiState.updateState { copy(task = CreateTaskUiState()) }
+    }
+
+    fun createTask(onSuccess: () -> Unit) {
+        val form = _uiState.value.task
+        if (form.name.isBlank()) {
+            updateTaskErrorMessage("Task name is required")
+            return
+        }
+
+        updateTaskLoading(true)
+        updateTaskErrorMessage(null)
+        updateTaskSuccessMessage(null)
+
+        viewModelScope.launch {
+            try {
+                val duration = getTaskTimeInSeconds()
+                val name = form.name.trim()
+                addTask(name, duration)
+                updateTaskSuccessMessage("Task '$name' prepared")
+                resetTaskForm()
+                onSuccess()
+            } catch (e: Exception) {
+                updateTaskErrorMessage("Failed to create task: ${e.message}")
+            } finally {
+                updateTaskLoading(false)
+            }
+        }
+    }
+
+    fun addTask(name: String, durationSeconds: Int?) {
+        val order = _uiState.value.tasks.size
+        val newTask = Task(routineId = -1, name = name, duration = durationSeconds, order = order)
+        _uiState.updateState { copy(tasks = tasks + newTask) }
+    }
+
     fun createRoutine(onSuccess: () -> Unit) {
         if (_uiState.value.routineName.isBlank()) {
             updateErrorMessage("Routine name is required")
@@ -101,6 +193,8 @@ class CreateRoutineViewModel(private val repository: DataRepository) : ViewModel
                     "Routine '${routine.name}' with ID: $routineId created successfully!"
                 )
 
+                for (task in uiState.value.tasks) repository.addTaskToRoutine(routineId, task)
+
                 resetForm()
 
                 onSuccess()
@@ -119,6 +213,7 @@ class CreateRoutineViewModel(private val repository: DataRepository) : ViewModel
                 isTimeSet = false,
                 selectedDaysOfWeek = emptySet(),
                 intervalWeeks = 0f,
+                tasks = emptyList(),
             )
         }
     }
@@ -143,6 +238,19 @@ data class CreateRoutineUiState(
     val showTimePicker: Boolean = false,
     val selectedDaysOfWeek: Set<DayOfWeek> = emptySet(),
     val intervalWeeks: Float = 0f,
+    val selectedHour: Int = 0,
+    val selectedMinute: Int = 0,
+    val isLoading: Boolean = false,
+    val errorMessage: String? = null,
+    val successMessage: String? = null,
+    val tasks: List<Task> = emptyList(),
+    val task: CreateTaskUiState = CreateTaskUiState(),
+)
+
+data class CreateTaskUiState(
+    val name: String = "",
+    val isTimeSet: Boolean = false,
+    val showTimePicker: Boolean = false,
     val selectedHour: Int = 0,
     val selectedMinute: Int = 0,
     val isLoading: Boolean = false,

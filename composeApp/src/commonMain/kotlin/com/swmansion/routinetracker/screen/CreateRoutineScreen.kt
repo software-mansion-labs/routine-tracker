@@ -1,6 +1,8 @@
 package com.swmansion.routinetracker.screen
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.collectAsState
@@ -15,9 +17,13 @@ import com.mohamedrejeb.calf.ui.timepicker.AdaptiveTimePickerState
 import com.mohamedrejeb.calf.ui.timepicker.rememberAdaptiveTimePickerState
 import com.swmansion.routinetracker.di.LocalAppContainer
 import com.swmansion.routinetracker.model.DayOfWeek
+import com.swmansion.routinetracker.model.Task
+import com.swmansion.routinetracker.navigation.CreateTask
 import com.swmansion.routinetracker.viewmodel.CreateRoutineViewModel
+import com.swmansion.routinetracker.viewmodel.durationToString
 import org.jetbrains.compose.resources.painterResource
 import routinetracker.composeapp.generated.resources.Res
+import routinetracker.composeapp.generated.resources.ic_add
 import routinetracker.composeapp.generated.resources.ic_back
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -53,13 +59,25 @@ fun CreateRoutineScreen(
                     }
                 },
             )
-        }
+        },
+        bottomBar = {
+            Column(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp)
+            ) {
+                ActionButtons(
+                    isLoading = uiState.isLoading,
+                    onCreate = { viewModel.createRoutine(onSuccess = navController::popBackStack) },
+                    onDiscard = navController::popBackStack,
+                )
+            }
+        },
     ) { paddingValues ->
         Column(
             modifier =
                 Modifier.fillMaxSize()
                     .padding(paddingValues)
-                    .padding(start = 16.dp, top = 16.dp, end = 16.dp),
+                    .padding(start = 16.dp, top = 16.dp, end = 16.dp)
+                    .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             RoutineNameField(
@@ -91,16 +109,12 @@ fun CreateRoutineScreen(
                 onIntervalChange = viewModel::updateIntervalWeeks,
             )
 
+            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), thickness = 1.dp)
+
+            TaskSection(uiState.tasks, navController)
+
             uiState.errorMessage?.let { ErrorMessageCard(message = it) }
             uiState.successMessage?.let { SuccessMessageCard(message = it) }
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            ActionButtons(
-                isLoading = uiState.isLoading,
-                onCreate = { viewModel.createRoutine(onSuccess = navController::popBackStack) },
-                onDiscard = navController::popBackStack,
-            )
         }
     }
 }
@@ -210,6 +224,49 @@ private fun IntervalWeeksSelector(intervalWeeks: Float, onIntervalChange: (Float
             valueRange = 0f..4f,
             steps = 3,
         )
+    }
+}
+
+@Composable
+private fun TaskSection(tasks: List<Task>, navController: NavController) {
+    Surface(
+        color = MaterialTheme.colorScheme.primaryContainer,
+        shape = MaterialTheme.shapes.medium,
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Column {
+            Text(text = "Tasks: ${tasks.size}", modifier = Modifier.padding(16.dp))
+            tasks.forEach { task ->
+                Surface(
+                    tonalElevation = 1.dp,
+                    modifier =
+                        Modifier.fillMaxWidth()
+                            .padding(start = 12.dp, end = 12.dp, top = 0.dp, bottom = 12.dp),
+                    shape = MaterialTheme.shapes.medium,
+                ) {
+                    Row(
+                        Modifier.fillMaxWidth().padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                    ) {
+                        Text(task.name, style = MaterialTheme.typography.bodyLarge)
+                        Text(task.duration?.let(::durationToString).orEmpty())
+                    }
+                }
+            }
+            Button(
+                onClick = { navController.navigate(CreateTask) },
+                modifier = Modifier.padding(16.dp).fillMaxWidth().height(48.dp),
+            ) {
+                Row {
+                    Icon(
+                        painter = painterResource(Res.drawable.ic_add),
+                        contentDescription = "Add task",
+                    )
+                    Text(text = "Add task", style = MaterialTheme.typography.bodyLarge)
+                }
+            }
+        }
     }
 }
 

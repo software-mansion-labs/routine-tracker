@@ -55,4 +55,6 @@ class DataRepository(
         taskDao.removeAll()
         routineRecurrenceDao.removeAll()
     }
+
+    suspend fun getTasksForRoutine(routineId: Long) = taskDao.getTasksForRoutine(routineId)
 }

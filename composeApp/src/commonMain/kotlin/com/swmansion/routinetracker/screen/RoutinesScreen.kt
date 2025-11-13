@@ -13,9 +13,10 @@ import androidx.lifecycle.viewmodel.MutableCreationExtras
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.swmansion.routinetracker.di.LocalAppContainer
-import com.swmansion.routinetracker.model.Routine
+import com.swmansion.routinetracker.model.RoutineWithTasks
 import com.swmansion.routinetracker.navigation.CreateRoutine
 import com.swmansion.routinetracker.viewmodel.HomeViewModel
+import com.swmansion.routinetracker.viewmodel.durationToString
 import org.jetbrains.compose.resources.painterResource
 import routinetracker.composeapp.generated.resources.Res
 import routinetracker.composeapp.generated.resources.ic_add
@@ -50,7 +51,7 @@ fun RoutinesScreen(
         },
         contentWindowInsets = WindowInsets(0.dp),
     ) { paddingValues ->
-        if (uiState.routines.isEmpty()) {
+        if (uiState.routinesWithTasks.isEmpty()) {
             Box(
                 modifier = Modifier.fillMaxSize().padding(paddingValues),
                 contentAlignment = Alignment.Center,
@@ -67,8 +68,9 @@ fun RoutinesScreen(
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                items(items = uiState.routines, key = Routine::id) { routine ->
-                    RoutineItem(routine = routine)
+                items(items = uiState.routinesWithTasks, key = { it.routine.id }) { routineWithTasks
+                    ->
+                    RoutineItem(routineWithTasks = routineWithTasks)
                 }
             }
         }
@@ -76,7 +78,7 @@ fun RoutinesScreen(
 }
 
 @Composable
-private fun RoutineItem(routine: Routine) {
+private fun RoutineItem(routineWithTasks: RoutineWithTasks) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
@@ -87,14 +89,33 @@ private fun RoutineItem(routine: Routine) {
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text(text = routine.name, style = MaterialTheme.typography.titleMedium)
-                if (routine.time != null) {
+                Text(
+                    text = routineWithTasks.routine.name,
+                    style = MaterialTheme.typography.titleMedium,
+                )
+                if (routineWithTasks.routine.time != null) {
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = routine.time,
+                        text = routineWithTasks.routine.time,
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
+                }
+                routineWithTasks.tasks.forEach { task ->
+                    Surface(
+                        tonalElevation = 1.dp,
+                        modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
+                        shape = MaterialTheme.shapes.medium,
+                    ) {
+                        Row(
+                            Modifier.fillMaxWidth().padding(16.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                        ) {
+                            Text(task.name, style = MaterialTheme.typography.bodyLarge)
+                            Text(task.duration?.let(::durationToString).orEmpty())
+                        }
+                    }
                 }
             }
         }

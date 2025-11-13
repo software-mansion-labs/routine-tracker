@@ -9,3 +9,5 @@ import kotlinx.serialization.Serializable
 
 // Additional
 @Serializable object CreateRoutine
+
+@Serializable object CreateTask
