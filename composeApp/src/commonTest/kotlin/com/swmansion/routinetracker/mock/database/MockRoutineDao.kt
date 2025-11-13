@@ -5,7 +5,6 @@ import com.swmansion.routinetracker.model.Routine
 import com.swmansion.routinetracker.model.RoutineWithTasks
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.flowOf
 
 class MockRoutineDao(
     private val insertResult: Long,
@@ -20,17 +19,15 @@ class MockRoutineDao(
 
     override fun getAllRoutinesWithTasks(): Flow<List<RoutineWithTasks>> {
         return routinesFlow.map { routines ->
-            routines.map { routine ->
-                RoutineWithTasks(routine = routine, tasks = emptyList())
-            }
+            routines.map { routine -> RoutineWithTasks(routine = routine, tasks = emptyList()) }
         }
     }
 
     override fun getRoutineWithTasksById(id: Long): Flow<RoutineWithTasks?> {
         return routinesFlow.map { routines ->
-            routines.firstOrNull { it.id == id }?.let { routine ->
-                RoutineWithTasks(routine = routine, tasks = emptyList())
-            }
+            routines
+                .firstOrNull { it.id == id }
+                ?.let { routine -> RoutineWithTasks(routine = routine, tasks = emptyList()) }
         }
     }
 
