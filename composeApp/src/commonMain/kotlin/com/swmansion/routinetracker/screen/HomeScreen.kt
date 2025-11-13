@@ -6,6 +6,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -14,9 +15,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.swmansion.routinetracker.navigation.Routines
+import com.swmansion.routinetracker.navigation.Settings
 import org.jetbrains.compose.resources.painterResource
 import routinetracker.composeapp.generated.resources.Res
 import routinetracker.composeapp.generated.resources.ic_routine
+import routinetracker.composeapp.generated.resources.ic_settings
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -36,11 +39,20 @@ fun HomeScreen(navController: NavController) {
                         )
                     },
                     label = { Text("Routines") },
-                    selected =
-                        currentBackStackEntry?.destination?.hierarchy?.any {
-                            it.hasRoute(Routines::class)
-                        } == true,
+                    selected = currentBackStackEntry.isSelected(Routines::class),
                     onClick = { homeNavController.navigate(Routines) },
+                )
+                NavigationBarItem(
+                    icon = {
+                        Icon(
+                            painter = painterResource(Res.drawable.ic_settings),
+                            contentDescription = "Settings",
+                            modifier = Modifier.size(24.dp),
+                        )
+                    },
+                    label = { Text("Settings") },
+                    selected = currentBackStackEntry.isSelected(Settings::class),
+                    onClick = { homeNavController.navigate(Settings) },
                 )
             }
         },
@@ -52,6 +64,10 @@ fun HomeScreen(navController: NavController) {
             modifier = Modifier.fillMaxSize().padding(paddingValues),
         ) {
             composable<Routines> { RoutinesScreen(navController = navController) }
+            composable<Settings> { SettingsScreen() }
         }
     }
 }
+
+private fun NavBackStackEntry?.isSelected(routeClass: kotlin.reflect.KClass<*>): Boolean =
+    this?.destination?.hierarchy?.any { it.hasRoute(routeClass) } == true
