@@ -6,6 +6,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -38,10 +39,7 @@ fun HomeScreen(navController: NavController) {
                         )
                     },
                     label = { Text("Routines") },
-                    selected =
-                        currentBackStackEntry?.destination?.hierarchy?.any {
-                            it.hasRoute(Routines::class)
-                        } == true,
+                    selected = currentBackStackEntry.isSelected(Routines::class),
                     onClick = { homeNavController.navigate(Routines) },
                 )
                 NavigationBarItem(
@@ -53,10 +51,7 @@ fun HomeScreen(navController: NavController) {
                         )
                     },
                     label = { Text("Settings") },
-                    selected =
-                        currentBackStackEntry?.destination?.hierarchy?.any {
-                            it.hasRoute(Settings::class)
-                        } == true,
+                    selected = currentBackStackEntry.isSelected(Settings::class),
                     onClick = { homeNavController.navigate(Settings) },
                 )
             }
@@ -73,3 +68,6 @@ fun HomeScreen(navController: NavController) {
         }
     }
 }
+
+private fun NavBackStackEntry?.isSelected(routeClass: kotlin.reflect.KClass<*>): Boolean =
+    this?.destination?.hierarchy?.any { it.hasRoute(routeClass) } == true
