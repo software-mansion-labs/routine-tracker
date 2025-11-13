@@ -20,7 +20,7 @@ class CreateTaskViewModel(private val repository: DataRepository) : ViewModel() 
     val uiState: StateFlow<CreateTaskUiState> = _uiState.asStateFlow()
 
     fun updateTaskName(name: String) {
-        _uiState.updateState { copy(taskName = name) }
+        _uiState.updateState { copy(name = name) }
     }
 
     fun updateVisibilityTimePicker(visibility: Boolean) {
@@ -71,7 +71,7 @@ class CreateTaskViewModel(private val repository: DataRepository) : ViewModel() 
         }
 
     fun createTask(onSuccess: (name: String, durationSeconds: Int?) -> Unit) {
-        if (_uiState.value.taskName.isBlank()) {
+        if (_uiState.value.name.isBlank()) {
             updateErrorMessage("Task name is required")
             return
         }
@@ -86,7 +86,7 @@ class CreateTaskViewModel(private val repository: DataRepository) : ViewModel() 
                 val taskPreview =
                     Task(
                         routineId = -1,
-                        name = _uiState.value.taskName.trim(),
+                        name = _uiState.value.name.trim(),
                         duration = durationSeconds,
                         order = 0,
                     )
@@ -104,7 +104,7 @@ class CreateTaskViewModel(private val repository: DataRepository) : ViewModel() 
     }
 
     private fun resetForm() {
-        _uiState.updateState { copy(taskName = "", isTimeSet = false) }
+        _uiState.updateState { copy(name = "", isTimeSet = false) }
     }
 
     companion object {
@@ -120,14 +120,3 @@ class CreateTaskViewModel(private val repository: DataRepository) : ViewModel() 
         }
     }
 }
-
-data class CreateTaskUiState(
-    val taskName: String = "",
-    val isTimeSet: Boolean = false,
-    val showTimePicker: Boolean = false,
-    val selectedHour: Int = 0,
-    val selectedMinute: Int = 0,
-    val isLoading: Boolean = false,
-    val errorMessage: String? = null,
-    val successMessage: String? = null,
-)
