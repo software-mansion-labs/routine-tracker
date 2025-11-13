@@ -24,11 +24,10 @@ import routinetracker.composeapp.generated.resources.ic_back
 @Composable
 fun CreateTaskScreen(
     navController: NavController,
-    createViewModel: @Composable () -> CreateRoutineViewModel = {
-        val routineBackStackEntry =
-            remember(navController) { navController.getBackStackEntry(CreateRoutine) }
+    viewModel: CreateRoutineViewModel =
         viewModel(
-            routineBackStackEntry,
+            viewModelStoreOwner =
+                remember(navController) { navController.getBackStackEntry(CreateRoutine) },
             factory = CreateRoutineViewModel.Factory,
             extras =
                 MutableCreationExtras().apply {
@@ -37,9 +36,7 @@ fun CreateTaskScreen(
                         LocalAppContainer.current.repository,
                     )
                 },
-        )
-    },
-    viewModel: CreateRoutineViewModel = createViewModel(),
+        ),
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val task = uiState.task
