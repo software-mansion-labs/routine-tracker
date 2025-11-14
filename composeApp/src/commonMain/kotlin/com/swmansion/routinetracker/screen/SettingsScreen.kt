@@ -105,6 +105,12 @@ fun SettingsScreen(
             }
 
             if (showUnspecifiedPicker) {
+                val timePickerState =
+                    rememberAdaptiveTimePickerState(
+                        initialHour = uiState.unspecifiedReminderHour,
+                        initialMinute = uiState.unspecifiedReminderMinute,
+                    )
+
                 TimePickerDialog(
                     timePickerState = timePickerState,
                     onDone = {
