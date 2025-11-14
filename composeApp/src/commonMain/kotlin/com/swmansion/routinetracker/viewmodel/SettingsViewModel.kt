@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 class SettingsViewModel(
     private val repository: UserPreferencesRepository,
     private val scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main),
-): ViewModel() {
+) : ViewModel() {
     private val _uiState = MutableStateFlow(SettingsUiState())
     val prefs: StateFlow<UserPreferences> = repository.preferences
     val uiState: StateFlow<SettingsUiState> =
@@ -29,11 +29,11 @@ class SettingsViewModel(
                 SettingsUiState(
                     remindersEnabled = p.remindersEnabled,
                     specifiedOptions = SPECIFIED_OPTIONS,
-                    specifiedSelected =
-                        p.specifiedTimeOption.ifEmpty { SPECIFIED_OPTIONS.first() },
+                    specifiedSelected = p.specifiedTimeOption.ifEmpty { SPECIFIED_OPTIONS.first() },
                     unspecifiedReminderHour = p.unspecifiedReminderHour,
                     unspecifiedReminderMinute = p.unspecifiedReminderMinute,
-                    unspecifiedFormatted = formatTime(p.unspecifiedReminderHour, p.unspecifiedReminderMinute),
+                    unspecifiedFormatted =
+                        formatTime(p.unspecifiedReminderHour, p.unspecifiedReminderMinute),
                 )
             }
             .stateIn(

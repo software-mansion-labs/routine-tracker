@@ -3,9 +3,9 @@ package com.swmansion.routinetracker.data
 import com.swmansion.routinetracker.model.UserPreferences
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import platform.Foundation.NSNotificationCenter
 import platform.Foundation.NSUbiquitousKeyValueStore
 import platform.Foundation.NSUbiquitousKeyValueStoreDidChangeExternallyNotification
-import platform.Foundation.NSNotificationCenter
 
 actual class UserPreferencesRepository {
     private val store = NSUbiquitousKeyValueStore.defaultStore()
@@ -17,7 +17,7 @@ actual class UserPreferencesRepository {
         NSNotificationCenter.defaultCenter.addObserverForName(
             name = NSUbiquitousKeyValueStoreDidChangeExternallyNotification,
             `object` = null,
-            queue = null
+            queue = null,
         ) { _ ->
             _preferences.value = load()
         }
