@@ -3,21 +3,34 @@ package com.swmansion.routinetracker.data
 import com.swmansion.routinetracker.model.UserPreferences
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import platform.Foundation.NSUserDefaults
+import platform.Foundation.NSUbiquitousKeyValueStore
+import platform.Foundation.NSUbiquitousKeyValueStoreDidChangeExternallyNotification
+import platform.Foundation.NSNotificationCenter
 
 actual class UserPreferencesRepository {
-    private val defaults = NSUserDefaults.Companion.standardUserDefaults()
+    private val store = NSUbiquitousKeyValueStore.defaultStore()
     private val _preferences = MutableStateFlow(load())
     actual val preferences: StateFlow<UserPreferences>
         get() = _preferences
 
+    init {
+        NSNotificationCenter.defaultCenter.addObserverForName(
+            name = NSUbiquitousKeyValueStoreDidChangeExternallyNotification,
+            `object` = null,
+            queue = null
+        ) { _ ->
+            _preferences.value = load()
+        }
+        store.synchronize()
+    }
+
     private fun load(): UserPreferences =
         UserPreferences(
-            remindersEnabled = defaults.boolForKey("reminders_enabled"),
-            specifiedTimeOption = defaults.stringForKey("specified_time_option") ?: "15 min",
+            remindersEnabled = store.boolForKey("reminders_enabled"),
+            specifiedTimeOption = store.stringForKey("specified_time_option") ?: "15 min",
             unspecifiedReminderHour =
-                defaults.integerForKey("unspecified_hour").toInt().let { if (it == 0) 9 else it },
-            unspecifiedReminderMinute = defaults.integerForKey("unspecified_minute").toInt(),
+                store.longLongForKey("unspecified_hour").let { if (it == 0L) 9 else it.toInt() },
+            unspecifiedReminderMinute = store.longLongForKey("unspecified_minute").toInt(),
         )
 
     private fun update(transform: (UserPreferences) -> UserPreferences) {
@@ -26,18 +39,21 @@ actual class UserPreferencesRepository {
     }
 
     actual suspend fun setRemindersEnabled(enabled: Boolean) {
-        defaults.setBool(enabled, "reminders_enabled")
+        store.setBool(enabled, "reminders_enabled")
+        store.synchronize()
         update { it.copy(remindersEnabled = enabled) }
     }
 
     actual suspend fun setSpecifiedTimeOption(option: String) {
-        defaults.setObject(option, "specified_time_option")
+        store.setString(option, "specified_time_option")
+        store.synchronize()
         update { it.copy(specifiedTimeOption = option) }
     }
 
     actual suspend fun setUnspecifiedReminderTime(hour: Int, minute: Int) {
-        defaults.setInteger(hour.toLong(), "unspecified_hour")
-        defaults.setInteger(minute.toLong(), "unspecified_minute")
+        store.setLongLong(hour.toLong(), "unspecified_hour")
+        store.setLongLong(minute.toLong(), "unspecified_minute")
+        store.synchronize()
         update { it.copy(unspecifiedReminderHour = hour, unspecifiedReminderMinute = minute) }
     }
 }
