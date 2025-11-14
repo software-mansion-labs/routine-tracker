@@ -1,7 +1,7 @@
 package com.swmansion.routinetracker.mock
 
+import com.swmansion.routinetracker.DefaultDataRepository
 import com.swmansion.routinetracker.DataRepository
-import com.swmansion.routinetracker.IDataRepository
 import com.swmansion.routinetracker.database.RoutineDao
 import com.swmansion.routinetracker.database.RoutineRecurrenceDao
 import com.swmansion.routinetracker.database.TaskDao
@@ -12,8 +12,8 @@ class MockDataRepository(
     routineDao: RoutineDao,
     taskDao: TaskDao,
     recurrenceDao: RoutineRecurrenceDao,
-) : IDataRepository {
-    private val delegate: IDataRepository = DataRepository(routineDao, taskDao, recurrenceDao)
+) : DataRepository {
+    private val delegate: DataRepository = DefaultDataRepository(routineDao, taskDao, recurrenceDao)
 
     var createRoutineWithRecurrenceCallCount = 0
     var lastRoutine: Routine? = null

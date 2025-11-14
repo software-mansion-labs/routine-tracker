@@ -2,8 +2,8 @@ package com.swmansion.routinetracker.di
 
 import androidx.room.Room
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import com.swmansion.routinetracker.DefaultDataRepository
 import com.swmansion.routinetracker.DataRepository
-import com.swmansion.routinetracker.IDataRepository
 import com.swmansion.routinetracker.database.DB_FILE_NAME
 import com.swmansion.routinetracker.database.RoutineDatabase
 import kotlinx.cinterop.ExperimentalForeignApi
@@ -14,7 +14,7 @@ import platform.Foundation.NSFileManager
 import platform.Foundation.NSURL
 import platform.Foundation.NSUserDomainMask
 
-actual open class AppContainer : IAppContainer {
+actual open class DefaultAppContainer : AppContainer {
     private val database: RoutineDatabase by lazy {
         val dbFile = "${fileDirectory()}/$DB_FILE_NAME"
         Room.databaseBuilder<RoutineDatabase>(name = dbFile)
@@ -23,8 +23,8 @@ actual open class AppContainer : IAppContainer {
             .build()
     }
 
-    actual override val repository: IDataRepository by lazy {
-        DataRepository(
+    actual override val repository: DataRepository by lazy {
+        DefaultDataRepository(
             routineDao = database.routineDao(),
             taskDao = database.taskDao(),
             routineRecurrenceDao = database.routineRecurrenceDao(),

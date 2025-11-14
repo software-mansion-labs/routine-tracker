@@ -9,7 +9,7 @@ import com.swmansion.routinetracker.model.RoutineWithTasks
 import com.swmansion.routinetracker.model.Task
 import kotlinx.coroutines.flow.Flow
 
-interface IDataRepository {
+interface DataRepository {
     fun getAllRoutinesWithTasks(): Flow<List<RoutineWithTasks>>
 
     suspend fun createRoutineWithRecurrence(
@@ -20,11 +20,11 @@ interface IDataRepository {
     suspend fun addTaskToRoutine(routineId: Long, task: Task): Long
 }
 
-class DataRepository(
+class DefaultDataRepository(
     private val routineDao: RoutineDao,
     private val taskDao: TaskDao,
     private val routineRecurrenceDao: RoutineRecurrenceDao,
-) : IDataRepository {
+) : DataRepository {
     fun getAllRoutines() = routineDao.getAllRoutines()
 
     override fun getAllRoutinesWithTasks() = routineDao.getAllRoutinesWithTasks()
