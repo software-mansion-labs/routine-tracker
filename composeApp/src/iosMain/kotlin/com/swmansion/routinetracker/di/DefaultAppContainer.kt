@@ -2,8 +2,8 @@ package com.swmansion.routinetracker.di
 
 import androidx.room.Room
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
-import com.swmansion.routinetracker.DefaultDataRepository
 import com.swmansion.routinetracker.DataRepository
+import com.swmansion.routinetracker.DefaultDataRepository
 import com.swmansion.routinetracker.database.DB_FILE_NAME
 import com.swmansion.routinetracker.database.RoutineDatabase
 import kotlinx.cinterop.ExperimentalForeignApi

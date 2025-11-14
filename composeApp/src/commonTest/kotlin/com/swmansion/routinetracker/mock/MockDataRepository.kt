@@ -1,7 +1,7 @@
 package com.swmansion.routinetracker.mock
 
-import com.swmansion.routinetracker.DefaultDataRepository
 import com.swmansion.routinetracker.DataRepository
+import com.swmansion.routinetracker.DefaultDataRepository
 import com.swmansion.routinetracker.database.RoutineDao
 import com.swmansion.routinetracker.database.RoutineRecurrenceDao
 import com.swmansion.routinetracker.database.TaskDao
