@@ -32,8 +32,14 @@ actual class DefaultAppContainer : AppContainer {
         )
     }
 
-    actual val userPreferencesRepository: UserPreferencesRepository by lazy {
-        UserPreferencesRepository()
+    private val _userPreferencesRepository = lazy { UserPreferencesRepository() }
+    actual val userPreferencesRepository: UserPreferencesRepository
+        get() = _userPreferencesRepository.value
+
+    fun close() {
+        if (_userPreferencesRepository.isInitialized()) {
+            _userPreferencesRepository.value.dispose()
+        }
     }
 
     @OptIn(ExperimentalForeignApi::class)

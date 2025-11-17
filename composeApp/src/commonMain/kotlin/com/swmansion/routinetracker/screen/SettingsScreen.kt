@@ -38,6 +38,7 @@ import com.mohamedrejeb.calf.ui.timepicker.AdaptiveTimePickerState
 import com.mohamedrejeb.calf.ui.timepicker.rememberAdaptiveTimePickerState
 import com.swmansion.routinetracker.di.LocalAppContainer
 import com.swmansion.routinetracker.viewmodel.SettingsViewModel
+import com.swmansion.routinetracker.viewmodel.formatTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -59,11 +60,6 @@ fun SettingsScreen(
     var specifiedExpanded by remember { mutableStateOf(false) }
 
     var showUnspecifiedPicker by remember { mutableStateOf(false) }
-    val timePickerState =
-        rememberAdaptiveTimePickerState(
-            initialHour = uiState.unspecifiedReminderHour,
-            initialMinute = uiState.unspecifiedReminderMinute,
-        )
 
     Scaffold(
         topBar = { TopAppBar(title = { Text("Settings") }) },
@@ -77,7 +73,7 @@ fun SettingsScreen(
         ) {
             RemindersToggleRow(
                 checked = uiState.remindersEnabled,
-                onCheckedChange = { viewModel.toggleReminders(!uiState.remindersEnabled) },
+                onCheckedChange =  (viewModel::toggleReminders) ,
             )
 
             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), thickness = 1.dp)
@@ -236,10 +232,4 @@ private fun TimePickerDialog(
         confirmButton = { Button(onClick = onDone) { Text("Done") } },
         dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } },
     )
-}
-
-private fun formatTime(hour: Int, minute: Int): String {
-    val hh = hour.toString().padStart(2, '0')
-    val mm = minute.toString().padStart(2, '0')
-    return "$hh:$mm"
 }

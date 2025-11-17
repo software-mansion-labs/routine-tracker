@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.StateFlow
 import platform.Foundation.NSNotificationCenter
 import platform.Foundation.NSUbiquitousKeyValueStore
 import platform.Foundation.NSUbiquitousKeyValueStoreDidChangeExternallyNotification
+import platform.darwin.NSObjectProtocol
 
 actual class UserPreferencesRepository {
     private val store = NSUbiquitousKeyValueStore.defaultStore()
@@ -13,8 +14,11 @@ actual class UserPreferencesRepository {
     actual val preferences: StateFlow<UserPreferences>
         get() = _preferences
 
+    private val observer: NSObjectProtocol
+    private var disposed = false
+
     init {
-        NSNotificationCenter.defaultCenter.addObserverForName(
+        observer = NSNotificationCenter.defaultCenter.addObserverForName(
             name = NSUbiquitousKeyValueStoreDidChangeExternallyNotification,
             `object` = null,
             queue = null,
@@ -22,6 +26,12 @@ actual class UserPreferencesRepository {
             _preferences.value = load()
         }
         store.synchronize()
+    }
+
+    fun dispose() {
+        if (disposed) return
+        NSNotificationCenter.defaultCenter.removeObserver(observer)
+        disposed = true
     }
 
     private fun load(): UserPreferences =

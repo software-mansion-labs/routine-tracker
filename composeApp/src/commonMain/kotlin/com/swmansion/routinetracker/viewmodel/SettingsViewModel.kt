@@ -21,8 +21,6 @@ class SettingsViewModel(
     private val repository: UserPreferencesRepository,
     private val scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main),
 ) : ViewModel() {
-    private val _uiState = MutableStateFlow(SettingsUiState())
-    val prefs: StateFlow<UserPreferences> = repository.preferences
     val uiState: StateFlow<SettingsUiState> =
         repository.preferences
             .map { p ->
@@ -32,8 +30,6 @@ class SettingsViewModel(
                     specifiedSelected = p.specifiedTimeOption.ifEmpty { SPECIFIED_OPTIONS.first() },
                     unspecifiedReminderHour = p.unspecifiedReminderHour,
                     unspecifiedReminderMinute = p.unspecifiedReminderMinute,
-                    unspecifiedFormatted =
-                        formatTime(p.unspecifiedReminderHour, p.unspecifiedReminderMinute),
                 )
             }
             .stateIn(
@@ -68,7 +64,7 @@ class SettingsViewModel(
     }
 }
 
-private fun formatTime(hour: Int, minute: Int): String =
+fun formatTime(hour: Int, minute: Int): String =
     hour.toString().padStart(2, '0') + ":" + minute.toString().padStart(2, '0')
 
 private val SPECIFIED_OPTIONS = listOf("5 min", "15 min", "30 min", "1 hour", "4 hours")
@@ -79,5 +75,4 @@ data class SettingsUiState(
     val specifiedSelected: String = SPECIFIED_OPTIONS.first(),
     val unspecifiedReminderHour: Int = 9,
     val unspecifiedReminderMinute: Int = 0,
-    val unspecifiedFormatted: String = formatTime(9, 0),
 )
