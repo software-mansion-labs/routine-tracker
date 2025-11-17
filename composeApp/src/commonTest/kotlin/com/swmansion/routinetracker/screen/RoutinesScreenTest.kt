@@ -150,7 +150,5 @@ class RoutinesScreenTest {
 
     private fun createTestAppContainer(
         routinesFlow: MutableStateFlow<List<Routine>> = MutableStateFlow(emptyList())
-    ): MockAppContainer {
-        return MockAppContainer(routinesFlow)
-    }
+    ) = MockAppContainer(routinesFlow)
 }
