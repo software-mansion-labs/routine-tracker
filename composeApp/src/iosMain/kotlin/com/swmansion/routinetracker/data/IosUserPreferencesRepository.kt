@@ -9,10 +9,10 @@ import platform.Foundation.NSUbiquitousKeyValueStore
 import platform.Foundation.NSUbiquitousKeyValueStoreDidChangeExternallyNotification
 import platform.darwin.NSObjectProtocol
 
-actual class UserPreferencesRepository {
+class IosUserPreferencesRepository : UserPreferencesRepository {
     private val store = NSUbiquitousKeyValueStore.defaultStore()
     private val _preferences = MutableStateFlow(load())
-    actual val preferences: StateFlow<UserPreferences>
+    override val preferences: StateFlow<UserPreferences>
         get() = _preferences
 
     private val observer: NSObjectProtocol
@@ -49,19 +49,19 @@ actual class UserPreferencesRepository {
             unspecifiedReminderMinute = store.longLongForKey("unspecified_minute").toInt(),
         )
 
-    actual suspend fun setRemindersEnabled(enabled: Boolean) {
+    override suspend fun setRemindersEnabled(enabled: Boolean) {
         _preferences.update { it.copy(remindersEnabled = enabled) }
         store.setBool(enabled, "reminders_enabled")
         store.synchronize()
     }
 
-    actual suspend fun setSpecifiedTimeOption(option: String) {
+    override suspend fun setSpecifiedTimeOption(option: String) {
         _preferences.update { it.copy(specifiedTimeOption = option) }
         store.setString(option, "specified_time_option")
         store.synchronize()
     }
 
-    actual suspend fun setUnspecifiedReminderTime(hour: Int, minute: Int) {
+    override suspend fun setUnspecifiedReminderTime(hour: Int, minute: Int) {
         _preferences.update {
             it.copy(unspecifiedReminderHour = hour, unspecifiedReminderMinute = minute)
         }

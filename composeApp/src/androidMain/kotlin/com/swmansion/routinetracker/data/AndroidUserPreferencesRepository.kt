@@ -22,10 +22,10 @@ private val KEY_SPECIFIED_OPTION = stringPreferencesKey("specified_time_option")
 private val KEY_UNSPECIFIED_HOUR = intPreferencesKey("unspecified_hour")
 private val KEY_UNSPECIFIED_MINUTE = intPreferencesKey("unspecified_minute")
 
-actual class UserPreferencesRepository(
+class AndroidUserPreferencesRepository(
     private val appContext: Context,
     private val scope: CoroutineScope,
-) {
+) : UserPreferencesRepository {
     private val flow =
         appContext.dataStore.data.map { prefs ->
             UserPreferences(
@@ -39,18 +39,18 @@ actual class UserPreferencesRepository(
             )
         }
 
-    actual val preferences: StateFlow<UserPreferences> =
+    override val preferences: StateFlow<UserPreferences> =
         flow.stateIn(scope, SharingStarted.Eagerly, UserPreferences())
 
-    actual suspend fun setRemindersEnabled(enabled: Boolean) {
+    override suspend fun setRemindersEnabled(enabled: Boolean) {
         appContext.dataStore.edit { it[KEY_REMINDERS_ENABLED] = enabled }
     }
 
-    actual suspend fun setSpecifiedTimeOption(option: String) {
+    override suspend fun setSpecifiedTimeOption(option: String) {
         appContext.dataStore.edit { it[KEY_SPECIFIED_OPTION] = option }
     }
 
-    actual suspend fun setUnspecifiedReminderTime(hour: Int, minute: Int) {
+    override suspend fun setUnspecifiedReminderTime(hour: Int, minute: Int) {
         appContext.dataStore.edit {
             it[KEY_UNSPECIFIED_HOUR] = hour
             it[KEY_UNSPECIFIED_MINUTE] = minute

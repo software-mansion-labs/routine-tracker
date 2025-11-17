@@ -5,6 +5,7 @@ import androidx.room.Room
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.swmansion.routinetracker.DataRepository
 import com.swmansion.routinetracker.DefaultDataRepository
+import com.swmansion.routinetracker.data.AndroidUserPreferencesRepository
 import com.swmansion.routinetracker.data.UserPreferencesRepository
 import com.swmansion.routinetracker.database.DB_FILE_NAME
 import com.swmansion.routinetracker.database.RoutineDatabase
@@ -30,7 +31,8 @@ actual class DefaultAppContainer(private val application: Application) : AppCont
             routineRecurrenceDao = database.routineRecurrenceDao(),
         )
     }
+
     actual override val userPreferencesRepository: UserPreferencesRepository by lazy {
-        UserPreferencesRepository(application, appScope)
+        AndroidUserPreferencesRepository(application, appScope)
     }
 }
