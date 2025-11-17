@@ -12,7 +12,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
-        val appContainer = (application as RoutineTrackerApplication).defaultAppContainer
+        val appContainer = (application as RoutineTrackerApplication).appContainer
 
         setContent { CompositionLocalProvider(LocalAppContainer provides appContainer) { App() } }
     }

@@ -14,7 +14,7 @@ import platform.Foundation.NSFileManager
 import platform.Foundation.NSURL
 import platform.Foundation.NSUserDomainMask
 
-actual open class DefaultAppContainer : AppContainer {
+actual class DefaultAppContainer : AppContainer {
     private val database: RoutineDatabase by lazy {
         val dbFile = "${fileDirectory()}/$DB_FILE_NAME"
         Room.databaseBuilder<RoutineDatabase>(name = dbFile)
