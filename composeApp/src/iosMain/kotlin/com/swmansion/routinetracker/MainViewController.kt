@@ -2,11 +2,11 @@ package com.swmansion.routinetracker
 
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.window.ComposeUIViewController
-import com.swmansion.routinetracker.di.AppContainer
+import com.swmansion.routinetracker.di.DefaultAppContainer
 import com.swmansion.routinetracker.di.LocalAppContainer
 
 fun MainViewController() = ComposeUIViewController {
-    val appContainer = AppContainer()
+    val defaultAppContainer = DefaultAppContainer()
 
-    CompositionLocalProvider(LocalAppContainer provides appContainer) { App() }
+    CompositionLocalProvider(LocalAppContainer provides defaultAppContainer) { App() }
 }
