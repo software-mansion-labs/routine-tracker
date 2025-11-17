@@ -2,23 +2,18 @@ package com.swmansion.routinetracker.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.swmansion.routinetracker.data.UserPreferencesRepository
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class SettingsViewModel(
-    private val repository: UserPreferencesRepository,
-    private val scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main),
-) : ViewModel() {
+class SettingsViewModel(private val repository: UserPreferencesRepository) : ViewModel() {
     val uiState: StateFlow<SettingsUiState> =
         repository.preferences
             .map { p ->
@@ -31,26 +26,26 @@ class SettingsViewModel(
                 )
             }
             .stateIn(
-                scope = scope,
+                scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5_000),
                 initialValue = SettingsUiState(),
             )
 
     fun toggleReminders(enabled: Boolean) {
-        scope.launch { repository.setRemindersEnabled(enabled) }
+        viewModelScope.launch { repository.setRemindersEnabled(enabled) }
     }
 
     fun setSpecified(option: String) {
-        scope.launch { repository.setSpecifiedTimeOption(option) }
+        viewModelScope.launch { repository.setSpecifiedTimeOption(option) }
     }
 
     fun setUnspecified(hour: Int, minute: Int) {
-        scope.launch { repository.setUnspecifiedReminderTime(hour, minute) }
+        viewModelScope.launch { repository.setUnspecifiedReminderTime(hour, minute) }
     }
 
     companion object {
         val DATA_REPOSITORY_KEY = object : CreationExtras.Key<UserPreferencesRepository> {}
-        var Factory: ViewModelProvider.Factory = viewModelFactory {
+        val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 val prefsRepository =
                     this[DATA_REPOSITORY_KEY]

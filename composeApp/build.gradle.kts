@@ -52,7 +52,6 @@ kotlin {
             implementation(libs.calf.ui)
             implementation(libs.kotlinx.datetime)
             implementation(libs.androidx.jetbrains.navigation.compose)
-            implementation(libs.coroutines)
         }
 
         commonTest.dependencies {

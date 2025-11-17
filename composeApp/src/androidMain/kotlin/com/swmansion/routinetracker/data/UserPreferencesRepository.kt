@@ -22,15 +22,20 @@ private val KEY_SPECIFIED_OPTION = stringPreferencesKey("specified_time_option")
 private val KEY_UNSPECIFIED_HOUR = intPreferencesKey("unspecified_hour")
 private val KEY_UNSPECIFIED_MINUTE = intPreferencesKey("unspecified_minute")
 
-actual class UserPreferencesRepository
-private constructor(private val appContext: Context, private val scope: CoroutineScope) {
+actual class UserPreferencesRepository(
+    private val appContext: Context,
+    private val scope: CoroutineScope,
+) {
     private val flow =
         appContext.dataStore.data.map { prefs ->
             UserPreferences(
                 remindersEnabled = prefs[KEY_REMINDERS_ENABLED] ?: false,
-                specifiedTimeOption = prefs[KEY_SPECIFIED_OPTION] ?: "15 min",
-                unspecifiedReminderHour = prefs[KEY_UNSPECIFIED_HOUR] ?: 9,
-                unspecifiedReminderMinute = prefs[KEY_UNSPECIFIED_MINUTE] ?: 0,
+                specifiedTimeOption =
+                    prefs[KEY_SPECIFIED_OPTION] ?: UserPreferences.DEFAULT_SPECIFIED_TIME_OPTION,
+                unspecifiedReminderHour =
+                    prefs[KEY_UNSPECIFIED_HOUR] ?: UserPreferences.DEFAULT_UNSPECIFIED_HOUR,
+                unspecifiedReminderMinute =
+                    prefs[KEY_UNSPECIFIED_MINUTE] ?: UserPreferences.DEFAULT_UNSPECIFIED_MINUTE,
             )
         }
 

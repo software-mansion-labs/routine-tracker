@@ -31,6 +31,6 @@ actual class DefaultAppContainer(private val application: Application) : AppCont
         )
     }
     actual val userPreferencesRepository: UserPreferencesRepository by lazy {
-        UserPreferencesRepository.get(application, appScope)
+        UserPreferencesRepository(application, appScope)
     }
 }
