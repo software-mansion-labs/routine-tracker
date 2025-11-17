@@ -56,17 +56,4 @@ actual class UserPreferencesRepository(
             it[KEY_UNSPECIFIED_MINUTE] = minute
         }
     }
-
-    companion object {
-        @Volatile private var instance: UserPreferencesRepository? = null
-
-        fun get(context: Context, scope: CoroutineScope): UserPreferencesRepository =
-            instance
-                ?: synchronized(this) {
-                    instance
-                        ?: UserPreferencesRepository(context.applicationContext, scope).also {
-                            instance = it
-                        }
-                }
-    }
 }
