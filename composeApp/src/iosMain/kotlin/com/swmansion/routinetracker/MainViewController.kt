@@ -10,9 +10,7 @@ import com.swmansion.routinetracker.di.LocalAppContainer
 fun MainViewController() = ComposeUIViewController {
     val defaultAppContainer = remember { DefaultAppContainer() }
 
-    DisposableEffect(Unit) {
-        onDispose { defaultAppContainer.close() }
-    }
+    DisposableEffect(Unit) { onDispose { defaultAppContainer.close() } }
 
     CompositionLocalProvider(LocalAppContainer provides defaultAppContainer) { App() }
 }
