@@ -10,4 +10,5 @@ interface AppContainer {
 
 expect class DefaultAppContainer : AppContainer {
     override val repository: DataRepository
+    override val userPreferencesRepository: UserPreferencesRepository
 }

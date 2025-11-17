@@ -33,7 +33,7 @@ actual class DefaultAppContainer : AppContainer {
     }
 
     private val _userPreferencesRepository = lazy { UserPreferencesRepository() }
-    actual val userPreferencesRepository: UserPreferencesRepository
+    actual override val userPreferencesRepository: UserPreferencesRepository
         get() = _userPreferencesRepository.value
 
     fun close() {

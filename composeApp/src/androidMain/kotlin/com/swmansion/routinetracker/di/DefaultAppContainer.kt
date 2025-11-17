@@ -30,7 +30,7 @@ actual class DefaultAppContainer(private val application: Application) : AppCont
             routineRecurrenceDao = database.routineRecurrenceDao(),
         )
     }
-    override val userPreferencesRepository: UserPreferencesRepository by lazy {
+    actual override val userPreferencesRepository: UserPreferencesRepository by lazy {
         UserPreferencesRepository(application, appScope)
     }
 }
