@@ -1,6 +1,6 @@
 package com.swmansion.routinetracker.viewmodel
 
-import com.swmansion.routinetracker.IDataRepository
+import com.swmansion.routinetracker.DataRepository
 import com.swmansion.routinetracker.mock.MockDataRepository
 import com.swmansion.routinetracker.mock.database.MockRecurrenceDao
 import com.swmansion.routinetracker.mock.database.MockRoutineDao
@@ -158,7 +158,7 @@ class CreateRoutineViewModelTest {
 
     private fun createMockRepository(
         routinesFlow: Flow<List<Routine>> = flowOf(emptyList())
-    ): IDataRepository {
+    ): DataRepository {
         val mockRoutineDao = MockRoutineDao(1L, routinesFlow)
         val mockTaskDao = MockTaskDao()
         val mockRecurrenceDao = MockRecurrenceDao()
