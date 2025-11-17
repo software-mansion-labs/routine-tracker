@@ -6,7 +6,6 @@ import com.swmansion.routinetracker.mock.database.MockRecurrenceDao
 import com.swmansion.routinetracker.mock.database.MockRoutineDao
 import com.swmansion.routinetracker.mock.database.MockTaskDao
 import com.swmansion.routinetracker.model.DayOfWeek
-import com.swmansion.routinetracker.model.Routine
 import com.swmansion.routinetracker.utils.runTestWithMainDispatcher
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -15,7 +14,6 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -156,10 +154,8 @@ class CreateRoutineViewModelTest {
         assertNull(viewModel.uiState.value.successMessage)
     }
 
-    private fun createMockRepository(
-        routinesFlow: Flow<List<Routine>> = flowOf(emptyList())
-    ): DataRepository {
-        val mockRoutineDao = MockRoutineDao(1L, routinesFlow)
+    private fun createMockRepository(): DataRepository {
+        val mockRoutineDao = MockRoutineDao(1L, flowOf(emptyList()))
         val mockTaskDao = MockTaskDao()
         val mockRecurrenceDao = MockRecurrenceDao()
         return MockDataRepository(mockRoutineDao, mockTaskDao, mockRecurrenceDao)
