@@ -73,7 +73,7 @@ fun SettingsScreen(
         ) {
             RemindersToggleRow(
                 checked = uiState.remindersEnabled,
-                onCheckedChange =  (viewModel::toggleReminders) ,
+                onCheckedChange = (viewModel::toggleReminders),
             )
 
             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), thickness = 1.dp)

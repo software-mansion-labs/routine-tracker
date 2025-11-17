@@ -18,13 +18,14 @@ actual class UserPreferencesRepository {
     private var disposed = false
 
     init {
-        observer = NSNotificationCenter.defaultCenter.addObserverForName(
-            name = NSUbiquitousKeyValueStoreDidChangeExternallyNotification,
-            `object` = null,
-            queue = null,
-        ) { _ ->
-            _preferences.value = load()
-        }
+        observer =
+            NSNotificationCenter.defaultCenter.addObserverForName(
+                name = NSUbiquitousKeyValueStoreDidChangeExternallyNotification,
+                `object` = null,
+                queue = null,
+            ) { _ ->
+                _preferences.value = load()
+            }
         store.synchronize()
     }
 
