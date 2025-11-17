@@ -5,9 +5,8 @@ import com.swmansion.routinetracker.model.UserPreferences
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-class MockUserPreferencesRepository(
-    initial: UserPreferences = UserPreferences()
-) : UserPreferencesRepository {
+class MockUserPreferencesRepository(initial: UserPreferences = UserPreferences()) :
+    UserPreferencesRepository {
     private val mutable = MutableStateFlow(initial)
 
     override val preferences: StateFlow<UserPreferences> = mutable
@@ -21,10 +20,8 @@ class MockUserPreferencesRepository(
     }
 
     override suspend fun setUnspecifiedReminderTime(hour: Int, minute: Int) {
-        mutable.value = mutable.value.copy(
-            unspecifiedReminderHour = hour,
-            unspecifiedReminderMinute = minute
-        )
+        mutable.value =
+            mutable.value.copy(unspecifiedReminderHour = hour, unspecifiedReminderMinute = minute)
     }
 
     suspend fun setPreferences(preferences: UserPreferences) {
