@@ -8,6 +8,8 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 
+interface ScreenshotTests
+
 @OptIn(ExperimentalCoroutinesApi::class)
 fun runTestWithMainDispatcher(testBody: suspend TestScope.() -> Unit) = runTest {
     Dispatchers.setMain(StandardTestDispatcher(testScheduler))

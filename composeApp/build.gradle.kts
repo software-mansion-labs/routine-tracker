@@ -102,7 +102,18 @@ android {
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
-    testOptions { unitTests { isIncludeAndroidResources = true } }
+    testOptions {
+        unitTests {
+            all {
+                it.useJUnit {
+                    if (project.hasProperty("screenshot")) {
+                        includeCategories("com.swmansion.routinetracker.utils.ScreenshotTests")
+                    }
+                }
+            }
+            isIncludeAndroidResources = true
+        }
+    }
 
     packaging { resources { excludes += "/META-INF/{AL2.0,LGPL2.1}" } }
     buildTypes { getByName("release") { isMinifyEnabled = false } }
@@ -129,4 +140,4 @@ dependencies {
 
 room { schemaDirectory("$projectDir/schemas") }
 
-roborazzi { outputDir.set(file("src/iosTest/resources")) }
+roborazzi { outputDir.set(file("build/outputs/roborazzi")) }

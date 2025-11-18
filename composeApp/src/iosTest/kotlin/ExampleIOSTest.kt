@@ -22,8 +22,8 @@ class ExampleIOSTest {
                     Column { Button(modifier = Modifier, onClick = {}) { Text("Hello World") } }
                 }
             }
-            onRoot().captureRoboImage(this, filePath = "test_1")
-            onNodeWithText("Hello World").captureRoboImage(this, filePath = "test_2")
+            onRoot().captureRoboImage(this, filePath = "test_1.png")
+            onNodeWithText("Hello World").captureRoboImage(this, filePath = "test_2.png")
         }
     }
 }
