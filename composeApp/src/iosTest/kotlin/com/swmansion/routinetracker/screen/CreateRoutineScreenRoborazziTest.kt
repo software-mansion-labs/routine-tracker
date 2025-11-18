@@ -40,10 +40,8 @@ class CreateRoutineScreenRoborazziTest {
         }
 
         onRoot().captureRoboImage(this, filePath = "create_routine_initial_state.png")
-        onNodeWithText("Create Routine").captureRoboImage(
-            this,
-            filePath = "create_routine_title.png"
-        )
+        onNodeWithText("Create Routine")
+            .captureRoboImage(this, filePath = "create_routine_title.png")
     }
 
     @Test
@@ -86,10 +84,8 @@ class CreateRoutineScreenRoborazziTest {
         }
 
         onRoot().captureRoboImage(this, filePath = "create_routine_all_sections.png")
-        onNodeWithText("Days of Week (optional)").captureRoboImage(
-            this,
-            filePath = "create_routine_days_section.png"
-        )
+        onNodeWithText("Days of Week (optional)")
+            .captureRoboImage(this, filePath = "create_routine_days_section.png")
     }
 
     @Test
@@ -109,15 +105,13 @@ class CreateRoutineScreenRoborazziTest {
             }
         }
 
-        onNodeWithText("Create").captureRoboImage(this, filePath = "create_routine_create_button.png")
-        onNodeWithText("Discard").captureRoboImage(
-            this,
-            filePath = "create_routine_discard_button.png"
-        )
+        onNodeWithText("Create")
+            .captureRoboImage(this, filePath = "create_routine_create_button.png")
+        onNodeWithText("Discard")
+            .captureRoboImage(this, filePath = "create_routine_discard_button.png")
     }
 
     private fun createTestAppContainer(
         routinesFlow: MutableStateFlow<List<Routine>> = MutableStateFlow(emptyList())
     ) = MockAppContainer(routinesFlow)
 }
-

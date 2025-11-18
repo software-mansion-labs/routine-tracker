@@ -74,14 +74,11 @@ class HomeViewModelRoborazziTest {
         }
 
         onRoot().captureRoboImage(this, filePath = "routines_without_time.png")
-        onNodeWithText("Simple Routine 1").captureRoboImage(
-            this,
-            filePath = "routines_simple_routine.png"
-        )
+        onNodeWithText("Simple Routine 1")
+            .captureRoboImage(this, filePath = "routines_simple_routine.png")
     }
 
     private fun createTestAppContainer(
         routinesFlow: MutableStateFlow<List<Routine>> = MutableStateFlow(emptyList())
     ) = MockAppContainer(routinesFlow)
 }
-

@@ -37,10 +37,7 @@ class CreateRoutineScreenRoborazziTest {
 
     @get:Rule
     val roborazziRule =
-        RoborazziRule(
-            composeRule = composeTestRule,
-            captureRoot = composeTestRule.onRoot(),
-        )
+        RoborazziRule(composeRule = composeTestRule, captureRoot = composeTestRule.onRoot())
 
     @Test
     fun shouldCaptureCreateRoutineScreenInitialState() {

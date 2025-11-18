@@ -39,10 +39,8 @@ class RoutinesScreenRoborazziTest {
         }
 
         onRoot().captureRoboImage(this, filePath = "routines_empty_screen.png")
-        onNodeWithText("No routines yet").captureRoboImage(
-            this,
-            filePath = "routines_empty_state.png"
-        )
+        onNodeWithText("No routines yet")
+            .captureRoboImage(this, filePath = "routines_empty_state.png")
     }
 
     @Test
@@ -71,10 +69,8 @@ class RoutinesScreenRoborazziTest {
         }
 
         onRoot().captureRoboImage(this, filePath = "routines_with_routines.png")
-        onNodeWithText("Morning Routine").captureRoboImage(
-            this,
-            filePath = "routines_morning_routine.png"
-        )
+        onNodeWithText("Morning Routine")
+            .captureRoboImage(this, filePath = "routines_morning_routine.png")
     }
 
     @Test
@@ -94,14 +90,10 @@ class RoutinesScreenRoborazziTest {
             }
         }
 
-        onNodeWithText("My Routines").captureRoboImage(
-            this,
-            filePath = "routines_top_bar.png"
-        )
+        onNodeWithText("My Routines").captureRoboImage(this, filePath = "routines_top_bar.png")
     }
 
     private fun createTestAppContainer(
         routinesFlow: MutableStateFlow<List<Routine>> = MutableStateFlow(emptyList())
     ) = MockAppContainer(routinesFlow)
 }
-
