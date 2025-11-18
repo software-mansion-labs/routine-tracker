@@ -11,8 +11,9 @@ import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
 import io.github.takahirom.roborazzi.captureRoboImage
 import kotlin.test.Test
 
+@OptIn(ExperimentalTestApi::class, ExperimentalRoborazziApi::class)
 class ExampleIOSTest {
-    @OptIn(ExperimentalTestApi::class, ExperimentalRoborazziApi::class)
+
     @Test
     fun test() {
         runComposeUiTest {
@@ -21,8 +22,8 @@ class ExampleIOSTest {
                     Column { Button(modifier = Modifier, onClick = {}) { Text("Hello World") } }
                 }
             }
-            onRoot().captureRoboImage(this, filePath = "ios.png")
-            onNodeWithText("Hello World").captureRoboImage(this, filePath = "ios_button.png")
+            onRoot().captureRoboImage(this, filePath = "test_1")
+            onNodeWithText("Hello World").captureRoboImage(this, filePath = "test_2")
         }
     }
 }
