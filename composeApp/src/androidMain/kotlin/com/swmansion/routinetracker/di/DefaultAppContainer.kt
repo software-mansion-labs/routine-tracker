@@ -9,7 +9,6 @@ import com.swmansion.routinetracker.data.AndroidUserPreferencesRepository
 import com.swmansion.routinetracker.data.UserPreferencesRepository
 import com.swmansion.routinetracker.database.DB_FILE_NAME
 import com.swmansion.routinetracker.database.RoutineDatabase
-import com.tweener.alarmee.AlarmeeService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob

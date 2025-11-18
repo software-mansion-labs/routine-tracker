@@ -8,7 +8,6 @@ import com.swmansion.routinetracker.data.IosUserPreferencesRepository
 import com.swmansion.routinetracker.data.UserPreferencesRepository
 import com.swmansion.routinetracker.database.DB_FILE_NAME
 import com.swmansion.routinetracker.database.RoutineDatabase
-import com.tweener.alarmee.AlarmeeService
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO

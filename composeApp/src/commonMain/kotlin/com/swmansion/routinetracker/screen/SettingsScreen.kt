@@ -40,7 +40,6 @@ import com.swmansion.routinetracker.data.createAlarmeePlatformConfiguration
 import com.swmansion.routinetracker.di.LocalAppContainer
 import com.swmansion.routinetracker.viewmodel.SettingsViewModel
 import com.swmansion.routinetracker.viewmodel.formatTime
-import com.tweener.alarmee.AlarmeeService
 import com.tweener.alarmee.rememberAlarmeeService
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -129,9 +128,7 @@ fun SettingsScreen(
 
             Button(
                 modifier = Modifier.padding(top = 16.dp),
-                onClick = {
-                    viewModel.scheduleImmediateTestNotification()
-                }
+                onClick = { viewModel.scheduleImmediateTestNotification() },
             ) {
                 Text("Notify now")
             }

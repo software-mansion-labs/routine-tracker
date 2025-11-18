@@ -9,21 +9,26 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.swmansion.routinetracker.DataRepository
 import com.swmansion.routinetracker.data.UserPreferencesRepository
 import com.tweener.alarmee.AlarmeeService
+import com.tweener.alarmee.model.Alarmee
+import com.tweener.alarmee.model.AndroidNotificationConfiguration
+import com.tweener.alarmee.model.AndroidNotificationPriority
+import com.tweener.alarmee.model.IosNotificationConfiguration
+import com.tweener.alarmee.model.RepeatInterval
+import kotlin.time.Clock
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.ExperimentalTime
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlin.time.Clock
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.toLocalDateTime
 import kotlinx.datetime.DatePeriod
-import kotlinx.datetime.plus
-import kotlin.time.Duration.Companion.minutes
-import kotlin.time.Duration.Companion.hours
-import kotlin.time.ExperimentalTime
 import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.plus
+import kotlinx.datetime.toLocalDateTime
 
 class SettingsViewModel(
     private val repository: UserPreferencesRepository,
@@ -53,27 +58,30 @@ class SettingsViewModel(
 
     fun scheduleSpecifiedReminder() {
         val pref = uiState.value
-        val duration = when (pref.specifiedSelected) {
-            "5 min" -> 5.minutes
-            "15 min" -> 15.minutes
-            "30 min" -> 30.minutes
-            "1 hour" -> 1.hours
-            "4 hours" -> 4.hours
-            else -> 15.minutes
-        }
+        val duration =
+            when (pref.specifiedSelected) {
+                "5 min" -> 5.minutes
+                "15 min" -> 15.minutes
+                "30 min" -> 30.minutes
+                "1 hour" -> 1.hours
+                "4 hours" -> 4.hours
+                else -> 15.minutes
+            }
         viewModelScope.launch {
             alarmeeService.local.schedule(
-                alarmee = Alarmee(
-                    uuid = UUID_SPECIFIED,
-                    notificationTitle = "Przypomnienie rutyny",
-                    notificationBody = "Czas na kolejną rutynę.",
-                    repeatInterval = RepeatInterval.Custom(duration = duration),
-                    androidNotificationConfiguration = AndroidNotificationConfiguration(
-                        priority = AndroidNotificationPriority.DEFAULT,
-                        channelId = "routineChannel",
-                    ),
-                    iosNotificationConfiguration = IosNotificationConfiguration(),
-                )
+                alarmee =
+                    Alarmee(
+                        uuid = UUID_SPECIFIED,
+                        notificationTitle = "Przypomnienie rutyny",
+                        notificationBody = "Czas na kolejną rutynę.",
+                        repeatInterval = RepeatInterval.Custom(duration = duration),
+                        androidNotificationConfiguration =
+                            AndroidNotificationConfiguration(
+                                priority = AndroidNotificationPriority.DEFAULT,
+                                channelId = "routineChannel",
+                            ),
+                        iosNotificationConfiguration = IosNotificationConfiguration(),
+                    )
             )
         }
     }
@@ -82,43 +90,48 @@ class SettingsViewModel(
     fun scheduleDailyUnspecifiedReminder() {
         val pref = uiState.value
         val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
-        val targetToday = LocalDateTime(
-            year = now.year,
-            month = now.month,
-            dayOfMonth = now.dayOfMonth,
-            hour = pref.unspecifiedReminderHour,
-            minute = pref.unspecifiedReminderMinute,
-            second = 0,
-            nanosecond = 0
-        )
-        val scheduled = if (targetToday > now) {
-            targetToday
-        } else {
-            val nextDate = targetToday.date.plus(DatePeriod(days = 1))
+        val targetToday =
             LocalDateTime(
-                year = nextDate.year,
-                month = nextDate.month,
-                dayOfMonth = nextDate.day,
+                year = now.year,
+                month = now.month,
+                dayOfMonth = now.dayOfMonth,
                 hour = pref.unspecifiedReminderHour,
                 minute = pref.unspecifiedReminderMinute,
                 second = 0,
-                nanosecond = 0
+                nanosecond = 0,
             )
-        }
+        val scheduled =
+            if (targetToday > now) {
+                targetToday
+            } else {
+                val nextDate = targetToday.date.plus(DatePeriod(days = 1))
+                LocalDateTime(
+                    year = nextDate.year,
+                    month = nextDate.month,
+                    dayOfMonth = nextDate.day,
+                    hour = pref.unspecifiedReminderHour,
+                    minute = pref.unspecifiedReminderMinute,
+                    second = 0,
+                    nanosecond = 0,
+                )
+            }
         viewModelScope.launch {
             alarmeeService.local.schedule(
-                alarmee = Alarmee(
-                    uuid = UUID_UNSPECIFIED,
-                    notificationTitle = "Reminder",
-                    notificationBody = "Routine starting: (${formatTime(pref.unspecifiedReminderHour, pref.unspecifiedReminderMinute)}).",
-                    scheduledDateTime = scheduled,
-                    repeatInterval = RepeatInterval.Daily,
-                    androidNotificationConfiguration = AndroidNotificationConfiguration(
-                        priority = AndroidNotificationPriority.HIGH,
-                        channelId = "routineChannel",
-                    ),
-                    iosNotificationConfiguration = IosNotificationConfiguration(),
-                )
+                alarmee =
+                    Alarmee(
+                        uuid = UUID_UNSPECIFIED,
+                        notificationTitle = "Reminder",
+                        notificationBody =
+                            "Routine starting: (${formatTime(pref.unspecifiedReminderHour, pref.unspecifiedReminderMinute)}).",
+                        scheduledDateTime = scheduled,
+                        repeatInterval = RepeatInterval.Daily,
+                        androidNotificationConfiguration =
+                            AndroidNotificationConfiguration(
+                                priority = AndroidNotificationPriority.HIGH,
+                                channelId = "routineChannel",
+                            ),
+                        iosNotificationConfiguration = IosNotificationConfiguration(),
+                    )
             )
         }
     }
@@ -133,17 +146,19 @@ class SettingsViewModel(
         viewModelScope.launch {
             alarmeeService.local.cancel("test-immediate")
             alarmeeService.local.schedule(
-                alarmee = Alarmee(
-                    uuid = "test-immediate",
-                    notificationTitle = "Test notification",
-                    notificationBody = "Immediate notification",
-                    scheduledDateTime = fireAt,
-                    androidNotificationConfiguration = AndroidNotificationConfiguration(
-                        channelId = "routineChannel",
-                        priority = AndroidNotificationPriority.HIGH,
-                    ),
-                    iosNotificationConfiguration = IosNotificationConfiguration(),
-                )
+                alarmee =
+                    Alarmee(
+                        uuid = "test-immediate",
+                        notificationTitle = "Test notification",
+                        notificationBody = "Immediate notification",
+                        scheduledDateTime = fireAt,
+                        androidNotificationConfiguration =
+                            AndroidNotificationConfiguration(
+                                channelId = "routineChannel",
+                                priority = AndroidNotificationPriority.HIGH,
+                            ),
+                        iosNotificationConfiguration = IosNotificationConfiguration(),
+                    )
             )
         }
     }
