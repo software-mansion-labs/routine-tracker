@@ -69,6 +69,21 @@ kotlin {
 
         androidInstrumentedTest.dependencies {
             @OptIn(ExperimentalComposeLibrary::class) implementation(compose.uiTest)
+
+            implementation(libs.roborazzi.rule)
+            implementation(libs.roborazzi.compose)
+            implementation(libs.robolectric)
+        }
+
+        androidUnitTest.dependencies {
+            implementation(kotlin("test"))
+
+            implementation(libs.androidx.ui.test.junit4)
+            implementation(libs.androidx.ui.test.manifest)
+
+            implementation(libs.roborazzi.rule)
+            implementation(libs.roborazzi.compose)
+            implementation(libs.robolectric)
         }
 
         iosTest.dependencies { implementation(libs.roborazzi.compose.ios) }
@@ -87,6 +102,8 @@ android {
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
+    testOptions { unitTests { isIncludeAndroidResources = true } }
+
     packaging { resources { excludes += "/META-INF/{AL2.0,LGPL2.1}" } }
     buildTypes { getByName("release") { isMinifyEnabled = false } }
     compileOptions {
@@ -112,4 +129,4 @@ dependencies {
 
 room { schemaDirectory("$projectDir/schemas") }
 
-roborazzi { outputDir.set(file("src/screenshots")) }
+roborazzi { outputDir.set(file("src/iosTest/resources")) }
