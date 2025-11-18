@@ -33,7 +33,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.MutableCreationExtras
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.mmk.kmpnotifier.notification.NotifierManager
 import com.mohamedrejeb.calf.ui.timepicker.AdaptiveTimePicker
 import com.mohamedrejeb.calf.ui.timepicker.AdaptiveTimePickerState
 import com.mohamedrejeb.calf.ui.timepicker.rememberAdaptiveTimePickerState
@@ -41,6 +40,7 @@ import com.swmansion.routinetracker.data.createAlarmeePlatformConfiguration
 import com.swmansion.routinetracker.di.LocalAppContainer
 import com.swmansion.routinetracker.viewmodel.SettingsViewModel
 import com.swmansion.routinetracker.viewmodel.formatTime
+import com.tweener.alarmee.AlarmeeService
 import com.tweener.alarmee.rememberAlarmeeService
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -130,14 +130,7 @@ fun SettingsScreen(
             Button(
                 modifier = Modifier.padding(top = 16.dp),
                 onClick = {
-                    val timeText = formatTime(
-                        uiState.unspecifiedReminderHour,
-                        uiState.unspecifiedReminderMinute,
-                    )
-                    NotifierManager.getLocalNotifier().notify(
-                        title = "Test notification",
-                        body = "Test test test"
-                    )
+                    viewModel.scheduleImmediateTestNotification()
                 }
             ) {
                 Text("Notify now")
