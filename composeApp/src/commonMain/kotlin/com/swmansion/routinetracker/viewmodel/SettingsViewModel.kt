@@ -23,6 +23,7 @@ import kotlinx.datetime.plus
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.ExperimentalTime
+import kotlinx.datetime.Instant
 
 class SettingsViewModel(
     private val repository: UserPreferencesRepository,
@@ -97,7 +98,7 @@ class SettingsViewModel(
             LocalDateTime(
                 year = nextDate.year,
                 month = nextDate.month,
-                dayOfMonth = nextDate.dayOfMonth,
+                dayOfMonth = nextDate.day,
                 hour = pref.unspecifiedReminderHour,
                 minute = pref.unspecifiedReminderMinute,
                 second = 0,
@@ -124,8 +125,11 @@ class SettingsViewModel(
 
     @OptIn(ExperimentalTime::class)
     fun scheduleImmediateTestNotification() {
-        val nowLocal = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
-        val fireAt = nowLocal
+        val tz = TimeZone.currentSystemDefault()
+        val now = Clock.System.now()
+        val nextMinuteInstant = Instant.fromEpochSeconds((now.epochSeconds / 60 + 1) * 60)
+        val fireAt = nextMinuteInstant.toLocalDateTime(tz)
+
         viewModelScope.launch {
             alarmeeService.local.cancel("test-immediate")
             alarmeeService.local.schedule(
