@@ -81,15 +81,6 @@ kotlin {
             implementation(libs.robolectric)
         }
 
-        androidUnitTest.dependencies {
-            implementation(libs.androidx.ui.test.junit4)
-            implementation(libs.androidx.ui.test.manifest)
-
-            implementation(libs.roborazzi.rule)
-            implementation(libs.roborazzi.compose)
-            implementation(libs.robolectric)
-        }
-
         iosTest.dependencies { implementation(libs.roborazzi.compose.ios) }
     }
 }
