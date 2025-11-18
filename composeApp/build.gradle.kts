@@ -1,3 +1,4 @@
+import org.gradle.kotlin.dsl.roborazzi
 import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
@@ -70,10 +71,7 @@ kotlin {
             @OptIn(ExperimentalComposeLibrary::class) implementation(compose.uiTest)
         }
 
-        iosTest.dependencies {
-            implementation(libs.roborazzi.compose.ios)
-            implementation(kotlin("test"))
-        }
+        iosTest.dependencies { implementation(libs.roborazzi.compose.ios) }
     }
 }
 
@@ -113,3 +111,5 @@ dependencies {
 }
 
 room { schemaDirectory("$projectDir/schemas") }
+
+roborazzi { outputDir.set(file("src/screenshots")) }
