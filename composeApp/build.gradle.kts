@@ -30,6 +30,7 @@ kotlin {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
             implementation(libs.androidx.room.runtime)
+            implementation(libs.datastore)
         }
 
         iosMain.dependencies {

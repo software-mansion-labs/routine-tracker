@@ -5,9 +5,13 @@ import androidx.room.Room
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.swmansion.routinetracker.DataRepository
 import com.swmansion.routinetracker.DefaultDataRepository
+import com.swmansion.routinetracker.data.AndroidUserPreferencesRepository
+import com.swmansion.routinetracker.data.UserPreferencesRepository
 import com.swmansion.routinetracker.database.DB_FILE_NAME
 import com.swmansion.routinetracker.database.RoutineDatabase
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 
 actual class DefaultAppContainer(private val application: Application) : AppContainer {
 
@@ -18,6 +22,7 @@ actual class DefaultAppContainer(private val application: Application) : AppCont
             .setQueryCoroutineContext(Dispatchers.IO)
             .build()
     }
+    private val appScope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     actual override val repository: DataRepository by lazy {
         DefaultDataRepository(
@@ -25,5 +30,9 @@ actual class DefaultAppContainer(private val application: Application) : AppCont
             taskDao = database.taskDao(),
             routineRecurrenceDao = database.routineRecurrenceDao(),
         )
+    }
+
+    actual override val userPreferencesRepository: UserPreferencesRepository by lazy {
+        AndroidUserPreferencesRepository(application, appScope)
     }
 }

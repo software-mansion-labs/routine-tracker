@@ -4,6 +4,8 @@ import androidx.room.Room
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.swmansion.routinetracker.DataRepository
 import com.swmansion.routinetracker.DefaultDataRepository
+import com.swmansion.routinetracker.data.IosUserPreferencesRepository
+import com.swmansion.routinetracker.data.UserPreferencesRepository
 import com.swmansion.routinetracker.database.DB_FILE_NAME
 import com.swmansion.routinetracker.database.RoutineDatabase
 import kotlinx.cinterop.ExperimentalForeignApi
@@ -29,6 +31,16 @@ actual class DefaultAppContainer : AppContainer {
             taskDao = database.taskDao(),
             routineRecurrenceDao = database.routineRecurrenceDao(),
         )
+    }
+
+    private val _userPreferencesRepository = lazy { IosUserPreferencesRepository() }
+    actual override val userPreferencesRepository: UserPreferencesRepository
+        get() = _userPreferencesRepository.value
+
+    fun close() {
+        if (_userPreferencesRepository.isInitialized()) {
+            _userPreferencesRepository.value.dispose()
+        }
     }
 
     @OptIn(ExperimentalForeignApi::class)

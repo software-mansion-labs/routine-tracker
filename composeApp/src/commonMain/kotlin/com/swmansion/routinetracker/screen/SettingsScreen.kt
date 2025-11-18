@@ -23,6 +23,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,27 +31,35 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.MutableCreationExtras
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mohamedrejeb.calf.ui.timepicker.AdaptiveTimePicker
 import com.mohamedrejeb.calf.ui.timepicker.AdaptiveTimePickerState
 import com.mohamedrejeb.calf.ui.timepicker.rememberAdaptiveTimePickerState
+import com.swmansion.routinetracker.di.LocalAppContainer
+import com.swmansion.routinetracker.viewmodel.SettingsViewModel
+import com.swmansion.routinetracker.viewmodel.formatTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen() {
-    var remindersEnabled by remember { mutableStateOf(false) }
+fun SettingsScreen(
+    viewModel: SettingsViewModel =
+        viewModel(
+            factory = SettingsViewModel.Factory,
+            extras =
+                MutableCreationExtras().apply {
+                    set(
+                        SettingsViewModel.DATA_REPOSITORY_KEY,
+                        LocalAppContainer.current.userPreferencesRepository,
+                    )
+                },
+        )
+) {
+    val uiState by viewModel.uiState.collectAsState()
 
-    val specifiedOptions = listOf("5 min", "15 min", "30 min", "1 hour", "4 hours")
     var specifiedExpanded by remember { mutableStateOf(false) }
-    var specifiedSelected by remember { mutableStateOf(specifiedOptions.first()) }
 
     var showUnspecifiedPicker by remember { mutableStateOf(false) }
-    var unspecifiedHour by remember { mutableStateOf(9) }
-    var unspecifiedMinute by remember { mutableStateOf(0) }
-    val timePickerState =
-        rememberAdaptiveTimePickerState(
-            initialHour = unspecifiedHour,
-            initialMinute = unspecifiedMinute,
-        )
 
     Scaffold(
         topBar = { TopAppBar(title = { Text("Settings") }) },
@@ -63,36 +72,45 @@ fun SettingsScreen() {
                     .padding(horizontal = 16.dp, vertical = 12.dp)
         ) {
             RemindersToggleRow(
-                checked = remindersEnabled,
-                onCheckedChange = { remindersEnabled = it },
+                checked = uiState.remindersEnabled,
+                onCheckedChange = viewModel::toggleReminders,
             )
 
             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), thickness = 1.dp)
 
-            if (remindersEnabled) {
+            if (uiState.remindersEnabled) {
                 SpecifiedTimeRow(
-                    specifiedSelected = specifiedSelected,
+                    specifiedSelected = uiState.specifiedSelected,
                     specifiedExpanded = specifiedExpanded,
-                    specifiedOptions = specifiedOptions,
+                    specifiedOptions = uiState.specifiedOptions,
                     onExpandedChange = { specifiedExpanded = it },
                     onOptionSelected = {
-                        specifiedSelected = it
+                        viewModel.setSpecified(it)
                         specifiedExpanded = false
                     },
                 )
 
                 UnspecifiedTimeRow(
-                    timeText = formatTime(unspecifiedHour, unspecifiedMinute),
+                    timeText =
+                        formatTime(
+                            uiState.unspecifiedReminderHour,
+                            uiState.unspecifiedReminderMinute,
+                        ),
                     onOpenPicker = { showUnspecifiedPicker = true },
                 )
             }
 
             if (showUnspecifiedPicker) {
+                val timePickerState =
+                    rememberAdaptiveTimePickerState(
+                        initialHour = uiState.unspecifiedReminderHour,
+                        initialMinute = uiState.unspecifiedReminderMinute,
+                    )
+
                 TimePickerDialog(
                     timePickerState = timePickerState,
                     onDone = {
-                        unspecifiedHour = timePickerState.hour
-                        unspecifiedMinute = timePickerState.minute
+                        viewModel.setUnspecified(timePickerState.hour, timePickerState.minute)
                         showUnspecifiedPicker = false
                     },
                     onDismiss = { showUnspecifiedPicker = false },
@@ -214,10 +232,4 @@ private fun TimePickerDialog(
         confirmButton = { Button(onClick = onDone) { Text("Done") } },
         dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } },
     )
-}
-
-private fun formatTime(hour: Int, minute: Int): String {
-    val hh = hour.toString().padStart(2, '0')
-    val mm = minute.toString().padStart(2, '0')
-    return "$hh:$mm"
 }

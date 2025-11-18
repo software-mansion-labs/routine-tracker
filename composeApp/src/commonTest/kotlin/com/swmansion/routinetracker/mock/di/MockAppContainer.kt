@@ -2,7 +2,9 @@ package com.swmansion.routinetracker.mock.di
 
 import com.swmansion.routinetracker.DataRepository
 import com.swmansion.routinetracker.DefaultDataRepository
+import com.swmansion.routinetracker.data.UserPreferencesRepository
 import com.swmansion.routinetracker.di.AppContainer
+import com.swmansion.routinetracker.mock.data.MockUserPreferencesRepository
 import com.swmansion.routinetracker.mock.database.MockRecurrenceDao
 import com.swmansion.routinetracker.mock.database.MockRoutineDao
 import com.swmansion.routinetracker.mock.database.MockTaskDao
@@ -15,5 +17,9 @@ class MockAppContainer(private val routinesFlow: MutableStateFlow<List<Routine>>
         val mockTaskDao = MockTaskDao()
         val mockRecurrenceDao = MockRecurrenceDao()
         DefaultDataRepository(mockRoutineDao, mockTaskDao, mockRecurrenceDao)
+    }
+
+    override val userPreferencesRepository: UserPreferencesRepository by lazy {
+        MockUserPreferencesRepository()
     }
 }
