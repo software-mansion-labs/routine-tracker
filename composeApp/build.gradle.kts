@@ -70,15 +70,9 @@ kotlin {
 
         androidInstrumentedTest.dependencies {
             @OptIn(ExperimentalComposeLibrary::class) implementation(compose.uiTest)
-
-            implementation(libs.roborazzi.rule)
-            implementation(libs.roborazzi.compose)
-            implementation(libs.robolectric)
         }
 
         androidUnitTest.dependencies {
-            implementation(kotlin("test"))
-
             implementation(libs.androidx.ui.test.junit4)
             implementation(libs.androidx.ui.test.manifest)
 
