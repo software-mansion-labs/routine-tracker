@@ -2,6 +2,7 @@ package com.swmansion.routinetracker.di
 
 import com.swmansion.routinetracker.DataRepository
 import com.swmansion.routinetracker.data.UserPreferencesRepository
+import com.tweener.alarmee.AlarmeeService
 
 interface AppContainer {
     val repository: DataRepository

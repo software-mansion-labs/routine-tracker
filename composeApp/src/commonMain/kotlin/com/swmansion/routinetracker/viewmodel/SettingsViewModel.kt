@@ -14,6 +14,15 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlin.time.Clock
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.toLocalDateTime
+import kotlinx.datetime.DatePeriod
+import kotlinx.datetime.plus
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.ExperimentalTime
 
 class SettingsViewModel(
     private val repository: UserPreferencesRepository,
@@ -37,16 +46,129 @@ class SettingsViewModel(
                 initialValue = SettingsUiState(),
             )
 
+    private suspend fun cancel(uuid: String) {
+        alarmeeService.local.cancel(uuid)
+    }
+
+    fun scheduleSpecifiedReminder() {
+        val pref = uiState.value
+        val duration = when (pref.specifiedSelected) {
+            "5 min" -> 5.minutes
+            "15 min" -> 15.minutes
+            "30 min" -> 30.minutes
+            "1 hour" -> 1.hours
+            "4 hours" -> 4.hours
+            else -> 15.minutes
+        }
+        viewModelScope.launch {
+            alarmeeService.local.schedule(
+                alarmee = Alarmee(
+                    uuid = UUID_SPECIFIED,
+                    notificationTitle = "Przypomnienie rutyny",
+                    notificationBody = "Czas na kolejną rutynę.",
+                    repeatInterval = RepeatInterval.Custom(duration = duration),
+                    androidNotificationConfiguration = AndroidNotificationConfiguration(
+                        priority = AndroidNotificationPriority.DEFAULT,
+                        channelId = "routineChannel",
+                    ),
+                    iosNotificationConfiguration = IosNotificationConfiguration(),
+                )
+            )
+        }
+    }
+
+    @OptIn(ExperimentalTime::class)
+    fun scheduleDailyUnspecifiedReminder() {
+        val pref = uiState.value
+        val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+        val targetToday = LocalDateTime(
+            year = now.year,
+            month = now.month,
+            dayOfMonth = now.dayOfMonth,
+            hour = pref.unspecifiedReminderHour,
+            minute = pref.unspecifiedReminderMinute,
+            second = 0,
+            nanosecond = 0
+        )
+        val scheduled = if (targetToday > now) {
+            targetToday
+        } else {
+            val nextDate = targetToday.date.plus(DatePeriod(days = 1))
+            LocalDateTime(
+                year = nextDate.year,
+                month = nextDate.month,
+                dayOfMonth = nextDate.dayOfMonth,
+                hour = pref.unspecifiedReminderHour,
+                minute = pref.unspecifiedReminderMinute,
+                second = 0,
+                nanosecond = 0
+            )
+        }
+        viewModelScope.launch {
+            alarmeeService.local.schedule(
+                alarmee = Alarmee(
+                    uuid = UUID_UNSPECIFIED,
+                    notificationTitle = "Reminder",
+                    notificationBody = "Routine starting: (${formatTime(pref.unspecifiedReminderHour, pref.unspecifiedReminderMinute)}).",
+                    scheduledDateTime = scheduled,
+                    repeatInterval = RepeatInterval.Daily,
+                    androidNotificationConfiguration = AndroidNotificationConfiguration(
+                        priority = AndroidNotificationPriority.HIGH,
+                        channelId = "routineChannel",
+                    ),
+                    iosNotificationConfiguration = IosNotificationConfiguration(),
+                )
+            )
+        }
+    }
+
+    @OptIn(ExperimentalTime::class)
+    fun scheduleImmediateTestNotification() {
+        val nowLocal = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+        val fireAt = nowLocal
+        viewModelScope.launch {
+            alarmeeService.local.cancel("test-immediate")
+            alarmeeService.local.schedule(
+                alarmee = Alarmee(
+                    uuid = "test-immediate",
+                    notificationTitle = "Test notification",
+                    notificationBody = "Immediate notification",
+                    scheduledDateTime = fireAt,
+                    androidNotificationConfiguration = AndroidNotificationConfiguration(
+                        channelId = "routineChannel",
+                        priority = AndroidNotificationPriority.HIGH,
+                    ),
+                    iosNotificationConfiguration = IosNotificationConfiguration(),
+                )
+            )
+        }
+    }
+
     fun toggleReminders(enabled: Boolean) {
-        viewModelScope.launch { repository.setRemindersEnabled(enabled) }
+        viewModelScope.launch {
+            repository.setRemindersEnabled(enabled)
+            if (enabled) {
+                scheduleSpecifiedReminder()
+                scheduleDailyUnspecifiedReminder()
+            } else {
+                cancel(UUID_SPECIFIED)
+                cancel(UUID_UNSPECIFIED)
+            }
+        }
     }
 
     fun setSpecified(option: String) {
-        viewModelScope.launch { repository.setSpecifiedTimeOption(option) }
+        viewModelScope.launch {
+            repository.setSpecifiedTimeOption(option)
+            if (uiState.value.remindersEnabled) scheduleSpecifiedReminder()
+        }
     }
 
     fun setUnspecified(hour: Int, minute: Int) {
-        viewModelScope.launch { repository.setUnspecifiedReminderTime(hour, minute) }
+        viewModelScope.launch {
+            repository.setUnspecifiedReminderTime(hour, minute)
+            if (uiState.value.remindersEnabled) scheduleDailyUnspecifiedReminder()
+        }
     }
 
     companion object {
