@@ -11,6 +11,7 @@ plugins {
     alias(libs.plugins.androidx.room)
     alias(libs.plugins.ksp)
     alias(libs.plugins.jetbarins.serialization)
+    alias(libs.plugins.roborazzi)
 }
 
 kotlin {
@@ -68,6 +69,11 @@ kotlin {
         androidInstrumentedTest.dependencies {
             @OptIn(ExperimentalComposeLibrary::class) implementation(compose.uiTest)
         }
+
+        iosTest.dependencies {
+            implementation(libs.roborazzi.compose.ios)
+            implementation(kotlin("test"))
+        }
     }
 }
 
@@ -93,8 +99,14 @@ android {
 
 dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4.android)
+
     debugImplementation(libs.androidx.ui.test.manifest)
     debugImplementation(compose.uiTooling)
+
+    testImplementation(libs.roborazzi)
+    testImplementation(libs.roborazzi.compose)
+    testImplementation(libs.roborazzi.rule)
+
     add("kspAndroid", libs.androidx.room.compiler)
     add("kspIosSimulatorArm64", libs.androidx.room.compiler)
     add("kspIosArm64", libs.androidx.room.compiler)
