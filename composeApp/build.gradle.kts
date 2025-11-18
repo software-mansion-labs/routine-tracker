@@ -80,9 +80,7 @@ kotlin {
             implementation(libs.robolectric)
         }
 
-        iosTest.dependencies {
-            implementation(libs.roborazzi.compose.ios)
-        }
+        iosTest.dependencies { implementation(libs.roborazzi.compose.ios) }
     }
 }
 
