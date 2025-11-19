@@ -4,6 +4,7 @@ import com.swmansion.routinetracker.database.RoutineDao
 import com.swmansion.routinetracker.model.Routine
 import com.swmansion.routinetracker.model.RoutineWithTasks
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.count
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
