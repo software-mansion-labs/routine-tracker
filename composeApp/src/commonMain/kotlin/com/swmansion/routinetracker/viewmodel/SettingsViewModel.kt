@@ -158,7 +158,7 @@ class SettingsViewModel(
     }
 
     @OptIn(ExperimentalTime::class)
-    private fun scheduleDailyUnspecifiedReminder(hour: Int, minute: Int) {
+    fun scheduleDailyUnspecifiedReminder(hour: Int, minute: Int) {
         val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
         val targetToday =
             LocalDateTime(
