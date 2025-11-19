@@ -76,7 +76,7 @@ class SettingsViewModel(
                         repeatInterval = RepeatInterval.Custom(duration = duration),
                         androidNotificationConfiguration =
                             AndroidNotificationConfiguration(
-                                priority = AndroidNotificationPriority.DEFAULT,
+                                priority = AndroidNotificationPriority.HIGH,
                                 channelId = "routineChannel",
                             ),
                         iosNotificationConfiguration = IosNotificationConfiguration(),
@@ -86,16 +86,15 @@ class SettingsViewModel(
     }
 
     @OptIn(ExperimentalTime::class)
-    fun scheduleDailyUnspecifiedReminder() {
-        val pref = uiState.value
+    private fun scheduleDailyUnspecifiedReminder(hour: Int, minute: Int) {
         val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
         val targetToday =
             LocalDateTime(
                 year = now.year,
                 month = now.month,
                 dayOfMonth = now.dayOfMonth,
-                hour = pref.unspecifiedReminderHour,
-                minute = pref.unspecifiedReminderMinute,
+                hour = hour,
+                minute = minute,
                 second = 0,
                 nanosecond = 0,
             )
@@ -108,8 +107,8 @@ class SettingsViewModel(
                     year = nextDate.year,
                     month = nextDate.month,
                     dayOfMonth = nextDate.day,
-                    hour = pref.unspecifiedReminderHour,
-                    minute = pref.unspecifiedReminderMinute,
+                    hour = hour,
+                    minute = minute,
                     second = 0,
                     nanosecond = 0,
                 )
@@ -119,9 +118,9 @@ class SettingsViewModel(
                 alarmee =
                     Alarmee(
                         uuid = UUID_UNSPECIFIED,
-                        notificationTitle = "Reminder",
+                        notificationTitle = "Routine reminder",
                         notificationBody =
-                            "Routine starting: (${formatTime(pref.unspecifiedReminderHour, pref.unspecifiedReminderMinute)}).",
+                            "Do not forget about your routine! ${formatTime(hour, minute)}",
                         scheduledDateTime = scheduled,
                         repeatInterval = RepeatInterval.Daily,
                         androidNotificationConfiguration =
@@ -140,7 +139,9 @@ class SettingsViewModel(
             repository.setRemindersEnabled(enabled)
             if (enabled) {
                 scheduleSpecifiedReminder()
-                scheduleDailyUnspecifiedReminder()
+                val h = uiState.value.unspecifiedReminderHour
+                val m = uiState.value.unspecifiedReminderMinute
+                scheduleDailyUnspecifiedReminder(h, m)
             } else {
                 cancel(UUID_SPECIFIED)
                 cancel(UUID_UNSPECIFIED)
@@ -158,7 +159,7 @@ class SettingsViewModel(
     fun setUnspecified(hour: Int, minute: Int) {
         viewModelScope.launch {
             repository.setUnspecifiedReminderTime(hour, minute)
-            if (uiState.value.remindersEnabled) scheduleDailyUnspecifiedReminder()
+            if (uiState.value.remindersEnabled) scheduleDailyUnspecifiedReminder(hour, minute)
         }
     }
 
