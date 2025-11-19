@@ -24,7 +24,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.datetime.DatePeriod
-import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.plus
@@ -129,33 +128,6 @@ class SettingsViewModel(
                             AndroidNotificationConfiguration(
                                 priority = AndroidNotificationPriority.HIGH,
                                 channelId = "routineChannel",
-                            ),
-                        iosNotificationConfiguration = IosNotificationConfiguration(),
-                    )
-            )
-        }
-    }
-
-    @OptIn(ExperimentalTime::class)
-    fun scheduleImmediateTestNotification() {
-        val tz = TimeZone.currentSystemDefault()
-        val now = Clock.System.now()
-        val nextMinuteInstant = Instant.fromEpochSeconds((now.epochSeconds / 60 + 1) * 60)
-        val fireAt = nextMinuteInstant.toLocalDateTime(tz)
-
-        viewModelScope.launch {
-            alarmeeService.local.cancel("test-immediate")
-            alarmeeService.local.schedule(
-                alarmee =
-                    Alarmee(
-                        uuid = "test-immediate",
-                        notificationTitle = "Test notification",
-                        notificationBody = "Immediate notification",
-                        scheduledDateTime = fireAt,
-                        androidNotificationConfiguration =
-                            AndroidNotificationConfiguration(
-                                channelId = "routineChannel",
-                                priority = AndroidNotificationPriority.HIGH,
                             ),
                         iosNotificationConfiguration = IosNotificationConfiguration(),
                     )
