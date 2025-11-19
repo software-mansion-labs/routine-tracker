@@ -125,13 +125,6 @@ fun SettingsScreen(
                     onDismiss = { showUnspecifiedPicker = false },
                 )
             }
-
-            Button(
-                modifier = Modifier.padding(top = 16.dp),
-                onClick = { viewModel.scheduleImmediateTestNotification() },
-            ) {
-                Text("Notify now")
-            }
         }
     }
 }
