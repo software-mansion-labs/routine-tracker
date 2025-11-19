@@ -45,22 +45,22 @@ fun CreateRoutineScreen(
         ),
     settingsViewModel: SettingsViewModel =
         viewModel(
-        factory = SettingsViewModel.Factory,
-        extras =
-            MutableCreationExtras().apply {
-                set(
-                    SettingsViewModel.USER_PREFERENCES_REPOSITORY_KEY,
-                    LocalAppContainer.current.userPreferencesRepository,
-                )
-                set(
-                    SettingsViewModel.ALARMEE_SERVICE_KEY,
-                    rememberAlarmeeService(
-                        platformConfiguration = createAlarmeePlatformConfiguration()
-                    ),
-                )
-                set(SettingsViewModel.DATA_REPOSITORY_KEY, LocalAppContainer.current.repository)
-            },
-    ),
+            factory = SettingsViewModel.Factory,
+            extras =
+                MutableCreationExtras().apply {
+                    set(
+                        SettingsViewModel.USER_PREFERENCES_REPOSITORY_KEY,
+                        LocalAppContainer.current.userPreferencesRepository,
+                    )
+                    set(
+                        SettingsViewModel.ALARMEE_SERVICE_KEY,
+                        rememberAlarmeeService(
+                            platformConfiguration = createAlarmeePlatformConfiguration()
+                        ),
+                    )
+                    set(SettingsViewModel.DATA_REPOSITORY_KEY, LocalAppContainer.current.repository)
+                },
+        ),
     navController: NavController,
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -97,7 +97,8 @@ fun CreateRoutineScreen(
                                     } else {
                                         settingsViewModel.scheduleDailyUnspecifiedReminder(
                                             settingsViewModel.uiState.value.unspecifiedReminderHour,
-                                            settingsViewModel.uiState.value.unspecifiedReminderMinute
+                                            settingsViewModel.uiState.value
+                                                .unspecifiedReminderMinute,
                                         )
                                     }
                                 }
