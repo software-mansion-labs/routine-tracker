@@ -114,13 +114,15 @@ class SettingsViewModel(
                 )
             }
         viewModelScope.launch {
+            val count = dataRepository.countRoutinesWithoutTime()
+            val body = "You have $count routines to start"
+
             alarmeeService.local.schedule(
                 alarmee =
                     Alarmee(
                         uuid = UUID_UNSPECIFIED,
-                        notificationTitle = "Routine reminder",
-                        notificationBody =
-                            "Do not forget about your routine! ${formatTime(hour, minute)}",
+                        notificationTitle = "Routine Reminder",
+                        notificationBody = body,
                         scheduledDateTime = scheduled,
                         repeatInterval = RepeatInterval.Daily,
                         androidNotificationConfiguration =
