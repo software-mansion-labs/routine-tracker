@@ -1,6 +1,8 @@
 package com.swmansion.routinetracker.data
 
 import com.swmansion.routinetracker.model.UserPreferences
+import com.tweener.alarmee.configuration.AlarmeeIosPlatformConfiguration
+import com.tweener.alarmee.configuration.AlarmeePlatformConfiguration
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -70,3 +72,8 @@ class IosUserPreferencesRepository : UserPreferencesRepository {
         store.synchronize()
     }
 }
+
+val platformConfiguration: AlarmeePlatformConfiguration = AlarmeeIosPlatformConfiguration
+
+actual fun createAlarmeePlatformConfiguration(): AlarmeePlatformConfiguration =
+    platformConfiguration
