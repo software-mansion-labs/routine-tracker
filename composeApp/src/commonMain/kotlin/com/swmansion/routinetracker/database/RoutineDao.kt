@@ -38,4 +38,7 @@ interface RoutineDao {
     @Query("DELETE FROM routines WHERE id = :id") suspend fun deleteRoutineById(id: Long)
 
     @Query("DELETE FROM routines") suspend fun removeAll()
+
+    @Query("SELECT COUNT(*) FROM routines WHERE time IS NULL OR time = ''")
+    suspend fun countRoutinesWithoutTime(): Int
 }

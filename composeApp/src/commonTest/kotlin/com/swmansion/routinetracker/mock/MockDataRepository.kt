@@ -36,4 +36,8 @@ class MockDataRepository(
         routineId: Long,
         task: com.swmansion.routinetracker.model.Task,
     ) = delegate.addTaskToRoutine(routineId, task)
+
+    override suspend fun countRoutinesWithoutTime(): Int {
+        return delegate.countRoutinesWithoutTime()
+    }
 }

@@ -4,6 +4,7 @@ import com.swmansion.routinetracker.database.RoutineDao
 import com.swmansion.routinetracker.model.Routine
 import com.swmansion.routinetracker.model.RoutineWithTasks
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 class MockRoutineDao(
@@ -46,4 +47,7 @@ class MockRoutineDao(
     override suspend fun deleteRoutineById(id: Long) {}
 
     override suspend fun removeAll() {}
+
+    override suspend fun countRoutinesWithoutTime(): Int =
+        routinesFlow.first().count { it.time == null }
 }

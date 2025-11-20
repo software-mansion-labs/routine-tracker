@@ -18,6 +18,8 @@ interface DataRepository {
     ): Long
 
     suspend fun addTaskToRoutine(routineId: Long, task: Task): Long
+
+    suspend fun countRoutinesWithoutTime(): Int
 }
 
 class DefaultDataRepository(
@@ -70,4 +72,6 @@ class DefaultDataRepository(
     }
 
     suspend fun getTasksForRoutine(routineId: Long) = taskDao.getTasksForRoutine(routineId)
+
+    override suspend fun countRoutinesWithoutTime(): Int = routineDao.countRoutinesWithoutTime()
 }
