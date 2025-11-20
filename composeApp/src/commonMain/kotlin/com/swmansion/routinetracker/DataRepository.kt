@@ -18,6 +18,12 @@ interface DataRepository {
     ): Long
 
     suspend fun addTaskToRoutine(routineId: Long, task: Task): Long
+
+    suspend fun countRoutinesWithoutTime(): Int
+
+    suspend fun getRecurrencesForRoutine(routineId: Long): List<RoutineRecurrence>
+
+    suspend fun getRoutineById(id: Long): Routine?
 }
 
 class DefaultDataRepository(
@@ -70,4 +76,13 @@ class DefaultDataRepository(
     }
 
     suspend fun getTasksForRoutine(routineId: Long) = taskDao.getTasksForRoutine(routineId)
+
+    override suspend fun countRoutinesWithoutTime(): Int = routineDao.countRoutinesWithoutTime()
+
+    override suspend fun getRecurrencesForRoutine(routineId: Long): List<RoutineRecurrence> =
+        routineRecurrenceDao.getRecurrencesForRoutine(routineId)
+
+    override suspend fun getRoutineById(id: Long): Routine? {
+        return routineDao.getRoutineById(id)
+    }
 }
