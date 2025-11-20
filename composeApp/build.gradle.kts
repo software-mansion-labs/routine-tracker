@@ -96,17 +96,15 @@ android {
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
-    testOptions {
-        unitTests {
-            all {
-                it.useJUnit {
-                    if (project.hasProperty("screenshot")) {
-                        includeCategories("com.swmansion.routinetracker.utils.ScreenshotTests")
-                    }
+    testOptions.unitTests {
+        all { test ->
+            test.useJUnit {
+                if (project.hasProperty("screenshot")) {
+                    includeCategories("com.swmansion.routinetracker.utils.ScreenshotTests")
                 }
             }
-            isIncludeAndroidResources = true
         }
+        isIncludeAndroidResources = true
     }
     packaging { resources { excludes += "/META-INF/{AL2.0,LGPL2.1}" } }
     buildTypes { getByName("release") { isMinifyEnabled = false } }
