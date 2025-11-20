@@ -11,6 +11,7 @@ plugins {
     alias(libs.plugins.androidx.room)
     alias(libs.plugins.ksp)
     alias(libs.plugins.jetbarins.serialization)
+    alias(libs.plugins.roborazzi)
 }
 
 kotlin {
@@ -69,6 +70,17 @@ kotlin {
         androidInstrumentedTest.dependencies {
             @OptIn(ExperimentalComposeLibrary::class) implementation(compose.uiTest)
         }
+
+        androidUnitTest.dependencies {
+            implementation(libs.androidx.ui.test.junit4)
+            implementation(libs.androidx.ui.test.manifest)
+
+            implementation(libs.roborazzi.rule)
+            implementation(libs.roborazzi.compose)
+            implementation(libs.robolectric)
+        }
+
+        iosTest.dependencies { implementation(libs.roborazzi.compose.ios) }
     }
 }
 
@@ -84,6 +96,16 @@ android {
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
+    testOptions.unitTests {
+        all { test ->
+            test.useJUnit {
+                if (project.hasProperty("screenshot")) {
+                    includeCategories("com.swmansion.routinetracker.utils.ScreenshotTests")
+                }
+            }
+        }
+        isIncludeAndroidResources = true
+    }
     packaging { resources { excludes += "/META-INF/{AL2.0,LGPL2.1}" } }
     buildTypes { getByName("release") { isMinifyEnabled = false } }
     compileOptions {
@@ -94,11 +116,19 @@ android {
 
 dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4.android)
+
     debugImplementation(libs.androidx.ui.test.manifest)
     debugImplementation(compose.uiTooling)
+
+    testImplementation(libs.roborazzi)
+    testImplementation(libs.roborazzi.compose)
+    testImplementation(libs.roborazzi.rule)
+
     add("kspAndroid", libs.androidx.room.compiler)
     add("kspIosSimulatorArm64", libs.androidx.room.compiler)
     add("kspIosArm64", libs.androidx.room.compiler)
 }
 
 room { schemaDirectory("$projectDir/schemas") }
+
+roborazzi { outputDir.set(file("build/outputs/roborazzi")) }
