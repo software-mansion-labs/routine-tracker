@@ -24,6 +24,9 @@ import com.swmansion.routinetracker.viewmodel.CreateRoutineViewModel
 import com.swmansion.routinetracker.viewmodel.SettingsViewModel
 import com.swmansion.routinetracker.viewmodel.durationToString
 import com.tweener.alarmee.rememberAlarmeeService
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import routinetracker.composeapp.generated.resources.Res
 import routinetracker.composeapp.generated.resources.ic_add
@@ -88,23 +91,23 @@ fun CreateRoutineScreen(
                 ActionButtons(
                     isLoading = uiState.isLoading,
                     onCreate = {
-                        viewModel.createRoutine(
-                            onSuccess = {
-                                if (settingsViewModel.uiState.value.remindersEnabled) {
-                                    val time = viewModel.getFormattedTime()
-                                    if (time != null) {
-                                        settingsViewModel.scheduleSpecifiedReminder()
+                        viewModel.createRoutine { routineId, hasTime ->
+                            if (settingsViewModel.uiState.value.remindersEnabled) {
+                                MainScope().launch {
+                                    val routine = viewModel.getRoutineById(routineId)
+                                    val recurrences = viewModel.getRecurrencesForRoutine(routineId)
+                                    if (hasTime && routine != null && recurrences.isNotEmpty()) {
+                                        settingsViewModel.scheduleSpecifiedReminderForRoutine(routine, recurrences)
                                     } else {
                                         settingsViewModel.scheduleDailyUnspecifiedReminder(
                                             settingsViewModel.uiState.value.unspecifiedReminderHour,
-                                            settingsViewModel.uiState.value
-                                                .unspecifiedReminderMinute,
+                                            settingsViewModel.uiState.value.unspecifiedReminderMinute,
                                         )
                                     }
                                 }
-                                navController.popBackStack()
                             }
-                        )
+                            navController.popBackStack()
+                        }
                     },
                     onDiscard = navController::popBackStack,
                 )
