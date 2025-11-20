@@ -2,7 +2,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
@@ -17,13 +16,9 @@ class ExampleIOSTest {
     @Test
     fun test() {
         runComposeUiTest {
-            setContent {
-                MaterialTheme {
-                    Column { Button(modifier = Modifier, onClick = {}) { Text("Hello World") } }
-                }
-            }
-            onRoot().captureRoboImage(this, filePath = "test_1")
-            onNodeWithText("Hello World").captureRoboImage(this, filePath = "test_2")
+            setContent { MaterialTheme { Column { Button(onClick = {}) { Text("Hello World") } } } }
+            onRoot().captureRoboImage(this, filePath = "test_1.png")
+            onNodeWithText("Hello World").captureRoboImage(this, filePath = "test_2.png")
         }
     }
 }

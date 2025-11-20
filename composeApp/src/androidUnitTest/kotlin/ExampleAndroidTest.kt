@@ -3,7 +3,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
@@ -29,20 +28,13 @@ class ExampleAndroidTest {
 
     @get:Rule
     val roborazziRule =
-        RoborazziRule(
-            composeRule = composeTestRule,
-            captureRoot = composeTestRule.onRoot(),
-            options = RoborazziRule.Options(outputDirectoryPath = "src/androidUnitTest/resources"),
-        )
+        RoborazziRule(composeRule = composeTestRule, captureRoot = composeTestRule.onRoot())
 
     @Test
     fun test() {
         composeTestRule.setContent {
-            MaterialTheme {
-                Column { Button(modifier = Modifier, onClick = {}) { Text("Hello World") } }
-            }
+            MaterialTheme { Column { Button(onClick = {}) { Text("Hello World") } } }
         }
-        composeTestRule.onRoot().captureRoboImage()
         composeTestRule.onNodeWithText("Hello World").captureRoboImage()
     }
 }
