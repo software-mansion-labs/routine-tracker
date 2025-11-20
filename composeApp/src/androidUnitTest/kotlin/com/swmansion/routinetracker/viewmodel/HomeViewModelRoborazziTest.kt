@@ -50,18 +50,8 @@ class HomeViewModelRoborazziTest {
             )
         val routinesFlow = MutableStateFlow(routines)
         val testAppContainer = createTestAppContainer(routinesFlow)
-        val viewModelStoreOwner = MockViewModelStoreOwner()
 
-        composeTestRule.setContent {
-            CompositionLocalProvider(
-                LocalInspectionMode provides true,
-                LocalViewModelStoreOwner provides viewModelStoreOwner,
-                LocalAppContainer provides testAppContainer,
-            ) {
-                PreviewContextConfigurationEffect()
-                RoutinesScreen(navController = rememberNavController())
-            }
-        }
+        setupRoutinesScreenContent(testAppContainer)
 
         composeTestRule.onRoot().captureRoboImage()
     }
@@ -75,6 +65,14 @@ class HomeViewModelRoborazziTest {
             )
         val routinesFlow = MutableStateFlow(routines)
         val testAppContainer = createTestAppContainer(routinesFlow)
+
+        setupRoutinesScreenContent(testAppContainer)
+
+        composeTestRule.onRoot().captureRoboImage()
+        composeTestRule.onNodeWithText("Simple Routine 1").captureRoboImage()
+    }
+
+    private fun setupRoutinesScreenContent(testAppContainer: MockAppContainer) {
         val viewModelStoreOwner = MockViewModelStoreOwner()
 
         composeTestRule.setContent {
@@ -87,9 +85,6 @@ class HomeViewModelRoborazziTest {
                 RoutinesScreen(navController = rememberNavController())
             }
         }
-
-        composeTestRule.onRoot().captureRoboImage()
-        composeTestRule.onNodeWithText("Simple Routine 1").captureRoboImage()
     }
 
     private fun createTestAppContainer(

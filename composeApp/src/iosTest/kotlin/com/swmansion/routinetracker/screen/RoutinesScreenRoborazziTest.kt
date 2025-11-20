@@ -3,6 +3,7 @@ package com.swmansion.routinetracker.screen
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
@@ -24,19 +25,8 @@ class RoutinesScreenRoborazziTest {
     @Test
     fun shouldCaptureEmptyRoutinesScreen() = runComposeUiTest {
         val testAppContainer = createTestAppContainer(MutableStateFlow(emptyList()))
-        val viewModelStoreOwner = MockViewModelStoreOwner()
 
-        setContent {
-            MaterialTheme {
-                CompositionLocalProvider(
-                    LocalInspectionMode provides true,
-                    LocalViewModelStoreOwner provides viewModelStoreOwner,
-                    LocalAppContainer provides testAppContainer,
-                ) {
-                    RoutinesScreen(navController = rememberNavController())
-                }
-            }
-        }
+        setupRoutinesScreenContent(testAppContainer)
 
         onRoot().captureRoboImage(this, filePath = "routines_empty_screen.png")
         onNodeWithText("No routines yet")
@@ -54,19 +44,8 @@ class RoutinesScreenRoborazziTest {
                 )
             )
         val testAppContainer = createTestAppContainer(routines)
-        val viewModelStoreOwner = MockViewModelStoreOwner()
 
-        setContent {
-            MaterialTheme {
-                CompositionLocalProvider(
-                    LocalInspectionMode provides true,
-                    LocalViewModelStoreOwner provides viewModelStoreOwner,
-                    LocalAppContainer provides testAppContainer,
-                ) {
-                    RoutinesScreen(navController = rememberNavController())
-                }
-            }
-        }
+        setupRoutinesScreenContent(testAppContainer)
 
         onRoot().captureRoboImage(this, filePath = "routines_with_routines.png")
         onNodeWithText("Morning Routine")
@@ -76,6 +55,13 @@ class RoutinesScreenRoborazziTest {
     @Test
     fun shouldCaptureRoutinesScreenTopBar() = runComposeUiTest {
         val testAppContainer = createTestAppContainer(MutableStateFlow(emptyList()))
+
+        setupRoutinesScreenContent(testAppContainer)
+
+        onNodeWithText("My Routines").captureRoboImage(this, filePath = "routines_top_bar.png")
+    }
+
+    private fun ComposeUiTest.setupRoutinesScreenContent(testAppContainer: MockAppContainer) {
         val viewModelStoreOwner = MockViewModelStoreOwner()
 
         setContent {
@@ -89,8 +75,6 @@ class RoutinesScreenRoborazziTest {
                 }
             }
         }
-
-        onNodeWithText("My Routines").captureRoboImage(this, filePath = "routines_top_bar.png")
     }
 
     private fun createTestAppContainer(

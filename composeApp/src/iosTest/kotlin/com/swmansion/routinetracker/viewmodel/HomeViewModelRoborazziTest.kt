@@ -3,6 +3,7 @@ package com.swmansion.routinetracker.viewmodel
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
@@ -33,19 +34,8 @@ class HomeViewModelRoborazziTest {
             )
         val routinesFlow = MutableStateFlow(routines)
         val testAppContainer = createTestAppContainer(routinesFlow)
-        val viewModelStoreOwner = MockViewModelStoreOwner()
 
-        setContent {
-            MaterialTheme {
-                CompositionLocalProvider(
-                    LocalInspectionMode provides true,
-                    LocalViewModelStoreOwner provides viewModelStoreOwner,
-                    LocalAppContainer provides testAppContainer,
-                ) {
-                    RoutinesScreen(navController = rememberNavController())
-                }
-            }
-        }
+        setupRoutinesScreenContent(testAppContainer)
 
         onRoot().captureRoboImage(this, filePath = "routines_multiple_routines.png")
     }
@@ -59,6 +49,15 @@ class HomeViewModelRoborazziTest {
             )
         val routinesFlow = MutableStateFlow(routines)
         val testAppContainer = createTestAppContainer(routinesFlow)
+
+        setupRoutinesScreenContent(testAppContainer)
+
+        onRoot().captureRoboImage(this, filePath = "routines_without_time.png")
+        onNodeWithText("Simple Routine 1")
+            .captureRoboImage(this, filePath = "routines_simple_routine.png")
+    }
+
+    private fun ComposeUiTest.setupRoutinesScreenContent(testAppContainer: MockAppContainer) {
         val viewModelStoreOwner = MockViewModelStoreOwner()
 
         setContent {
@@ -72,10 +71,6 @@ class HomeViewModelRoborazziTest {
                 }
             }
         }
-
-        onRoot().captureRoboImage(this, filePath = "routines_without_time.png")
-        onNodeWithText("Simple Routine 1")
-            .captureRoboImage(this, filePath = "routines_simple_routine.png")
     }
 
     private fun createTestAppContainer(

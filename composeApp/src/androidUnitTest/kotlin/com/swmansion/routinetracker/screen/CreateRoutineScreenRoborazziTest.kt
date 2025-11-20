@@ -42,18 +42,8 @@ class CreateRoutineScreenRoborazziTest {
     @Test
     fun shouldCaptureCreateRoutineScreenInitialState() {
         val testAppContainer = createTestAppContainer()
-        val viewModelStoreOwner = MockViewModelStoreOwner()
 
-        composeTestRule.setContent {
-            CompositionLocalProvider(
-                LocalInspectionMode provides true,
-                LocalViewModelStoreOwner provides viewModelStoreOwner,
-                LocalAppContainer provides testAppContainer,
-            ) {
-                PreviewContextConfigurationEffect()
-                CreateRoutineScreen(navController = rememberNavController())
-            }
-        }
+        setupCreateRoutineScreenContent(testAppContainer)
 
         composeTestRule.onRoot().captureRoboImage()
         composeTestRule.onNodeWithText("Create Routine").captureRoboImage()
@@ -62,19 +52,9 @@ class CreateRoutineScreenRoborazziTest {
     @Test
     fun shouldCaptureCreateRoutineScreenWithNameEntered() {
         val testAppContainer = createTestAppContainer()
-        val viewModelStoreOwner = MockViewModelStoreOwner()
         val routineName = "Test Routine"
 
-        composeTestRule.setContent {
-            CompositionLocalProvider(
-                LocalInspectionMode provides true,
-                LocalViewModelStoreOwner provides viewModelStoreOwner,
-                LocalAppContainer provides testAppContainer,
-            ) {
-                PreviewContextConfigurationEffect()
-                CreateRoutineScreen(navController = rememberNavController())
-            }
-        }
+        setupCreateRoutineScreenContent(testAppContainer)
 
         composeTestRule.onNodeWithText("Routine Name").performTextInput(routineName)
         composeTestRule.onRoot().captureRoboImage()
@@ -83,18 +63,8 @@ class CreateRoutineScreenRoborazziTest {
     @Test
     fun shouldCaptureCreateRoutineScreenWithAllSections() {
         val testAppContainer = createTestAppContainer()
-        val viewModelStoreOwner = MockViewModelStoreOwner()
 
-        composeTestRule.setContent {
-            CompositionLocalProvider(
-                LocalInspectionMode provides true,
-                LocalViewModelStoreOwner provides viewModelStoreOwner,
-                LocalAppContainer provides testAppContainer,
-            ) {
-                PreviewContextConfigurationEffect()
-                CreateRoutineScreen(navController = rememberNavController())
-            }
-        }
+        setupCreateRoutineScreenContent(testAppContainer)
 
         composeTestRule.onRoot().captureRoboImage()
         composeTestRule.onNodeWithText("Days of Week (optional)").captureRoboImage()
@@ -103,6 +73,14 @@ class CreateRoutineScreenRoborazziTest {
     @Test
     fun shouldCaptureCreateRoutineScreenActionButtons() {
         val testAppContainer = createTestAppContainer()
+
+        setupCreateRoutineScreenContent(testAppContainer)
+
+        composeTestRule.onNodeWithText("Create").captureRoboImage()
+        composeTestRule.onNodeWithText("Discard").captureRoboImage()
+    }
+
+    private fun setupCreateRoutineScreenContent(testAppContainer: MockAppContainer) {
         val viewModelStoreOwner = MockViewModelStoreOwner()
 
         composeTestRule.setContent {
@@ -115,9 +93,6 @@ class CreateRoutineScreenRoborazziTest {
                 CreateRoutineScreen(navController = rememberNavController())
             }
         }
-
-        composeTestRule.onNodeWithText("Create").captureRoboImage()
-        composeTestRule.onNodeWithText("Discard").captureRoboImage()
     }
 
     private fun createTestAppContainer(

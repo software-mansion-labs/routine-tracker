@@ -3,6 +3,7 @@ package com.swmansion.routinetracker.screen
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
@@ -25,19 +26,8 @@ class CreateRoutineScreenRoborazziTest {
     @Test
     fun shouldCaptureCreateRoutineScreenInitialState() = runComposeUiTest {
         val testAppContainer = createTestAppContainer()
-        val viewModelStoreOwner = MockViewModelStoreOwner()
 
-        setContent {
-            MaterialTheme {
-                CompositionLocalProvider(
-                    LocalInspectionMode provides true,
-                    LocalViewModelStoreOwner provides viewModelStoreOwner,
-                    LocalAppContainer provides testAppContainer,
-                ) {
-                    CreateRoutineScreen(navController = rememberNavController())
-                }
-            }
-        }
+        setupCreateRoutineScreenContent(testAppContainer)
 
         onRoot().captureRoboImage(this, filePath = "create_routine_initial_state.png")
         onNodeWithText("Create Routine")
@@ -47,20 +37,9 @@ class CreateRoutineScreenRoborazziTest {
     @Test
     fun shouldCaptureCreateRoutineScreenWithNameEntered() = runComposeUiTest {
         val testAppContainer = createTestAppContainer()
-        val viewModelStoreOwner = MockViewModelStoreOwner()
         val routineName = "Test Routine"
 
-        setContent {
-            MaterialTheme {
-                CompositionLocalProvider(
-                    LocalInspectionMode provides true,
-                    LocalViewModelStoreOwner provides viewModelStoreOwner,
-                    LocalAppContainer provides testAppContainer,
-                ) {
-                    CreateRoutineScreen(navController = rememberNavController())
-                }
-            }
-        }
+        setupCreateRoutineScreenContent(testAppContainer)
 
         onNodeWithText("Routine Name").performTextInput(routineName)
         onRoot().captureRoboImage(this, filePath = "create_routine_with_name.png")
@@ -69,19 +48,8 @@ class CreateRoutineScreenRoborazziTest {
     @Test
     fun shouldCaptureCreateRoutineScreenWithAllSections() = runComposeUiTest {
         val testAppContainer = createTestAppContainer()
-        val viewModelStoreOwner = MockViewModelStoreOwner()
 
-        setContent {
-            MaterialTheme {
-                CompositionLocalProvider(
-                    LocalInspectionMode provides true,
-                    LocalViewModelStoreOwner provides viewModelStoreOwner,
-                    LocalAppContainer provides testAppContainer,
-                ) {
-                    CreateRoutineScreen(navController = rememberNavController())
-                }
-            }
-        }
+        setupCreateRoutineScreenContent(testAppContainer)
 
         onRoot().captureRoboImage(this, filePath = "create_routine_all_sections.png")
         onNodeWithText("Days of Week (optional)")
@@ -91,6 +59,16 @@ class CreateRoutineScreenRoborazziTest {
     @Test
     fun shouldCaptureCreateRoutineScreenActionButtons() = runComposeUiTest {
         val testAppContainer = createTestAppContainer()
+
+        setupCreateRoutineScreenContent(testAppContainer)
+
+        onNodeWithText("Create")
+            .captureRoboImage(this, filePath = "create_routine_create_button.png")
+        onNodeWithText("Discard")
+            .captureRoboImage(this, filePath = "create_routine_discard_button.png")
+    }
+
+    private fun ComposeUiTest.setupCreateRoutineScreenContent(testAppContainer: MockAppContainer) {
         val viewModelStoreOwner = MockViewModelStoreOwner()
 
         setContent {
@@ -104,11 +82,6 @@ class CreateRoutineScreenRoborazziTest {
                 }
             }
         }
-
-        onNodeWithText("Create")
-            .captureRoboImage(this, filePath = "create_routine_create_button.png")
-        onNodeWithText("Discard")
-            .captureRoboImage(this, filePath = "create_routine_discard_button.png")
     }
 
     private fun createTestAppContainer(

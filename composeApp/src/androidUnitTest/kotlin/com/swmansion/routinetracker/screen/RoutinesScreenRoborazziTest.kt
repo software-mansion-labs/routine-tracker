@@ -41,18 +41,8 @@ class RoutinesScreenRoborazziTest {
     @Test
     fun shouldCaptureEmptyRoutinesScreen() {
         val testAppContainer = createTestAppContainer(MutableStateFlow(emptyList()))
-        val viewModelStoreOwner = MockViewModelStoreOwner()
 
-        composeTestRule.setContent {
-            CompositionLocalProvider(
-                LocalInspectionMode provides true,
-                LocalViewModelStoreOwner provides viewModelStoreOwner,
-                LocalAppContainer provides testAppContainer,
-            ) {
-                PreviewContextConfigurationEffect()
-                RoutinesScreen(navController = rememberNavController())
-            }
-        }
+        setupRoutinesScreenContent(testAppContainer)
 
         composeTestRule.onRoot().captureRoboImage()
         composeTestRule.onNodeWithText("No routines yet").captureRoboImage()
@@ -69,18 +59,8 @@ class RoutinesScreenRoborazziTest {
                 )
             )
         val testAppContainer = createTestAppContainer(routines)
-        val viewModelStoreOwner = MockViewModelStoreOwner()
 
-        composeTestRule.setContent {
-            CompositionLocalProvider(
-                LocalInspectionMode provides true,
-                LocalViewModelStoreOwner provides viewModelStoreOwner,
-                LocalAppContainer provides testAppContainer,
-            ) {
-                PreviewContextConfigurationEffect()
-                RoutinesScreen(navController = rememberNavController())
-            }
-        }
+        setupRoutinesScreenContent(testAppContainer)
 
         composeTestRule.onRoot().captureRoboImage()
         composeTestRule.onNodeWithText("Morning Routine").captureRoboImage()
@@ -89,6 +69,13 @@ class RoutinesScreenRoborazziTest {
     @Test
     fun shouldCaptureRoutinesScreenTopBar() {
         val testAppContainer = createTestAppContainer(MutableStateFlow(emptyList()))
+
+        setupRoutinesScreenContent(testAppContainer)
+
+        composeTestRule.onNodeWithText("My Routines").captureRoboImage()
+    }
+
+    private fun setupRoutinesScreenContent(testAppContainer: MockAppContainer) {
         val viewModelStoreOwner = MockViewModelStoreOwner()
 
         composeTestRule.setContent {
@@ -101,8 +88,6 @@ class RoutinesScreenRoborazziTest {
                 RoutinesScreen(navController = rememberNavController())
             }
         }
-
-        composeTestRule.onNodeWithText("My Routines").captureRoboImage()
     }
 
     private fun createTestAppContainer(
