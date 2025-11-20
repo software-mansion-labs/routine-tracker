@@ -6,14 +6,20 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import com.swmansion.routinetracker.DataRepository
 import com.swmansion.routinetracker.data.UserPreferencesRepository
+import com.tweener.alarmee.AlarmeeService
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class SettingsViewModel(private val repository: UserPreferencesRepository) : ViewModel() {
+class SettingsViewModel(
+    private val repository: UserPreferencesRepository,
+    private val dataRepository: DataRepository,
+    private val alarmeeService: AlarmeeService,
+) : ViewModel() {
     val uiState: StateFlow<SettingsUiState> =
         repository.preferences
             .map { p ->
@@ -44,14 +50,25 @@ class SettingsViewModel(private val repository: UserPreferencesRepository) : Vie
     }
 
     companion object {
-        val DATA_REPOSITORY_KEY = object : CreationExtras.Key<UserPreferencesRepository> {}
+        const val UUID_SPECIFIED = "specified-reminder"
+        const val UUID_UNSPECIFIED = "daily-unspecified-reminder"
+        val USER_PREFERENCES_REPOSITORY_KEY =
+            object : CreationExtras.Key<UserPreferencesRepository> {}
+        val ALARMEE_SERVICE_KEY = object : CreationExtras.Key<AlarmeeService> {}
+        val DATA_REPOSITORY_KEY = object : CreationExtras.Key<DataRepository> {}
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 val prefsRepository =
-                    this[DATA_REPOSITORY_KEY]
+                    this[USER_PREFERENCES_REPOSITORY_KEY]
                         ?: throw IllegalArgumentException("UserPreferencesRepository not provided")
 
-                SettingsViewModel(prefsRepository)
+                val alarmee =
+                    this[ALARMEE_SERVICE_KEY]
+                        ?: throw IllegalArgumentException("AlarmeeService not provided")
+                val dataRepository =
+                    this[DATA_REPOSITORY_KEY]
+                        ?: throw IllegalArgumentException("DataRepository not provided")
+                SettingsViewModel(prefsRepository, dataRepository, alarmee)
             }
         }
     }
