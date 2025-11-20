@@ -40,4 +40,12 @@ class MockDataRepository(
     override suspend fun countRoutinesWithoutTime(): Int {
         return delegate.countRoutinesWithoutTime()
     }
+
+    override suspend fun getRecurrencesForRoutine(routineId: Long): List<RoutineRecurrence> {
+        return delegate.getRecurrencesForRoutine(routineId)
+    }
+
+    override suspend fun getRoutineById(id: Long): Routine? {
+        return delegate.getRoutineById(id)
+    }
 }
