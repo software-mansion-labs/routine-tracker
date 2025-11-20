@@ -15,7 +15,11 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class SettingsViewModel(private val repository: UserPreferencesRepository, private val dataRepository: DataRepository, private val alarmeeService: AlarmeeService,) : ViewModel() {
+class SettingsViewModel(
+    private val repository: UserPreferencesRepository,
+    private val dataRepository: DataRepository,
+    private val alarmeeService: AlarmeeService,
+) : ViewModel() {
     val uiState: StateFlow<SettingsUiState> =
         repository.preferences
             .map { p ->
