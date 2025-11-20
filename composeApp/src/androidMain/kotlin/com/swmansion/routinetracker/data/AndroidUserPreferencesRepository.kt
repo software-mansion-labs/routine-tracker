@@ -1,12 +1,18 @@
 package com.swmansion.routinetracker.data
 
+import android.app.NotificationManager
 import android.content.Context
+import androidx.compose.ui.graphics.Color
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.swmansion.routinetracker.R
 import com.swmansion.routinetracker.model.UserPreferences
+import com.tweener.alarmee.channel.AlarmeeNotificationChannel
+import com.tweener.alarmee.configuration.AlarmeeAndroidPlatformConfiguration
+import com.tweener.alarmee.configuration.AlarmeePlatformConfiguration
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -57,3 +63,19 @@ class AndroidUserPreferencesRepository(
         }
     }
 }
+
+actual fun createAlarmeePlatformConfiguration(): AlarmeePlatformConfiguration =
+    AlarmeeAndroidPlatformConfiguration(
+        notificationIconResId = R.drawable.ic_launcher_foreground,
+        notificationIconColor = Color.Blue,
+        useExactScheduling = true,
+        notificationChannels =
+            listOf(
+                AlarmeeNotificationChannel(
+                    id = "routineChannel",
+                    name = "Routine notifications",
+                    importance = NotificationManager.IMPORTANCE_HIGH,
+                    soundFilename = "notifications_sound",
+                )
+            ),
+    )

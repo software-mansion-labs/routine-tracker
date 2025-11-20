@@ -1,6 +1,7 @@
 package com.swmansion.routinetracker.data
 
 import com.swmansion.routinetracker.model.UserPreferences
+import com.tweener.alarmee.configuration.AlarmeePlatformConfiguration
 import kotlinx.coroutines.flow.StateFlow
 
 interface UserPreferencesRepository {
@@ -12,3 +13,5 @@ interface UserPreferencesRepository {
 
     suspend fun setUnspecifiedReminderTime(hour: Int, minute: Int)
 }
+
+expect fun createAlarmeePlatformConfiguration(): AlarmeePlatformConfiguration
