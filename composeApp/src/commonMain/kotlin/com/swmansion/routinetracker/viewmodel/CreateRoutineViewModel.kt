@@ -164,7 +164,7 @@ class CreateRoutineViewModel(private val repository: DataRepository) : ViewModel
         _uiState.updateState { copy(tasks = tasks + newTask) }
     }
 
-    fun createRoutine(onSuccess: () -> Unit) {
+    fun createRoutine(onSuccess: (Long, Boolean) -> Unit) {
         if (_uiState.value.routineName.isBlank()) {
             updateErrorMessage("Routine name is required")
             return
@@ -195,9 +195,11 @@ class CreateRoutineViewModel(private val repository: DataRepository) : ViewModel
 
                 for (task in uiState.value.tasks) repository.addTaskToRoutine(routineId, task)
 
+                val hasTime = timeString != null
+
                 resetForm()
 
-                onSuccess()
+                onSuccess(routineId, hasTime)
             } catch (e: Exception) {
                 updateErrorMessage("Failed to create routine: ${e.message}")
             } finally {
@@ -216,6 +218,14 @@ class CreateRoutineViewModel(private val repository: DataRepository) : ViewModel
                 tasks = emptyList(),
             )
         }
+    }
+
+    suspend fun getRoutineById(routineId: Long): Routine? {
+        return repository.getRoutineById(routineId)
+    }
+
+    suspend fun getRecurrencesForRoutine(routineId: Long): List<RoutineRecurrence> {
+        return repository.getRecurrencesForRoutine(routineId)
     }
 
     companion object {
