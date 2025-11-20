@@ -16,11 +16,10 @@ import com.tweener.alarmee.model.AndroidNotificationConfiguration
 import com.tweener.alarmee.model.AndroidNotificationPriority
 import com.tweener.alarmee.model.IosNotificationConfiguration
 import com.tweener.alarmee.model.RepeatInterval
-import kotlin.time.Clock
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
-import kotlin.time.Duration.Companion.hours
-import kotlin.time.Duration.Companion.minutes
 import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
@@ -34,6 +33,10 @@ import kotlinx.datetime.isoDayNumber
 import kotlinx.datetime.plus
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
+
+private const val UUID_SPECIFIED = "specified-reminder"
+private const val UUID_UNSPECIFIED = "daily-unspecified-reminder"
+private val SPECIFIED_OPTIONS = listOf("5 min", "15 min", "30 min", "1 hour", "4 hours")
 
 class SettingsViewModel(
     private val repository: UserPreferencesRepository,
@@ -51,15 +54,9 @@ class SettingsViewModel(
                     unspecifiedReminderMinute = p.unspecifiedReminderMinute,
                 )
             }
-            .stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5_000),
-                initialValue = SettingsUiState(),
-            )
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), SettingsUiState())
 
-    private fun cancel(uuid: String) {
-        alarmeeService.local.cancel(uuid)
-    }
+    private fun cancel(uuid: String) = alarmeeService.local.cancel(uuid)
 
     private fun specifiedUuid(routineId: Long, dayOfWeek: Int) =
         "$UUID_SPECIFIED-$routineId-$dayOfWeek"
@@ -70,36 +67,21 @@ class SettingsViewModel(
             .map { it.routine }
             .filter { it.time != null }
             .forEach { routine ->
-                val recurrences = dataRepository.getRecurrencesForRoutine(routine.id)
-                recurrences.forEach { rec -> cancel(specifiedUuid(routine.id, rec.dayOfWeek)) }
+                dataRepository.getRecurrencesForRoutine(routine.id).forEach { rec ->
+                    cancel(specifiedUuid(routine.id, rec.dayOfWeek))
+                }
             }
-    }
-
-    private fun parseHourMinute(time: String): Pair<Int, Int> {
-        val parts = time.split(":")
-        val h = parts.getOrNull(0)?.toIntOrNull() ?: 0
-        val m = parts.getOrNull(1)?.toIntOrNull() ?: 0
-        return h to m
     }
 
     @OptIn(ExperimentalTime::class)
     fun scheduleSpecifiedReminder() {
         val pref = uiState.value
-        val offset =
-            when (pref.specifiedSelected) {
-                "5 min" -> 5.minutes
-                "15 min" -> 15.minutes
-                "30 min" -> 30.minutes
-                "1 hour" -> 1.hours
-                "4 hours" -> 4.hours
-                else -> 15.minutes
-            }
+        val offset = getReminderOffset(pref.specifiedSelected)
 
         viewModelScope.launch {
             val routines = dataRepository.getAllRoutinesWithTasks().first()
-
-            val nowInstant = Clock.System.now()
-            val tz = TimeZone.currentSystemDefault()
+            val nowInstant = getCurrentInstant()
+            val tz = getCurrentTimeZone()
 
             routines
                 .map { it.routine }
@@ -107,53 +89,8 @@ class SettingsViewModel(
                 .forEach { routine ->
                     val (hour, minute) = parseHourMinute(routine.time!!)
                     val recurrences = dataRepository.getRecurrencesForRoutine(routine.id)
-                    if (recurrences.isEmpty()) return@forEach
-
                     recurrences.forEach { rec ->
-                        val todayLdt = nowInstant.toLocalDateTime(tz)
-                        val today = todayLdt.date
-                        val todayIso = today.dayOfWeek.isoDayNumber
-
-                        val deltaDays = (rec.dayOfWeek - todayIso + 7) % 7
-                        val firstDate = today.plus(DatePeriod(days = deltaDays))
-
-                        val baseFirst =
-                            LocalDateTime(
-                                year = firstDate.year,
-                                month = firstDate.month,
-                                dayOfMonth = firstDate.day,
-                                hour = hour,
-                                minute = minute,
-                                second = 0,
-                                nanosecond = 0,
-                            )
-
-                        var scheduledInstant = baseFirst.toInstant(tz) - offset
-
-                        val periodDays = (rec.intervalWeeks.coerceAtLeast(1)) * 7
-                        while (scheduledInstant <= nowInstant) {
-                            scheduledInstant += periodDays.toLong().days
-                        }
-
-                        val scheduled = scheduledInstant.toLocalDateTime(tz)
-
-                        alarmeeService.local.schedule(
-                            alarmee =
-                                Alarmee(
-                                    uuid = specifiedUuid(routine.id, rec.dayOfWeek),
-                                    notificationTitle = "Routine Reminder",
-                                    notificationBody = "Soon: ${routine.name}",
-                                    scheduledDateTime = scheduled,
-                                    repeatInterval =
-                                        RepeatInterval.Custom(duration = periodDays.toLong().days),
-                                    androidNotificationConfiguration =
-                                        AndroidNotificationConfiguration(
-                                            priority = AndroidNotificationPriority.HIGH,
-                                            channelId = "routineChannel",
-                                        ),
-                                    iosNotificationConfiguration = IosNotificationConfiguration(),
-                                )
-                        )
+                        scheduleRoutineReminder(routine, rec, hour, minute, offset, nowInstant, tz)
                     }
                 }
         }
@@ -164,73 +101,70 @@ class SettingsViewModel(
         routine: Routine,
         recurrences: List<RoutineRecurrence>,
     ) {
-        val pref = uiState.value
-        val offset =
-            when (pref.specifiedSelected) {
-                "5 min" -> 5.minutes
-                "15 min" -> 15.minutes
-                "30 min" -> 30.minutes
-                "1 hour" -> 1.hours
-                "4 hours" -> 4.hours
-                else -> 15.minutes
-            }
+        val offset = getReminderOffset(uiState.value.specifiedSelected)
+        val nowInstant = getCurrentInstant()
+        val tz = getCurrentTimeZone()
+        val (hour, minute) = parseHourMinute(routine.time!!)
 
         viewModelScope.launch {
-            val nowInstant = Clock.System.now()
-            val tz = TimeZone.currentSystemDefault()
-            val (hour, minute) = parseHourMinute(routine.time!!)
             recurrences.forEach { rec ->
-                val todayLdt = nowInstant.toLocalDateTime(tz)
-                val today = todayLdt.date
-                val todayIso = today.dayOfWeek.isoDayNumber
-
-                val deltaDays = (rec.dayOfWeek - todayIso + 7) % 7
-                val firstDate = today.plus(DatePeriod(days = deltaDays))
-
-                val baseFirst =
-                    LocalDateTime(
-                        year = firstDate.year,
-                        month = firstDate.month,
-                        dayOfMonth = firstDate.day,
-                        hour = hour,
-                        minute = minute,
-                        second = 0,
-                        nanosecond = 0,
-                    )
-
-                var scheduledInstant = baseFirst.toInstant(tz) - offset
-
-                val periodDays = (rec.intervalWeeks.coerceAtLeast(1)) * 7
-                while (scheduledInstant <= nowInstant) {
-                    scheduledInstant += periodDays.toLong().days
-                }
-
-                val scheduled = scheduledInstant.toLocalDateTime(tz)
-
-                alarmeeService.local.schedule(
-                    alarmee =
-                        Alarmee(
-                            uuid = specifiedUuid(routine.id, rec.dayOfWeek),
-                            notificationTitle = "Routine Reminder",
-                            notificationBody = "Soon: ${routine.name}",
-                            scheduledDateTime = scheduled,
-                            repeatInterval =
-                                RepeatInterval.Custom(duration = periodDays.toLong().days),
-                            androidNotificationConfiguration =
-                                AndroidNotificationConfiguration(
-                                    priority = AndroidNotificationPriority.HIGH,
-                                    channelId = "routineChannel",
-                                ),
-                            iosNotificationConfiguration = IosNotificationConfiguration(),
-                        )
-                )
+                scheduleRoutineReminder(routine, rec, hour, minute, offset, nowInstant, tz)
             }
         }
     }
 
     @OptIn(ExperimentalTime::class)
+    private fun scheduleRoutineReminder(
+        routine: Routine,
+        rec: RoutineRecurrence,
+        hour: Int,
+        minute: Int,
+        offset: Duration,
+        nowInstant: Instant,
+        tz: TimeZone,
+    ) {
+        val todayLdt = nowInstant.toLocalDateTime(tz)
+        val today = todayLdt.date
+        val todayIso = today.dayOfWeek.isoDayNumber
+        val deltaDays = (rec.dayOfWeek - todayIso + 7) % 7
+        val firstDate = today.plus(DatePeriod(days = deltaDays))
+        val baseFirst =
+            LocalDateTime(
+                year = firstDate.year,
+                month = firstDate.month,
+                dayOfMonth = firstDate.day,
+                hour = hour,
+                minute = minute,
+                second = 0,
+                nanosecond = 0,
+            )
+        var scheduledInstant = baseFirst.toInstant(tz) - offset
+        val periodDays = (rec.intervalWeeks.coerceAtLeast(1)) * 7
+        while (scheduledInstant <= nowInstant) {
+            scheduledInstant += periodDays.toLong().days
+        }
+        val scheduled = scheduledInstant.toLocalDateTime(tz)
+
+        alarmeeService.local.schedule(
+            Alarmee(
+                uuid = specifiedUuid(routine.id, rec.dayOfWeek),
+                notificationTitle = "Routine Reminder",
+                notificationBody = "Soon: ${routine.name}",
+                scheduledDateTime = scheduled,
+                repeatInterval = RepeatInterval.Custom(duration = periodDays.toLong().days),
+                androidNotificationConfiguration =
+                    AndroidNotificationConfiguration(
+                        priority = AndroidNotificationPriority.HIGH,
+                        channelId = "routineChannel",
+                    ),
+                iosNotificationConfiguration = IosNotificationConfiguration(),
+            )
+        )
+    }
+
+    @OptIn(ExperimentalTime::class)
     fun scheduleDailyUnspecifiedReminder(hour: Int, minute: Int) {
-        val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+        val now = getCurrentInstant().toLocalDateTime(getCurrentTimeZone())
         val targetToday =
             LocalDateTime(
                 year = now.year,
@@ -242,9 +176,8 @@ class SettingsViewModel(
                 nanosecond = 0,
             )
         val scheduled =
-            if (targetToday > now) {
-                targetToday
-            } else {
+            if (targetToday > now) targetToday
+            else {
                 val nextDate = targetToday.date.plus(DatePeriod(days = 1))
                 LocalDateTime(
                     year = nextDate.year,
@@ -259,22 +192,20 @@ class SettingsViewModel(
         viewModelScope.launch {
             val count = dataRepository.countRoutinesWithoutTime()
             val body = "You have $count routines to start"
-
             alarmeeService.local.schedule(
-                alarmee =
-                    Alarmee(
-                        uuid = UUID_UNSPECIFIED,
-                        notificationTitle = "Routine Reminder",
-                        notificationBody = body,
-                        scheduledDateTime = scheduled,
-                        repeatInterval = RepeatInterval.Daily,
-                        androidNotificationConfiguration =
-                            AndroidNotificationConfiguration(
-                                priority = AndroidNotificationPriority.HIGH,
-                                channelId = "routineChannel",
-                            ),
-                        iosNotificationConfiguration = IosNotificationConfiguration(),
-                    )
+                Alarmee(
+                    uuid = UUID_UNSPECIFIED,
+                    notificationTitle = "Routine Reminder",
+                    notificationBody = body,
+                    scheduledDateTime = scheduled,
+                    repeatInterval = RepeatInterval.Daily,
+                    androidNotificationConfiguration =
+                        AndroidNotificationConfiguration(
+                            priority = AndroidNotificationPriority.HIGH,
+                            channelId = "routineChannel",
+                        ),
+                    iosNotificationConfiguration = IosNotificationConfiguration(),
+                )
             )
         }
     }
@@ -284,9 +215,10 @@ class SettingsViewModel(
             repository.setRemindersEnabled(enabled)
             if (enabled) {
                 scheduleSpecifiedReminder()
-                val h = uiState.value.unspecifiedReminderHour
-                val m = uiState.value.unspecifiedReminderMinute
-                scheduleDailyUnspecifiedReminder(h, m)
+                scheduleDailyUnspecifiedReminder(
+                    uiState.value.unspecifiedReminderHour,
+                    uiState.value.unspecifiedReminderMinute,
+                )
             } else {
                 cancelAllSpecifiedReminders()
                 cancel(UUID_UNSPECIFIED)
@@ -315,8 +247,6 @@ class SettingsViewModel(
     }
 
     companion object {
-        const val UUID_SPECIFIED = "specified-reminder"
-        const val UUID_UNSPECIFIED = "daily-unspecified-reminder"
         val USER_PREFERENCES_REPOSITORY_KEY =
             object : CreationExtras.Key<UserPreferencesRepository> {}
         val ALARMEE_SERVICE_KEY = object : CreationExtras.Key<AlarmeeService> {}
@@ -326,7 +256,6 @@ class SettingsViewModel(
                 val prefsRepository =
                     this[USER_PREFERENCES_REPOSITORY_KEY]
                         ?: throw IllegalArgumentException("UserPreferencesRepository not provided")
-
                 val alarmee =
                     this[ALARMEE_SERVICE_KEY]
                         ?: throw IllegalArgumentException("AlarmeeService not provided")
@@ -338,11 +267,6 @@ class SettingsViewModel(
         }
     }
 }
-
-fun formatTime(hour: Int, minute: Int): String =
-    hour.toString().padStart(2, '0') + ":" + minute.toString().padStart(2, '0')
-
-private val SPECIFIED_OPTIONS = listOf("5 min", "15 min", "30 min", "1 hour", "4 hours")
 
 data class SettingsUiState(
     val remindersEnabled: Boolean = false,
