@@ -25,7 +25,6 @@ import com.swmansion.routinetracker.viewmodel.SettingsViewModel
 import com.swmansion.routinetracker.viewmodel.durationToString
 import com.tweener.alarmee.rememberAlarmeeService
 import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import routinetracker.composeapp.generated.resources.Res
@@ -97,11 +96,15 @@ fun CreateRoutineScreen(
                                     val routine = viewModel.getRoutineById(routineId)
                                     val recurrences = viewModel.getRecurrencesForRoutine(routineId)
                                     if (hasTime && routine != null && recurrences.isNotEmpty()) {
-                                        settingsViewModel.scheduleSpecifiedReminderForRoutine(routine, recurrences)
+                                        settingsViewModel.scheduleSpecifiedReminderForRoutine(
+                                            routine,
+                                            recurrences,
+                                        )
                                     } else {
                                         settingsViewModel.scheduleDailyUnspecifiedReminder(
                                             settingsViewModel.uiState.value.unspecifiedReminderHour,
-                                            settingsViewModel.uiState.value.unspecifiedReminderMinute,
+                                            settingsViewModel.uiState.value
+                                                .unspecifiedReminderMinute,
                                         )
                                     }
                                 }

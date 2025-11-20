@@ -160,7 +160,10 @@ class SettingsViewModel(
     }
 
     @OptIn(ExperimentalTime::class)
-    fun scheduleSpecifiedReminderForRoutine(routine: Routine, recurrences: List<RoutineRecurrence>) {
+    fun scheduleSpecifiedReminderForRoutine(
+        routine: Routine,
+        recurrences: List<RoutineRecurrence>,
+    ) {
         val pref = uiState.value
         val offset =
             when (pref.specifiedSelected) {
