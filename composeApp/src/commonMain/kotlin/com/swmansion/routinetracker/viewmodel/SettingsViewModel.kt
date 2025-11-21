@@ -193,21 +193,23 @@ class SettingsViewModel(
         viewModelScope.launch {
             val count = dataRepository.countRoutinesWithoutTime()
             val body = "You have $count routines to start"
-            alarmeeService.local.schedule(
-                Alarmee(
-                    uuid = UUID_UNSPECIFIED,
-                    notificationTitle = "Routine Reminder",
-                    notificationBody = body,
-                    scheduledDateTime = scheduled,
-                    repeatInterval = RepeatInterval.Daily,
-                    androidNotificationConfiguration =
-                        AndroidNotificationConfiguration(
-                            priority = AndroidNotificationPriority.HIGH,
-                            channelId = "routineChannel",
-                        ),
-                    iosNotificationConfiguration = IosNotificationConfiguration(),
+            if (count > 0) {
+                alarmeeService.local.schedule(
+                    Alarmee(
+                        uuid = UUID_UNSPECIFIED,
+                        notificationTitle = "Routine Reminder",
+                        notificationBody = body,
+                        scheduledDateTime = scheduled,
+                        repeatInterval = RepeatInterval.Daily,
+                        androidNotificationConfiguration =
+                            AndroidNotificationConfiguration(
+                                priority = AndroidNotificationPriority.HIGH,
+                                channelId = "routineChannel",
+                            ),
+                        iosNotificationConfiguration = IosNotificationConfiguration(),
+                    )
                 )
-            )
+            }
         }
     }
 
