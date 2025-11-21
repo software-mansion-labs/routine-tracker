@@ -22,6 +22,7 @@ import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.count
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -74,6 +75,23 @@ class SettingsViewModel(
     }
 
     @OptIn(ExperimentalTime::class)
+    fun scheduleSpecifiedReminderForRoutine(
+        routine: Routine,
+        recurrences: List<RoutineRecurrence>,
+        hour: Int,
+        minute: Int,
+    ) {
+        val pref = uiState.value
+        val offset = getReminderOffset(pref.specifiedSelected)
+        val nowInstant = getCurrentInstant()
+        val tz = getCurrentTimeZone()
+
+        recurrences.forEach { rec ->
+            scheduleRoutineReminder(routine, rec, hour, minute, offset, nowInstant, tz)
+        }
+    }
+
+    @OptIn(ExperimentalTime::class)
     fun scheduleSpecifiedReminder() {
         val pref = uiState.value
         val offset = getReminderOffset(pref.specifiedSelected)
@@ -93,23 +111,6 @@ class SettingsViewModel(
                         scheduleRoutineReminder(routine, rec, hour, minute, offset, nowInstant, tz)
                     }
                 }
-        }
-    }
-
-    @OptIn(ExperimentalTime::class)
-    fun scheduleSpecifiedReminderForRoutine(
-        routine: Routine,
-        recurrences: List<RoutineRecurrence>,
-    ) {
-        val offset = getReminderOffset(uiState.value.specifiedSelected)
-        val nowInstant = getCurrentInstant()
-        val tz = getCurrentTimeZone()
-        val (hour, minute) = parseHourMinute(routine.time!!)
-
-        viewModelScope.launch {
-            recurrences.forEach { rec ->
-                scheduleRoutineReminder(routine, rec, hour, minute, offset, nowInstant, tz)
-            }
         }
     }
 
@@ -214,11 +215,14 @@ class SettingsViewModel(
         viewModelScope.launch {
             repository.setRemindersEnabled(enabled)
             if (enabled) {
-                scheduleSpecifiedReminder()
-                scheduleDailyUnspecifiedReminder(
-                    uiState.value.unspecifiedReminderHour,
-                    uiState.value.unspecifiedReminderMinute,
-                )
+                if (dataRepository.countRoutinesWithoutTime() > 0) {
+                    scheduleSpecifiedReminder()
+                } else if (dataRepository.getAllRoutinesWithTasks().count() > 0) {
+                    scheduleDailyUnspecifiedReminder(
+                        uiState.value.unspecifiedReminderHour,
+                        uiState.value.unspecifiedReminderMinute,
+                    )
+                }
             } else {
                 cancelAllSpecifiedReminders()
                 cancel(UUID_UNSPECIFIED)

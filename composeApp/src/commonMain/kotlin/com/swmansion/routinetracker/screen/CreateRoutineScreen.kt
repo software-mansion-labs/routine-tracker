@@ -15,7 +15,6 @@ import androidx.navigation.NavController
 import com.mohamedrejeb.calf.ui.timepicker.AdaptiveTimePicker
 import com.mohamedrejeb.calf.ui.timepicker.AdaptiveTimePickerState
 import com.mohamedrejeb.calf.ui.timepicker.rememberAdaptiveTimePickerState
-import com.swmansion.routinetracker.data.createAlarmeePlatformConfiguration
 import com.swmansion.routinetracker.di.LocalAppContainer
 import com.swmansion.routinetracker.model.DayOfWeek
 import com.swmansion.routinetracker.model.Task
@@ -23,9 +22,7 @@ import com.swmansion.routinetracker.navigation.CreateTask
 import com.swmansion.routinetracker.viewmodel.CreateRoutineViewModel
 import com.swmansion.routinetracker.viewmodel.SettingsViewModel
 import com.swmansion.routinetracker.viewmodel.durationToString
-import com.tweener.alarmee.rememberAlarmeeService
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.launch
+import com.tweener.alarmee.AlarmeeService
 import org.jetbrains.compose.resources.painterResource
 import routinetracker.composeapp.generated.resources.Res
 import routinetracker.composeapp.generated.resources.ic_add
@@ -45,6 +42,8 @@ fun CreateRoutineScreen(
                     )
                 },
         ),
+    alarmeeService: AlarmeeService,
+    navController: NavController,
     settingsViewModel: SettingsViewModel =
         viewModel(
             factory = SettingsViewModel.Factory,
@@ -54,19 +53,14 @@ fun CreateRoutineScreen(
                         SettingsViewModel.USER_PREFERENCES_REPOSITORY_KEY,
                         LocalAppContainer.current.userPreferencesRepository,
                     )
-                    set(
-                        SettingsViewModel.ALARMEE_SERVICE_KEY,
-                        rememberAlarmeeService(
-                            platformConfiguration = createAlarmeePlatformConfiguration()
-                        ),
-                    )
+                    set(SettingsViewModel.ALARMEE_SERVICE_KEY, alarmeeService)
                     set(SettingsViewModel.DATA_REPOSITORY_KEY, LocalAppContainer.current.repository)
                 },
         ),
-    navController: NavController,
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val timePickerState = rememberAdaptiveTimePickerState()
+    val remindersEnabled = settingsViewModel.uiState.collectAsState().value.remindersEnabled
 
     Scaffold(
         topBar = {
@@ -90,23 +84,20 @@ fun CreateRoutineScreen(
                 ActionButtons(
                     isLoading = uiState.isLoading,
                     onCreate = {
-                        viewModel.createRoutine { routineId, hasTime ->
-                            if (settingsViewModel.uiState.value.remindersEnabled) {
-                                MainScope().launch {
-                                    val routine = viewModel.getRoutineById(routineId)
-                                    val recurrences = viewModel.getRecurrencesForRoutine(routineId)
-                                    if (hasTime && routine != null && recurrences.isNotEmpty()) {
-                                        settingsViewModel.scheduleSpecifiedReminderForRoutine(
-                                            routine,
-                                            recurrences,
-                                        )
-                                    } else {
-                                        settingsViewModel.scheduleDailyUnspecifiedReminder(
-                                            settingsViewModel.uiState.value.unspecifiedReminderHour,
-                                            settingsViewModel.uiState.value
-                                                .unspecifiedReminderMinute,
-                                        )
-                                    }
+                        viewModel.createRoutine { _, routine, recurrences ->
+                            if (remindersEnabled) {
+                                if (!routine.time.isNullOrEmpty() && recurrences.isNotEmpty()) {
+                                    settingsViewModel.scheduleSpecifiedReminderForRoutine(
+                                        routine,
+                                        recurrences,
+                                        routine.time.substringBefore(":").toIntOrNull() ?: 9,
+                                        routine.time.substringAfter(":").toIntOrNull() ?: 0,
+                                    )
+                                } else {
+                                    settingsViewModel.scheduleDailyUnspecifiedReminder(
+                                        settingsViewModel.uiState.value.unspecifiedReminderHour,
+                                        settingsViewModel.uiState.value.unspecifiedReminderMinute,
+                                    )
                                 }
                             }
                             navController.popBackStack()

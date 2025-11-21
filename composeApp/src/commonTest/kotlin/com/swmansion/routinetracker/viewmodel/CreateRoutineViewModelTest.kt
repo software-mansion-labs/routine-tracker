@@ -96,7 +96,7 @@ class CreateRoutineViewModelTest {
         val viewModel = CreateRoutineViewModel(repository)
         var onSuccessCalled = false
 
-        viewModel.createRoutine { _, _ -> onSuccessCalled = true }
+        viewModel.createRoutine { _, _, _ -> onSuccessCalled = true }
 
         assertNotNull(viewModel.uiState.value.errorMessage)
         assertTrue(viewModel.uiState.value.errorMessage!!.contains("required", ignoreCase = true))
@@ -110,7 +110,7 @@ class CreateRoutineViewModelTest {
         viewModel.updateRoutineName("   ")
         var onSuccessCalled = false
 
-        viewModel.createRoutine { _, _ -> onSuccessCalled = true }
+        viewModel.createRoutine { _, _, _ -> onSuccessCalled = true }
 
         assertNotNull(viewModel.uiState.value.errorMessage)
         assertFalse(onSuccessCalled)
@@ -126,7 +126,7 @@ class CreateRoutineViewModelTest {
         viewModel.updateIntervalWeeks(2f)
         var onSuccessCalled = false
 
-        viewModel.createRoutine { _, _ -> onSuccessCalled = true }
+        viewModel.createRoutine { _, _, _ -> onSuccessCalled = true }
 
         advanceUntilIdle()
 

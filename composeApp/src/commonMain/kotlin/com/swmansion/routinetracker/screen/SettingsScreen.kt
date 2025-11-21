@@ -57,7 +57,7 @@ fun SettingsScreen(
                     set(SettingsViewModel.ALARMEE_SERVICE_KEY, alarmeeService)
                     set(SettingsViewModel.DATA_REPOSITORY_KEY, LocalAppContainer.current.repository)
                 },
-        )
+        ),
 ) {
     val uiState by viewModel.uiState.collectAsState()
 

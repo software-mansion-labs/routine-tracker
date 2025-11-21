@@ -9,10 +9,12 @@ import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.runComposeUiTest
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.navigation.compose.rememberNavController
+import com.swmansion.routinetracker.data.createAlarmeePlatformConfiguration
 import com.swmansion.routinetracker.di.LocalAppContainer
 import com.swmansion.routinetracker.mock.MockViewModelStoreOwner
 import com.swmansion.routinetracker.mock.di.MockAppContainer
 import com.swmansion.routinetracker.model.Routine
+import com.tweener.alarmee.rememberAlarmeeService
 import kotlin.test.Test
 import kotlinx.coroutines.flow.MutableStateFlow
 
@@ -29,7 +31,10 @@ class CreateRoutineScreenTest {
                 LocalViewModelStoreOwner provides viewModelStoreOwner,
                 LocalAppContainer provides testAppContainer,
             ) {
-                CreateRoutineScreen(navController = rememberNavController())
+                CreateRoutineScreen(
+                    navController = rememberNavController(),
+                    alarmeeService = rememberAlarmeeService(createAlarmeePlatformConfiguration()),
+                )
             }
         }
 
@@ -51,7 +56,10 @@ class CreateRoutineScreenTest {
                 LocalViewModelStoreOwner provides viewModelStoreOwner,
                 LocalAppContainer provides testAppContainer,
             ) {
-                CreateRoutineScreen(navController = rememberNavController())
+                CreateRoutineScreen(
+                    navController = rememberNavController(),
+                    alarmeeService = rememberAlarmeeService(createAlarmeePlatformConfiguration()),
+                )
             }
         }
 
@@ -69,7 +77,10 @@ class CreateRoutineScreenTest {
                 LocalViewModelStoreOwner provides viewModelStoreOwner,
                 LocalAppContainer provides testAppContainer,
             ) {
-                CreateRoutineScreen(navController = rememberNavController())
+                CreateRoutineScreen(
+                    navController = rememberNavController(),
+                    alarmeeService = rememberAlarmeeService(createAlarmeePlatformConfiguration()),
+                )
             }
         }
 
@@ -89,7 +100,10 @@ class CreateRoutineScreenTest {
                 LocalViewModelStoreOwner provides viewModelStoreOwner,
                 LocalAppContainer provides testAppContainer,
             ) {
-                CreateRoutineScreen(navController = rememberNavController())
+                CreateRoutineScreen(
+                    navController = rememberNavController(),
+                    alarmeeService = rememberAlarmeeService(createAlarmeePlatformConfiguration()),
+                )
             }
         }
 
@@ -118,7 +132,10 @@ class CreateRoutineScreenTest {
                 LocalViewModelStoreOwner provides viewModelStoreOwner,
                 LocalAppContainer provides testAppContainer,
             ) {
-                CreateRoutineScreen(navController = rememberNavController())
+                CreateRoutineScreen(
+                    navController = rememberNavController(),
+                    alarmeeService = rememberAlarmeeService(createAlarmeePlatformConfiguration()),
+                )
             }
         }
 
@@ -135,7 +152,10 @@ class CreateRoutineScreenTest {
                 LocalViewModelStoreOwner provides viewModelStoreOwner,
                 LocalAppContainer provides testAppContainer,
             ) {
-                CreateRoutineScreen(navController = rememberNavController())
+                CreateRoutineScreen(
+                    navController = rememberNavController(),
+                    alarmeeService = rememberAlarmeeService(createAlarmeePlatformConfiguration()),
+                )
             }
         }
     }
@@ -150,7 +170,10 @@ class CreateRoutineScreenTest {
                 LocalViewModelStoreOwner provides viewModelStoreOwner,
                 LocalAppContainer provides testAppContainer,
             ) {
-                CreateRoutineScreen(navController = rememberNavController())
+                CreateRoutineScreen(
+                    navController = rememberNavController(),
+                    alarmeeService = rememberAlarmeeService(createAlarmeePlatformConfiguration()),
+                )
             }
         }
 
