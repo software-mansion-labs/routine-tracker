@@ -16,6 +16,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.swmansion.routinetracker.navigation.Routines
 import com.swmansion.routinetracker.navigation.Settings
+import com.tweener.alarmee.AlarmeeService
 import org.jetbrains.compose.resources.painterResource
 import routinetracker.composeapp.generated.resources.Res
 import routinetracker.composeapp.generated.resources.ic_routine
@@ -23,7 +24,7 @@ import routinetracker.composeapp.generated.resources.ic_settings
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(navController: NavController) {
+fun HomeScreen(navController: NavController, alarmeeService: AlarmeeService) {
     val homeNavController = rememberNavController()
     val currentBackStackEntry by homeNavController.currentBackStackEntryAsState()
 
@@ -64,7 +65,7 @@ fun HomeScreen(navController: NavController) {
             modifier = Modifier.fillMaxSize().padding(paddingValues),
         ) {
             composable<Routines> { RoutinesScreen(navController = navController) }
-            composable<Settings> { SettingsScreen() }
+            composable<Settings> { SettingsScreen(alarmeeService = alarmeeService) }
         }
     }
 }

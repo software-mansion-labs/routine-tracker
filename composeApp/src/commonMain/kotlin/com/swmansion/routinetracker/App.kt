@@ -7,25 +7,34 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.swmansion.routinetracker.data.createAlarmeePlatformConfiguration
 import com.swmansion.routinetracker.navigation.CreateRoutine
 import com.swmansion.routinetracker.navigation.CreateTask
 import com.swmansion.routinetracker.navigation.Home
 import com.swmansion.routinetracker.screen.CreateRoutineScreen
 import com.swmansion.routinetracker.screen.CreateTaskScreen
 import com.swmansion.routinetracker.screen.HomeScreen
+import com.tweener.alarmee.AlarmeeService
+import com.tweener.alarmee.rememberAlarmeeService
 
 @Composable
 fun App() {
     MaterialTheme {
         val navController = rememberNavController()
+        val alarmeeService: AlarmeeService =
+            rememberAlarmeeService(createAlarmeePlatformConfiguration())
 
         NavHost(
             navController = navController,
             startDestination = Home,
             modifier = Modifier.fillMaxSize(),
         ) {
-            composable<Home> { HomeScreen(navController = navController) }
-            composable<CreateRoutine> { CreateRoutineScreen(navController = navController) }
+            composable<Home> {
+                HomeScreen(navController = navController, alarmeeService = alarmeeService)
+            }
+            composable<CreateRoutine> {
+                CreateRoutineScreen(navController = navController, alarmeeService = alarmeeService)
+            }
             composable<CreateTask> { CreateTaskScreen(navController = navController) }
         }
     }
