@@ -36,11 +36,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mohamedrejeb.calf.ui.timepicker.AdaptiveTimePicker
 import com.mohamedrejeb.calf.ui.timepicker.AdaptiveTimePickerState
 import com.mohamedrejeb.calf.ui.timepicker.rememberAdaptiveTimePickerState
-import com.swmansion.routinetracker.data.createAlarmeePlatformConfiguration
 import com.swmansion.routinetracker.di.LocalAppContainer
 import com.swmansion.routinetracker.viewmodel.SettingsViewModel
 import com.swmansion.routinetracker.viewmodel.formatTime
-import com.tweener.alarmee.rememberAlarmeeService
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -56,9 +54,7 @@ fun SettingsScreen(
                     )
                     set(
                         SettingsViewModel.ALARMEE_SERVICE_KEY,
-                        rememberAlarmeeService(
-                            platformConfiguration = createAlarmeePlatformConfiguration()
-                        ),
+                        LocalAppContainer.current.alarmeeService,
                     )
                     set(SettingsViewModel.DATA_REPOSITORY_KEY, LocalAppContainer.current.repository)
                 },

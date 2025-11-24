@@ -9,9 +9,13 @@ import com.swmansion.routinetracker.mock.database.MockRecurrenceDao
 import com.swmansion.routinetracker.mock.database.MockRoutineDao
 import com.swmansion.routinetracker.mock.database.MockTaskDao
 import com.swmansion.routinetracker.model.Routine
+import com.tweener.alarmee.AlarmeeService
 import kotlinx.coroutines.flow.MutableStateFlow
 
-class MockAppContainer(private val routinesFlow: MutableStateFlow<List<Routine>>) : AppContainer {
+class MockAppContainer(
+    private val routinesFlow: MutableStateFlow<List<Routine>>,
+    override val alarmeeService: AlarmeeService,
+) : AppContainer {
     override val repository: DataRepository by lazy {
         val mockRoutineDao = MockRoutineDao(1L, routinesFlow)
         val mockTaskDao = MockTaskDao()
