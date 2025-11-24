@@ -14,15 +14,14 @@ import com.swmansion.routinetracker.navigation.Home
 import com.swmansion.routinetracker.screen.CreateRoutineScreen
 import com.swmansion.routinetracker.screen.CreateTaskScreen
 import com.swmansion.routinetracker.screen.HomeScreen
-import com.tweener.alarmee.AlarmeeService
-import com.tweener.alarmee.rememberAlarmeeService
+import com.tweener.alarmee.createAlarmeeService
 
 @Composable
 fun App() {
     MaterialTheme {
         val navController = rememberNavController()
-        val alarmeeService: AlarmeeService =
-            rememberAlarmeeService(createAlarmeePlatformConfiguration())
+        val alarmeeService = createAlarmeeService()
+        alarmeeService.initialize(platformConfiguration = createAlarmeePlatformConfiguration())
 
         NavHost(
             navController = navController,
