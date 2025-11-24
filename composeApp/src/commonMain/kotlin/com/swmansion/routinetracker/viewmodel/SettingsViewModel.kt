@@ -218,12 +218,12 @@ class SettingsViewModel(
             repository.setRemindersEnabled(enabled)
             if (enabled) {
                 if (dataRepository.countRoutinesWithoutTime() > 0) {
-                    scheduleSpecifiedReminder()
-                } else if (dataRepository.getAllRoutinesWithTasks().count() > 0) {
                     scheduleDailyUnspecifiedReminder(
                         uiState.value.unspecifiedReminderHour,
                         uiState.value.unspecifiedReminderMinute,
                     )
+                } else if (dataRepository.getAllRoutinesWithTasks().count() > 0) {
+                    scheduleSpecifiedReminder()
                 }
             } else {
                 cancelAllSpecifiedReminders()

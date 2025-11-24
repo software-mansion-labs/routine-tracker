@@ -22,6 +22,7 @@ import com.swmansion.routinetracker.navigation.CreateTask
 import com.swmansion.routinetracker.viewmodel.CreateRoutineViewModel
 import com.swmansion.routinetracker.viewmodel.SettingsViewModel
 import com.swmansion.routinetracker.viewmodel.durationToString
+import com.swmansion.routinetracker.viewmodel.parseHourMinute
 import com.tweener.alarmee.AlarmeeService
 import org.jetbrains.compose.resources.painterResource
 import routinetracker.composeapp.generated.resources.Res
@@ -90,8 +91,8 @@ fun CreateRoutineScreen(
                                     settingsViewModel.scheduleSpecifiedReminderForRoutine(
                                         routine,
                                         recurrences,
-                                        routine.time.substringBefore(":").toIntOrNull() ?: 9,
-                                        routine.time.substringAfter(":").toIntOrNull() ?: 0,
+                                        parseHourMinute(routine.time).first,
+                                        parseHourMinute(routine.time).second,
                                     )
                                 } else {
                                     settingsViewModel.scheduleDailyUnspecifiedReminder(

@@ -220,14 +220,6 @@ class CreateRoutineViewModel(private val repository: DataRepository) : ViewModel
         }
     }
 
-    suspend fun getRoutineById(routineId: Long): Routine? {
-        return repository.getRoutineById(routineId)
-    }
-
-    suspend fun getRecurrencesForRoutine(routineId: Long): List<RoutineRecurrence> {
-        return repository.getRecurrencesForRoutine(routineId)
-    }
-
     companion object {
         val DATA_REPOSITORY_KEY = object : CreationExtras.Key<DataRepository> {}
         var Factory: ViewModelProvider.Factory = viewModelFactory {

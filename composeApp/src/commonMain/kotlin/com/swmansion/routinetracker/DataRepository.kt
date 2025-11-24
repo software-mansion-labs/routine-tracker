@@ -22,8 +22,6 @@ interface DataRepository {
     suspend fun countRoutinesWithoutTime(): Int
 
     suspend fun getRecurrencesForRoutine(routineId: Long): List<RoutineRecurrence>
-
-    suspend fun getRoutineById(id: Long): Routine?
 }
 
 class DefaultDataRepository(
@@ -81,8 +79,4 @@ class DefaultDataRepository(
 
     override suspend fun getRecurrencesForRoutine(routineId: Long): List<RoutineRecurrence> =
         routineRecurrenceDao.getRecurrencesForRoutine(routineId)
-
-    override suspend fun getRoutineById(id: Long): Routine? {
-        return routineDao.getRoutineById(id)
-    }
 }
