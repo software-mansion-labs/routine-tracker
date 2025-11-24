@@ -23,7 +23,6 @@ import com.swmansion.routinetracker.viewmodel.CreateRoutineViewModel
 import com.swmansion.routinetracker.viewmodel.SettingsViewModel
 import com.swmansion.routinetracker.viewmodel.durationToString
 import com.swmansion.routinetracker.viewmodel.parseHourMinute
-import com.tweener.alarmee.AlarmeeService
 import org.jetbrains.compose.resources.painterResource
 import routinetracker.composeapp.generated.resources.Res
 import routinetracker.composeapp.generated.resources.ic_add
@@ -43,7 +42,6 @@ fun CreateRoutineScreen(
                     )
                 },
         ),
-    alarmeeService: AlarmeeService,
     navController: NavController,
     settingsViewModel: SettingsViewModel =
         viewModel(
@@ -54,7 +52,10 @@ fun CreateRoutineScreen(
                         SettingsViewModel.USER_PREFERENCES_REPOSITORY_KEY,
                         LocalAppContainer.current.userPreferencesRepository,
                     )
-                    set(SettingsViewModel.ALARMEE_SERVICE_KEY, alarmeeService)
+                    set(
+                        SettingsViewModel.ALARMEE_SERVICE_KEY,
+                        LocalAppContainer.current.alarmeeService,
+                    )
                     set(SettingsViewModel.DATA_REPOSITORY_KEY, LocalAppContainer.current.repository)
                 },
         ),

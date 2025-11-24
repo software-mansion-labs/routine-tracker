@@ -7,8 +7,11 @@ import com.swmansion.routinetracker.DataRepository
 import com.swmansion.routinetracker.DefaultDataRepository
 import com.swmansion.routinetracker.data.AndroidUserPreferencesRepository
 import com.swmansion.routinetracker.data.UserPreferencesRepository
+import com.swmansion.routinetracker.data.createAlarmeePlatformConfiguration
 import com.swmansion.routinetracker.database.DB_FILE_NAME
 import com.swmansion.routinetracker.database.RoutineDatabase
+import com.tweener.alarmee.AlarmeeService
+import com.tweener.alarmee.createAlarmeeService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -34,5 +37,11 @@ actual class DefaultAppContainer(private val application: Application) : AppCont
 
     actual override val userPreferencesRepository: UserPreferencesRepository by lazy {
         AndroidUserPreferencesRepository(application, appScope)
+    }
+
+    actual override val alarmeeService: AlarmeeService by lazy {
+        val alarmeeService = createAlarmeeService()
+        alarmeeService.initialize(platformConfiguration = createAlarmeePlatformConfiguration())
+        alarmeeService
     }
 }
