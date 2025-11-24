@@ -10,6 +10,7 @@ import com.swmansion.routinetracker.DataRepository
 import com.swmansion.routinetracker.data.UserPreferencesRepository
 import com.swmansion.routinetracker.model.Routine
 import com.swmansion.routinetracker.model.RoutineRecurrence
+import com.swmansion.routinetracker.model.RoutineWithTasks
 import com.tweener.alarmee.AlarmeeService
 import com.tweener.alarmee.model.Alarmee
 import com.tweener.alarmee.model.AndroidNotificationConfiguration
@@ -65,7 +66,7 @@ class SettingsViewModel(
     private suspend fun cancelAllSpecifiedReminders() {
         val routines = dataRepository.getAllRoutinesWithTasks().first()
         routines
-            .map { it.routine }
+            .map(RoutineWithTasks::routine)
             .filter { it.time != null }
             .forEach { routine ->
                 dataRepository.getRecurrencesForRoutine(routine.id).forEach { rec ->
@@ -102,10 +103,11 @@ class SettingsViewModel(
             val tz = getCurrentTimeZone()
 
             routines
-                .map { it.routine }
+                .map(RoutineWithTasks::routine)
                 .filter { it.time != null }
                 .forEach { routine ->
-                    val (hour, minute) = parseHourMinute(routine.time!!)
+                    if (routine.time == null) return@forEach
+                    val (hour, minute) = parseHourMinute(routine.time)
                     val recurrences = dataRepository.getRecurrencesForRoutine(routine.id)
                     recurrences.forEach { rec ->
                         scheduleRoutineReminder(routine, rec, hour, minute, offset, nowInstant, tz)
@@ -141,9 +143,7 @@ class SettingsViewModel(
             )
         var scheduledInstant = baseFirst.toInstant(tz) - offset
         val periodDays = (rec.intervalWeeks.coerceAtLeast(1)) * 7
-        while (scheduledInstant <= nowInstant) {
-            scheduledInstant += periodDays.toLong().days
-        }
+        while (scheduledInstant <= nowInstant) scheduledInstant += periodDays.toLong().days
         val scheduled = scheduledInstant.toLocalDateTime(tz)
 
         alarmeeService.local.schedule(
