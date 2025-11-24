@@ -12,6 +12,7 @@ import com.swmansion.routinetracker.di.LocalAppContainer
 import com.swmansion.routinetracker.mock.MockViewModelStoreOwner
 import com.swmansion.routinetracker.mock.di.MockAppContainer
 import com.swmansion.routinetracker.model.Routine
+import com.tweener.alarmee.createAlarmeeService
 import kotlin.test.Test
 import kotlinx.coroutines.flow.MutableStateFlow
 
@@ -150,5 +151,5 @@ class RoutinesScreenTest {
 
     private fun createTestAppContainer(
         routinesFlow: MutableStateFlow<List<Routine>> = MutableStateFlow(emptyList())
-    ) = MockAppContainer(routinesFlow)
+    ) = MockAppContainer(routinesFlow, alarmeeService = createAlarmeeService())
 }

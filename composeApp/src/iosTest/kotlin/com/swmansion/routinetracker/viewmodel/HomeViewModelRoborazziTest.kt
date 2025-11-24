@@ -16,6 +16,7 @@ import com.swmansion.routinetracker.mock.MockViewModelStoreOwner
 import com.swmansion.routinetracker.mock.di.MockAppContainer
 import com.swmansion.routinetracker.model.Routine
 import com.swmansion.routinetracker.screen.RoutinesScreen
+import com.tweener.alarmee.createAlarmeeService
 import io.github.takahirom.roborazzi.captureRoboImage
 import kotlin.test.Test
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -75,5 +76,5 @@ class HomeViewModelRoborazziTest {
 
     private fun createTestAppContainer(
         routinesFlow: MutableStateFlow<List<Routine>> = MutableStateFlow(emptyList())
-    ) = MockAppContainer(routinesFlow)
+    ) = MockAppContainer(routinesFlow, alarmeeService = createAlarmeeService())
 }
